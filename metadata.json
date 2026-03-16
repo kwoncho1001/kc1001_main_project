@@ -1,0 +1,5 @@
+{
+  "name": "Main_project",
+  "description": "An interactive tablet interface for students to write and draw on problems, capturing handwriting as vector data.",
+  "requestFramePermissions": []
+}
