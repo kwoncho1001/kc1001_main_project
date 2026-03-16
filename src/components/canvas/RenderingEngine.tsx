@@ -29,9 +29,23 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
     theme: 'light',
     ...initialData?.appState,
   });
+  const [selectedElementIds, setSelectedElementIds] = useState<Record<string, boolean>>({});
   const [activeElement, setActiveElement] = useState<DigitalInkObject | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
   const stageRef = useRef<Konva.Stage>(null);
+
+  // Sync with props
+  useEffect(() => {
+    if (initialData?.elements) {
+      setElements(initialData.elements);
+    }
+  }, [initialData?.elements]);
+
+  useEffect(() => {
+    if (initialData?.appState) {
+      setAppState((prev) => ({ ...prev, ...initialData.appState }));
+    }
+  }, [initialData?.appState]);
 
   useEffect(() => {
     setAppState((prev) => ({ ...prev, mode }));
@@ -60,6 +74,17 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
         isDeleted: false,
       };
       setActiveElement(newEl);
+      setSelectedElementIds({});
+    } else if (appState.mode === 'selection') {
+      const clickedOnEmpty = e.target === stage;
+      if (clickedOnEmpty) {
+        setSelectedElementIds({});
+      } else {
+        const id = e.target.id();
+        if (id) {
+          setSelectedElementIds({ [id]: true });
+        }
+      }
     }
     
     onPointerDown?.(e);
@@ -104,21 +129,25 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
         return (
           <Path
             key={el.id}
+            id={el.id}
             data={pathData}
             fill={el.strokeColor}
             opacity={el.opacity}
+            stroke={selectedElementIds[el.id] ? '#3b82f6' : undefined}
+            strokeWidth={selectedElementIds[el.id] ? 2 : 0}
           />
         );
       case 'rectangle':
         return (
           <Rect
             key={el.id}
+            id={el.id}
             x={el.x}
             y={el.y}
             width={el.width}
             height={el.height}
-            stroke={el.strokeColor}
-            strokeWidth={el.strokeWidth}
+            stroke={selectedElementIds[el.id] ? '#3b82f6' : el.strokeColor}
+            strokeWidth={selectedElementIds[el.id] ? Math.max(el.strokeWidth, 2) : el.strokeWidth}
             fill={el.backgroundColor}
             opacity={el.opacity}
           />
