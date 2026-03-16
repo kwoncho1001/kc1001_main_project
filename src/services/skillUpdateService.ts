@@ -51,7 +51,7 @@ export class SkillUpdateService {
         score: newTypeScore,
         solvedProblemCount: oldSolvedCount + 1,
         lastUpdated: now,
-        level: 'tag'
+        level: 'TYPE'
       };
 
       updatedSkills.push({
@@ -79,7 +79,7 @@ export class SkillUpdateService {
         id: data.courseId,
         score: newCourseScore,
         lastUpdated: now,
-        level: 'subject'
+        level: 'COURSE'
       };
 
       updatedSkills.push({
@@ -147,7 +147,7 @@ export class SkillUpdateService {
       if (childScore) {
         // Apply cap for Field level propagation if needed
         let weight = childScore.solvedProblemCount || 1;
-        if (child.level === 'subject') {
+        if (child.level === 'COURSE') {
           weight = Math.min(weight, FIELD_SOLVED_COUNT_CAP);
         }
         

@@ -2,18 +2,22 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExamInterface } from './components/ExamInterface';
 import { ScannerUI } from './components/ScannerUI';
 import { BookmarksView } from './components/BookmarksView';
 import { GradePrediction } from './components/GradePrediction';
 import { AbilityTracker } from './components/AbilityTracker';
-import { PenTool, Scan, Star, BarChart3, Layers } from 'lucide-react';
-import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore } from './types/ability';
-import { AbilityEngine } from './services/abilityEngine';
+import { HierarchyManager } from './components/HierarchyManager';
+import { AIMetadataAnalyzer } from './components/AIMetadataAnalyzer';
+import { ProblemExtractor } from './components/ProblemExtractor';
+import { PenTool, Scan, Star, BarChart3, Layers, Database, Brain, FileSearch } from 'lucide-react';
+import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore, WeightCalculationResponse } from './types/ability';
 import { BehaviorCorrectionService } from './services/behaviorCorrection';
 import { InitialSkillService } from './services/initialSkillService';
 import { SkillUpdateService } from './services/skillUpdateService';
+import { WeightCalculationService } from './services/weightCalculationService';
+import { HierarchyService } from './services/hierarchyService';
 
 const problems = [
   { id: 'p1', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'Mathematics - Calculus' },
@@ -28,17 +32,7 @@ const problems = [
   { id: 'p10', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'General Knowledge' },
 ];
 
-const mockHierarchy: { id: string; name: string; level: AbilityLevel; parentId?: string }[] = [
-  { id: 'f1', name: 'Mathematics', level: 'field' },
-  { id: 's1', name: 'Calculus', level: 'subject', parentId: 'f1' },
-  { id: 's2', name: 'Algebra', level: 'subject', parentId: 'f1' },
-  { id: 's3', name: 'Geometry', level: 'subject', parentId: 'f1' },
-  { id: 'm1', name: 'Differentiation', level: 'majorUnit', parentId: 's1' },
-  { id: 'n1', name: 'Chain Rule', level: 'minorUnit', parentId: 'm1' },
-  { id: 't1', name: 'Implicit Differentiation', level: 'tag', parentId: 'n1' },
-  { id: 't2', name: 'Power Rule', level: 'tag', parentId: 'n1' },
-  { id: 't3', name: 'Trig Derivatives', level: 'tag', parentId: 'n1' },
-];
+const mockHierarchy = HierarchyService.getAllNodes();
 
 const mockAbilityScores: Record<string, number> = {
   f1: 0.75,
@@ -51,11 +45,35 @@ const mockAbilityScores: Record<string, number> = {
 };
 
 export default function App() {
-  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability'>('scanner');
+  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
   const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
   const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [prediction, setPrediction] = useState<WeightCalculationResponse | null>(null);
+
+  useEffect(() => {
+    if (selectedProblemId && Object.keys(abilityScores).length > 0) {
+      // Mock hierarchy for the selected problem
+      const problemHierarchy = {
+        L1: 'f1',
+        L2: 's1',
+        L3: 'm1',
+        L4: 'n1',
+        L5: 't1',
+      };
+
+      const result = WeightCalculationService.calculateFinalTheta(
+        {
+          studentId: 'user-123',
+          contextHierarchy: problemHierarchy,
+          reliabilityIndex: lastBehavior?.reliabilityIndex ?? 1.0
+        },
+        abilityScores
+      );
+      setPrediction(result);
+    }
+  }, [selectedProblemId, abilityScores, lastBehavior]);
 
   const handleOnboarding = (level: 'HIGH' | 'MEDIUM' | 'LOW') => {
     const request: InitialSkillRequest = {
@@ -75,7 +93,7 @@ export default function App() {
       newScores[s.id] = {
         id: s.id,
         name: mockHierarchy.find(h => h.id === s.id)?.name || s.id,
-        level: s.level.toLowerCase() as any,
+        level: s.level,
         score: s.initialScore,
         lastUpdated: Date.now(),
         solvedProblemCount: 0
@@ -168,6 +186,30 @@ export default function App() {
           <Layers size={14} />
           Ability Tracker
         </button>
+
+        <button 
+          onClick={() => setView('hierarchy')}
+          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'hierarchy' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+        >
+          <Database size={14} />
+          Hierarchy Manager
+        </button>
+
+        <button 
+          onClick={() => setView('ai-analyzer')}
+          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ai-analyzer' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+        >
+          <Brain size={14} />
+          AI Analyzer
+        </button>
+
+        <button 
+          onClick={() => setView('ocr-extractor')}
+          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ocr-extractor' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+        >
+          <FileSearch size={14} />
+          OCR Extractor
+        </button>
       </nav>
 
       <main className="flex-1 overflow-auto relative">
@@ -209,12 +251,18 @@ export default function App() {
           <BookmarksView problems={problems as any} onSelectProblem={handleSelectProblemFromBookmarks} />
         ) : view === 'prediction' ? (
           <GradePrediction />
-        ) : (
+        ) : view === 'ability' ? (
           <AbilityTracker 
             scores={abilityScores} 
             hierarchy={mockHierarchy} 
             lastBehavior={lastBehavior}
           />
+        ) : view === 'hierarchy' ? (
+          <HierarchyManager />
+        ) : view === 'ai-analyzer' ? (
+          <AIMetadataAnalyzer />
+        ) : (
+          <ProblemExtractor />
         )}
       </main>
     </div>

@@ -1,4 +1,4 @@
-export type AbilityLevel = 'field' | 'subject' | 'majorUnit' | 'minorUnit' | 'tag';
+export type AbilityLevel = 'FIELD' | 'COURSE' | 'MAJOR_CHAPTER' | 'MINOR_CHAPTER' | 'TYPE';
 
 export interface Problem {
   id: string;
@@ -57,11 +57,11 @@ export interface SolvingResult {
 }
 
 export const ABILITY_WEIGHTS: Record<AbilityLevel, number> = {
-  tag: 0.4,
-  minorUnit: 0.25,
-  majorUnit: 0.15,
-  subject: 0.1,
-  field: 0.1,
+  TYPE: 0.4,
+  MINOR_CHAPTER: 0.25,
+  MAJOR_CHAPTER: 0.15,
+  COURSE: 0.1,
+  FIELD: 0.1,
 };
 
 export interface UserPerformance {
@@ -140,9 +140,160 @@ export interface UpdatedSkillInfo {
   timestamp: number;
 }
 
+export interface PropagationWeights {
+  FIELD_TO_COURSE: number;
+  COURSE_TO_MAJOR_CHAPTER: number;
+  MAJOR_CHAPTER_TO_MINOR_CHAPTER: number;
+  MINOR_CHAPTER_TO_TYPE: number;
+}
+
+export type HierarchyAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'GET_ALL_STRUCTURE' | 'GET_PROPAGATION_WEIGHTS';
+
+export interface HierarchyRequest {
+  action: HierarchyAction;
+  level?: AbilityLevel;
+  id?: string;
+  parent_id?: string;
+  name?: string;
+  description?: string;
+  propagation_weights?: Partial<PropagationWeights>;
+}
+
+export interface HierarchyResponse {
+  status: 'SUCCESS' | 'FAILURE';
+  message: string;
+  data?: {
+    structure?: any[];
+    item?: any;
+    propagation_weights?: PropagationWeights;
+  };
+}
+
 export interface SkillUpdateResponse {
   studentId: string;
   updatedSkills: UpdatedSkillInfo[];
   status: 'SUCCESS' | 'FAILURE';
+  message: string;
+}
+
+export interface WeightCalculationRequest {
+  studentId: string;
+  contextHierarchy: {
+    L1: string; // Field
+    L2: string; // Course
+    L3: string; // Major Chapter
+    L4: string; // Minor Chapter
+    L5: string; // Type
+  };
+  weightPreset?: 'DEFAULT' | 'EXAM' | 'PRACTICE';
+  reliabilityIndex?: number;
+}
+
+export interface CalculationLogEntry {
+  level: number;
+  score: number | null;
+  weight: number;
+}
+
+export interface WeightCalculationResponse {
+  finalTheta: number;
+  confidence: number;
+  calculationLog: CalculationLogEntry[];
+}
+
+export type ExamStatus = 'ACTIVE' | 'PAUSED' | 'SUBMITTED' | 'TIMED_OUT';
+
+export interface ExamConfig {
+  id: string;
+  title: string;
+  timeLimitMs: number;
+  isAutoSubmitEnabled: boolean;
+}
+
+export interface ExamState {
+  status: ExamStatus;
+  startTime?: number;
+  endTime?: number;
+  hasSubmitted: boolean;
+}
+
+export interface DifficultyFactors {
+  computationalComplexity: number; // 0.0 to 1.0
+  conceptualDepth: number; // 0.0 to 1.0
+  logicalReasoning: number; // 0.0 to 1.0
+}
+
+export interface QuestionDBItem {
+  id: string;
+  content: string; // Markdown/Latex
+  metadata: ProblemMetadata;
+  keywords: string[];
+  concepts: string[]; // Concept IDs
+  difficultyFactors: DifficultyFactors;
+  aiConfidence: number;
+  needsReview: boolean;
+}
+
+export interface AIMetadataAnalysisRequest {
+  problemText: string;
+}
+
+export interface AIMetadataAnalysisResponse {
+  metadata: Omit<ProblemMetadata, 'difficulty'>;
+  keywords: string[];
+  concepts: string[];
+  difficultyFactors: DifficultyFactors;
+  confidence: number;
+}
+
+export interface ExamScoringRequest {
+  examId: string;
+  userId: string;
+  gradedResults: Record<string, boolean>;
+}
+
+export interface ExamScoringResponse {
+  totalScore: number;
+  rank: number;
+  totalCandidates: number;
+}
+
+export interface ExamQuestionWeight {
+  questionId: string;
+  weight: number;
+}
+
+export interface ExamPaperMetadata {
+  examId: string;
+  questions: ExamQuestionWeight[];
+}
+
+export interface OCRCandidate {
+  text: string;
+  confidence: number;
+}
+
+export interface OCRResult {
+  id: string;
+  type: 'text' | 'formula' | 'image';
+  boundingBox: { x: number; y: number; width: number; height: number };
+  content: string; // Recognized text or LaTeX
+  candidates?: OCRCandidate[];
+  isUncertain: boolean;
+}
+
+export interface ExtractedProblem {
+  id: string;
+  problemNumber: string;
+  content: string;
+  options?: string[];
+  answer?: string;
+  explanation?: string;
+  rawElements: OCRResult[];
+}
+
+export interface OCRProcessingState {
+  status: 'IDLE' | 'UPLOADING' | 'PREPROCESSING' | 'EXTRACTING' | 'VALIDATING' | 'REVIEW_REQUIRED' | 'COMPLETED';
+  progress: number;
   message: string;
 }

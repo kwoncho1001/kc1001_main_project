@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DigitalLearningCanvas } from './canvas/DigitalLearningCanvas';
 import { useExamTimer } from '../hooks/useExamTimer';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star } from 'lucide-react';
-import { Problem, SolvingResult } from '../types/ability';
+import { ExamManagerService } from '../services/examManagerService';
+import { ScoreCalculationService } from '../services/scoreCalculationService';
+import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star, Trophy, Users } from 'lucide-react';
+import { Problem, SolvingResult, ExamStatus, ExamScoringResponse } from '../types/ability';
 
 const EXAM_DURATION = 60 * 30; // 30 minutes
 
@@ -30,8 +32,9 @@ export const ExamInterface: React.FC<{
     const saved = localStorage.getItem('exam_answers_v3');
     return saved ? JSON.parse(saved) : {};
   });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [examStatus, setExamStatus] = useState<ExamStatus>('ACTIVE');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [scoringResult, setScoringResult] = useState<ExamScoringResponse | null>(null);
 
   const currentProblem = problems[currentProblemIndex];
 
@@ -39,7 +42,10 @@ export const ExamInterface: React.FC<{
   const { remainingTime, perQuestionTime, isTimeUp, blurCount } = useExamTimer(
     60 * 30,
     currentProblem.id,
-    () => handleSubmit()
+    () => {
+      const finalState = ExamManagerService.handleTimeout(answers);
+      setExamStatus(finalState.status);
+    }
   );
 
   // Initialize Bookmarks Hook
@@ -60,10 +66,10 @@ export const ExamInterface: React.FC<{
 
   // Sync answers with localStorage
   useEffect(() => {
-    if (!isSubmitted) {
+    if (examStatus === 'ACTIVE') {
       localStorage.setItem('exam_answers_v3', JSON.stringify(answers));
     }
-  }, [answers, isSubmitted]);
+  }, [answers, examStatus]);
 
   // Online/Offline detection
   useEffect(() => {
@@ -78,7 +84,7 @@ export const ExamInterface: React.FC<{
   }, []);
 
   const handleAnswerChange = (value: string) => {
-    if (isSubmitted || isTimeUp) return;
+    if (examStatus === 'SUBMITTED' || examStatus === 'TIMED_OUT' || isTimeUp) return;
     setAnswers(prev => ({
       ...prev,
       [currentProblem.id]: value
@@ -109,8 +115,25 @@ export const ExamInterface: React.FC<{
   };
 
   const handleSubmit = useCallback(() => {
-    if (isSubmitted) return;
-    setIsSubmitted(true);
+    if (examStatus === 'SUBMITTED' || examStatus === 'TIMED_OUT') return;
+    
+    const finalState = ExamManagerService.handleSubmit(answers);
+    setExamStatus(finalState.status);
+
+    // Mock Grading Engine (3bmvmrg6k)
+    const gradedResults: Record<string, boolean> = {};
+    problems.forEach(p => {
+      // Logic: If answer exists, 70% chance of being correct for mock
+      gradedResults[p.id] = !!answers[p.id] && Math.random() > 0.3;
+    });
+
+    // Calculate Score and Rank (rul74ykmh)
+    const result = ScoreCalculationService.processExamResult({
+      examId: 'exam-1',
+      userId: 'user-123',
+      gradedResults
+    });
+    setScoringResult(result);
     
     // Construct final data contract for analysis (g90y5xjqq)
     const finalData = {
@@ -119,14 +142,15 @@ export const ExamInterface: React.FC<{
       blurCount,
       submittedAt: new Date().toISOString(),
       remainingTime,
-      totalTimeSpent: EXAM_DURATION - remainingTime
+      totalTimeSpent: EXAM_DURATION - remainingTime,
+      status: finalState.status
     };
     
     console.log('Final Submission Data (Contract g90y5xjqq):', finalData);
     
     // Clear local cache
     localStorage.removeItem('exam_answers_v3');
-  }, [answers, perQuestionTime, blurCount, remainingTime, isSubmitted]);
+  }, [answers, perQuestionTime, blurCount, remainingTime, examStatus]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -141,13 +165,19 @@ export const ExamInterface: React.FC<{
     return `${m}m ${s}s`;
   };
 
-  if (isSubmitted) {
+  if (examStatus === 'SUBMITTED' || examStatus === 'TIMED_OUT') {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-[#E4E3E0] text-[#141414] p-8">
         <div className="bg-white p-12 rounded-3xl shadow-xl border border-black/5 max-w-md w-full text-center">
-          <CheckCircle2 size={64} className="text-emerald-500 mx-auto mb-6" />
-          <h1 className="text-3xl font-bold mb-2">Exam Completed</h1>
-          <p className="text-black/60 mb-8">Your performance data has been collected for analysis.</p>
+          <CheckCircle2 size={64} className={examStatus === 'SUBMITTED' ? 'text-emerald-500 mx-auto mb-6' : 'text-amber-500 mx-auto mb-6'} />
+          <h1 className="text-3xl font-bold mb-2">
+            {examStatus === 'SUBMITTED' ? 'Exam Completed' : 'Time Up!'}
+          </h1>
+          <p className="text-black/60 mb-8">
+            {examStatus === 'SUBMITTED' 
+              ? 'Your performance data has been collected for analysis.' 
+              : 'The exam was automatically submitted as the time limit was reached.'}
+          </p>
           
           <div className="space-y-4 text-left bg-gray-50 p-6 rounded-2xl border border-black/5 mb-8">
             <div className="flex justify-between text-sm">
@@ -159,6 +189,29 @@ export const ExamInterface: React.FC<{
               <span className="font-mono font-bold text-red-500">{blurCount}</span>
             </div>
           </div>
+
+          {scoringResult && (
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 text-center">
+                <div className="flex items-center justify-center gap-2 text-emerald-600 mb-1">
+                  <Trophy size={16} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Score</span>
+                </div>
+                <div className="text-3xl font-black text-emerald-700">
+                  {scoringResult.totalScore.toFixed(1)}
+                </div>
+              </div>
+              <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-center">
+                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
+                  <Users size={16} />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Rank</span>
+                </div>
+                <div className="text-3xl font-black text-blue-700">
+                  {scoringResult.rank}<span className="text-sm opacity-40"> / {scoringResult.totalCandidates}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <button 
             onClick={() => window.location.reload()}

@@ -17,7 +17,7 @@ interface AbilityTrackerProps {
 export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarchy, lastBehavior }) => {
   const radarData = useMemo(() => {
     return hierarchy
-      .filter(h => h.level === 'subject')
+      .filter(h => h.level === 'COURSE')
       .map(h => ({
         subject: h.name,
         score: Math.round((scores[h.id]?.score ?? 0.5) * 100),
@@ -26,7 +26,7 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
   const tagData = useMemo(() => {
     return hierarchy
-      .filter(h => h.level === 'tag')
+      .filter(h => h.level === 'TYPE')
       .map(h => ({
         name: h.name,
         score: scores[h.id]?.score ?? 0.5,
@@ -37,11 +37,11 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
   const getLevelColor = (level: AbilityLevel) => {
     switch (level) {
-      case 'field': return 'bg-purple-500';
-      case 'subject': return 'bg-blue-500';
-      case 'majorUnit': return 'bg-emerald-500';
-      case 'minorUnit': return 'bg-amber-500';
-      case 'tag': return 'bg-rose-500';
+      case 'FIELD': return 'bg-purple-500';
+      case 'COURSE': return 'bg-blue-500';
+      case 'MAJOR_CHAPTER': return 'bg-emerald-500';
+      case 'MINOR_CHAPTER': return 'bg-amber-500';
+      case 'TYPE': return 'bg-rose-500';
       default: return 'bg-gray-500';
     }
   };
@@ -168,7 +168,7 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
           <h2 className="text-xl font-bold">Hierarchical Breakdown</h2>
         </div>
         <div className="divide-y divide-gray-50">
-          {hierarchy.filter(h => h.level === 'field' || h.level === 'subject').map((item) => (
+          {hierarchy.filter(h => h.level === 'FIELD' || h.level === 'COURSE').map((item) => (
             <div key={item.id} className="p-6 hover:bg-gray-50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
