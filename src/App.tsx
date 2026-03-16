@@ -7,7 +7,13 @@ import { ExamInterface } from './components/ExamInterface';
 import { ScannerUI } from './components/ScannerUI';
 import { BookmarksView } from './components/BookmarksView';
 import { GradePrediction } from './components/GradePrediction';
-import { PenTool, Scan, Star, BarChart3 } from 'lucide-react';
+import { AbilityTracker } from './components/AbilityTracker';
+import { PenTool, Scan, Star, BarChart3, Layers } from 'lucide-react';
+import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore } from './types/ability';
+import { AbilityEngine } from './services/abilityEngine';
+import { BehaviorCorrectionService } from './services/behaviorCorrection';
+import { InitialSkillService } from './services/initialSkillService';
+import { SkillUpdateService } from './services/skillUpdateService';
 
 const problems = [
   { id: 'p1', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'Mathematics - Calculus' },
@@ -22,9 +28,92 @@ const problems = [
   { id: 'p10', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'General Knowledge' },
 ];
 
+const mockHierarchy: { id: string; name: string; level: AbilityLevel; parentId?: string }[] = [
+  { id: 'f1', name: 'Mathematics', level: 'field' },
+  { id: 's1', name: 'Calculus', level: 'subject', parentId: 'f1' },
+  { id: 's2', name: 'Algebra', level: 'subject', parentId: 'f1' },
+  { id: 's3', name: 'Geometry', level: 'subject', parentId: 'f1' },
+  { id: 'm1', name: 'Differentiation', level: 'majorUnit', parentId: 's1' },
+  { id: 'n1', name: 'Chain Rule', level: 'minorUnit', parentId: 'm1' },
+  { id: 't1', name: 'Implicit Differentiation', level: 'tag', parentId: 'n1' },
+  { id: 't2', name: 'Power Rule', level: 'tag', parentId: 'n1' },
+  { id: 't3', name: 'Trig Derivatives', level: 'tag', parentId: 'n1' },
+];
+
+const mockAbilityScores: Record<string, number> = {
+  f1: 0.75,
+  s1: 0.68,
+  s2: 0.82,
+  s3: 0.55,
+  t1: 0.45,
+  t2: 0.92,
+  t3: 0.78,
+};
+
 export default function App() {
-  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction'>('scanner');
+  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
+  const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
+  const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
+  const handleOnboarding = (level: 'HIGH' | 'MEDIUM' | 'LOW') => {
+    const request: InitialSkillRequest = {
+      studentId: 'user-123',
+      newSubjectPath: {
+        fieldId: 'f1',
+        courseId: 's1',
+        majorChapterId: 'm1',
+        minorChapterId: 'n1',
+        typeId: 't1',
+      },
+      selfAssessmentLevel: level,
+    };
+    const response = InitialSkillService.initializeSkills(request, {});
+    const newScores: Record<string, AbilityScore> = {};
+    response.initializedSkills.forEach(s => {
+      newScores[s.id] = {
+        id: s.id,
+        name: mockHierarchy.find(h => h.id === s.id)?.name || s.id,
+        level: s.level.toLowerCase() as any,
+        score: s.initialScore,
+        lastUpdated: Date.now(),
+        solvedProblemCount: 0
+      };
+    });
+    setAbilityScores(newScores);
+    setShowOnboarding(false);
+  };
+
+  const handleSolve = (result: SolvingResult) => {
+    const analysis = BehaviorCorrectionService.analyze(result);
+    setLastBehavior(analysis);
+    
+    // Use SkillUpdateService v2.0
+    const { updatedScores } = SkillUpdateService.processEvent(
+      result.studentId,
+      {
+        type: 'PROBLEM_SOLVE',
+        data: {
+          problemId: 'p1', // Mock
+          hierarchy: {
+            fieldId: result.metadata.fieldId,
+            courseId: result.metadata.subjectId,
+            majorChapterId: result.metadata.majorUnitId,
+            minorChapterId: result.metadata.minorUnitId,
+            typeId: result.metadata.tagId,
+          },
+          isCorrect: result.isCorrect,
+          difficultyLevel: result.metadata.difficulty * 4 + 1, // Convert 0-1 to 1-5
+          correctionFactor: analysis.correctionFactor
+        }
+      },
+      abilityScores,
+      mockHierarchy
+    );
+
+    setAbilityScores(updatedScores);
+  };
 
   const handleSelectProblemFromBookmarks = (problemId: string) => {
     setSelectedProblemId(problemId);
@@ -71,17 +160,61 @@ export default function App() {
           <BarChart3 size={14} />
           Grade Prediction
         </button>
+
+        <button 
+          onClick={() => setView('ability')}
+          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ability' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+        >
+          <Layers size={14} />
+          Ability Tracker
+        </button>
       </nav>
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto relative">
+        {showOnboarding && (
+          <div className="absolute inset-0 z-50 bg-[#141414]/90 backdrop-blur-sm flex items-center justify-center p-6">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+              <h2 className="text-2xl font-black mb-2">Welcome to AI Learning</h2>
+              <p className="text-gray-500 mb-8">To personalize your learning path, please select your current level in Mathematics.</p>
+              
+              <div className="space-y-3">
+                {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
+                  <button
+                    key={level}
+                    onClick={() => handleOnboarding(level)}
+                    className="w-full py-4 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left px-6 group"
+                  >
+                    <div className="font-bold group-hover:text-emerald-700">{level}</div>
+                    <div className="text-xs text-gray-400">
+                      {level === 'HIGH' ? 'I am confident in this subject' : 
+                       level === 'MEDIUM' ? 'I have some basic knowledge' : 
+                       'I am just starting out'}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {view === 'exam' ? (
-          <ExamInterface problems={problems as any} initialProblemId={selectedProblemId} />
+          <ExamInterface 
+            problems={problems as any} 
+            initialProblemId={selectedProblemId} 
+            onSolve={handleSolve}
+          />
         ) : view === 'scanner' ? (
           <ScannerUI />
         ) : view === 'bookmarks' ? (
           <BookmarksView problems={problems as any} onSelectProblem={handleSelectProblemFromBookmarks} />
-        ) : (
+        ) : view === 'prediction' ? (
           <GradePrediction />
+        ) : (
+          <AbilityTracker 
+            scores={abilityScores} 
+            hierarchy={mockHierarchy} 
+            lastBehavior={lastBehavior}
+          />
         )}
       </main>
     </div>

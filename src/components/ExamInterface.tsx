@@ -3,18 +3,15 @@ import { DigitalLearningCanvas } from './canvas/DigitalLearningCanvas';
 import { useExamTimer } from '../hooks/useExamTimer';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star } from 'lucide-react';
-
-interface Problem {
-  id: string;
-  type: 'multiple' | 'subjective';
-  options?: string[];
-  title?: string;
-}
-// ... (rest of the interfaces)
+import { Problem, SolvingResult } from '../types/ability';
 
 const EXAM_DURATION = 60 * 30; // 30 minutes
 
-export const ExamInterface: React.FC<{ problems: Problem[], initialProblemId?: string | null }> = ({ problems, initialProblemId }) => {
+export const ExamInterface: React.FC<{ 
+  problems: Problem[], 
+  initialProblemId?: string | null,
+  onSolve?: (result: SolvingResult) => void 
+}> = ({ problems, initialProblemId, onSolve }) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
     if (initialProblemId) {
       const index = problems.findIndex(p => p.id === initialProblemId);
@@ -86,6 +83,29 @@ export const ExamInterface: React.FC<{ problems: Problem[], initialProblemId?: s
       ...prev,
       [currentProblem.id]: value
     }));
+
+    // Trigger onSolve for multiple choice immediately
+    if (currentProblem.type === 'multiple' && onSolve) {
+      onSolve({
+        studentId: 'user-123',
+        isCorrect: Math.random() > 0.3, // Mock correctness
+        timeSpentMs: perQuestionTime[currentProblem.id] || 0,
+        expectedSolveTimeMs: 60000, // 60s
+        hintUsageCount: 0,
+        studentProfile: {
+          avgSolveSpeedFactor: 1.0,
+          recentHintFrequency: 0.1,
+        },
+        metadata: {
+          fieldId: 'f1',
+          subjectId: 's1',
+          majorUnitId: 'm1',
+          minorUnitId: 'n1',
+          tagId: 't1',
+          difficulty: 0.6,
+        }
+      });
+    }
   };
 
   const handleSubmit = useCallback(() => {
