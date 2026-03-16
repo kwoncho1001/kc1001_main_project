@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HandwritingCanvas } from './HandwritingCanvas';
+import { DigitalLearningCanvas } from './canvas/DigitalLearningCanvas';
 
 interface Problem {
   id: string;
@@ -58,9 +58,11 @@ export const ExamInterface: React.FC<{ problems: Problem[] }> = ({ problems }) =
 
   return (
     <div className="flex w-full h-screen p-4 gap-4">
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <h2 className="text-xl font-bold mb-2">Problem {currentProblemIndex + 1}</h2>
-        <HandwritingCanvas problemId={currentProblem.id} />
+        <div className="w-full h-[calc(100%-40px)] border rounded-xl overflow-hidden shadow-inner bg-gray-50">
+          <DigitalLearningCanvas />
+        </div>
       </div>
       <div className="w-64 border-l pl-4">
         <h2 className="text-xl font-bold mb-4">Answer Panel</h2>

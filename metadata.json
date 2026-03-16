@@ -1,5 +1,5 @@
 {
   "name": "Main_project",
-  "description": "An interactive tablet interface for students to write and draw on problems, capturing handwriting as vector data.",
+  "description": "An interactive tablet interface for students with an advanced exam scanner pipeline (orientation, deskew, dewarp, binarization).",
   "requestFramePermissions": []
 }
