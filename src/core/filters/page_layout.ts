@@ -3,30 +3,49 @@ import { jsPDF } from 'jspdf';
 /**
  * Step 6: Page Layout
  * Standardizes the page to A4 size and exports to PDF.
+ * Handles margins, centering, and optimal scaling.
  */
 export const pageLayout = async (canvas: HTMLCanvasElement): Promise<string> => {
-  // A4 dimensions in mm
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const imgData = canvas.toDataURL('image/jpeg', 1.0);
+  // A4 dimensions in mm: 210 x 297
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 10; // 10mm "Hard Margin" as requested
+
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
   
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
+  // Calculate dimensions to fit in A4 with margins
+  const maxWidth = pageWidth - margin * 2;
+  const maxHeight = pageHeight - margin * 2;
   
-  // Calculate aspect ratio to fit A4
-  const canvasRatio = canvas.height / canvas.width;
-  const pageRatio = pageHeight / pageWidth;
+  let finalWidth = canvas.width;
+  let finalHeight = canvas.height;
   
-  let finalWidth = pageWidth;
-  let finalHeight = pageHeight;
+  const ratio = finalWidth / finalHeight;
   
-  if (canvasRatio > pageRatio) {
-    finalWidth = pageHeight / canvasRatio;
-  } else {
-    finalHeight = pageWidth * canvasRatio;
+  // Scale down if it exceeds max dimensions
+  if (finalWidth > maxWidth) {
+    finalWidth = maxWidth;
+    finalHeight = finalWidth / ratio;
+  }
+  
+  if (finalHeight > maxHeight) {
+    finalHeight = maxHeight;
+    finalWidth = finalHeight * ratio;
   }
 
+  // Center the image on the A4 canvas
   const x = (pageWidth - finalWidth) / 2;
   const y = (pageHeight - finalHeight) / 2;
+
+  // Add white background (canvas)
+  pdf.setFillColor(255, 255, 255);
+  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
 
   pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
   
