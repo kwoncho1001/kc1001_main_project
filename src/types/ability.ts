@@ -297,3 +297,25 @@ export interface OCRProcessingState {
   progress: number;
   message: string;
 }
+
+export interface GamificationStats {
+  solvedCount: number;
+  avgDifficulty: number;
+  accuracy: number;
+  streakDays: number;
+  totalPoints: number;
+  level: number;
+  treeGrowth: number; // 0 to 100
+}
+
+export interface HeatmapData {
+  date: string;
+  intensity: number; // 0 to 1
+}
+
+export interface LearningReport {
+  points: number;
+  level: number;
+  heatmap: HeatmapData[];
+  timelapseUrl?: string;
+}

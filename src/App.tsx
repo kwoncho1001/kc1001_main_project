@@ -11,7 +11,8 @@ import { AbilityTracker } from './components/AbilityTracker';
 import { HierarchyManager } from './components/HierarchyManager';
 import { AIMetadataAnalyzer } from './components/AIMetadataAnalyzer';
 import { ProblemExtractor } from './components/ProblemExtractor';
-import { PenTool, Scan, Star, BarChart3, Layers, Database, Brain, FileSearch } from 'lucide-react';
+import { GamificationDashboard } from './components/GamificationDashboard';
+import { PenTool, Scan, Star, BarChart3, Layers, Database, Brain, FileSearch, Trophy } from 'lucide-react';
 import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore, WeightCalculationResponse } from './types/ability';
 import { BehaviorCorrectionService } from './services/behaviorCorrection';
 import { InitialSkillService } from './services/initialSkillService';
@@ -45,7 +46,7 @@ const mockAbilityScores: Record<string, number> = {
 };
 
 export default function App() {
-  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor'>('scanner');
+  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor' | 'gamification'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
   const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
   const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
@@ -210,6 +211,14 @@ export default function App() {
           <FileSearch size={14} />
           OCR Extractor
         </button>
+
+        <button 
+          onClick={() => setView('gamification')}
+          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'gamification' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
+        >
+          <Trophy size={14} />
+          Rewards
+        </button>
       </nav>
 
       <main className="flex-1 overflow-auto relative">
@@ -261,8 +270,10 @@ export default function App() {
           <HierarchyManager />
         ) : view === 'ai-analyzer' ? (
           <AIMetadataAnalyzer />
-        ) : (
+        ) : view === 'ocr-extractor' ? (
           <ProblemExtractor />
+        ) : (
+          <GamificationDashboard />
         )}
       </main>
     </div>

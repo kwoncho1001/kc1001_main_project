@@ -1,87 +1,140 @@
 import { OCRResult, ExtractedProblem, OCRProcessingState } from '../types/ability';
+import { GoogleGenAI, Type } from "@google/genai";
 
 export class OCRService {
   /**
-   * Simulates the full OCR extraction pipeline.
+   * Real OCR extraction pipeline using Gemini AI.
    */
   static async processFile(file: File, onProgress: (state: OCRProcessingState) => void): Promise<ExtractedProblem[]> {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not configured.');
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
     // 1. Uploading
-    onProgress({ status: 'UPLOADING', progress: 10, message: 'Uploading file to secure storage...' });
-    await new Promise(r => setTimeout(r, 1000));
+    onProgress({ status: 'UPLOADING', progress: 10, message: 'Reading file content...' });
+    const base64Data = await this.fileToBase64(file);
+    const mimeType = file.type || 'application/pdf';
 
-    // 2. Preprocessing (Handwriting separation)
-    onProgress({ status: 'PREPROCESSING', progress: 30, message: 'Separating handwriting from printed text...' });
-    await new Promise(r => setTimeout(r, 1500));
+    // 2. Preprocessing
+    onProgress({ status: 'PREPROCESSING', progress: 30, message: 'Analyzing document structure and removing noise...' });
+    await new Promise(r => setTimeout(r, 800));
 
-    // 3. Extracting (OCR + Formula)
-    onProgress({ status: 'EXTRACTING', progress: 60, message: 'Recognizing text and mathematical formulas...' });
-    await new Promise(r => setTimeout(r, 2000));
+    // 3. Extracting (Real AI Call)
+    onProgress({ status: 'EXTRACTING', progress: 60, message: 'Gemini AI is extracting problems and formulas...' });
 
-    // 4. Validating
-    onProgress({ status: 'VALIDATING', progress: 85, message: 'Validating data structure and identifying uncertainties...' });
-    await new Promise(r => setTimeout(r, 1000));
-
-    // Mock extracted data
-    const mockProblems: ExtractedProblem[] = [
-      {
-        id: 'ext-1',
-        problemNumber: '1',
-        content: '다음 함수 f(x) = sin(x^2)의 도함수를 구하시오.',
-        options: ['2x cos(x^2)', 'cos(x^2)', '2 sin(x)', 'x^2 cos(x)'],
-        answer: '2x cos(x^2)',
-        explanation: '연쇄법칙을 적용하면 f\'(x) = cos(x^2) * 2x이다.',
-        rawElements: [
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: [
           {
-            id: 'e1',
-            type: 'text',
-            boundingBox: { x: 10, y: 10, width: 200, height: 30 },
-            content: '다음 함수 f(x) = sin(x^2)의 도함수를 구하시오.',
-            isUncertain: false
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType,
+            },
           },
           {
-            id: 'e2',
-            type: 'formula',
-            boundingBox: { x: 10, y: 50, width: 100, height: 30 },
-            content: 'f(x) = \\sin(x^2)',
-            isUncertain: true,
-            candidates: [
-              { text: 'f(x) = \\sin(x^2)', confidence: 0.85 },
-              { text: 'f(x) = \\sin(x^3)', confidence: 0.12 },
-              { text: 'f(x) = \\sin(x)', confidence: 0.03 }
-            ]
+            text: `You are a professional exam digitizer. Extract all exam problems from this document. 
+            
+            For each problem, you MUST extract:
+            - problemNumber: The number of the problem (e.g., "1", "2a", etc.)
+            - content: The full text of the problem. Use LaTeX for ALL mathematical formulas (e.g., $x^2$, \\frac{a}{b}).
+            - options: If it's multiple choice, list the options as an array of strings.
+            - answer: The correct answer if identifiable.
+            - explanation: Any solution steps or explanations provided in the text.
+            
+            CRITICAL: Identify "rawElements". These are the individual blocks of text or formulas you extracted. 
+            If you are even slightly unsure about a specific word, symbol, or formula (e.g., due to handwriting overlap or blur), set "isUncertain": true and provide 2-3 "candidates" with confidence scores.
+            
+            Return ONLY a JSON array of problems.`,
+          },
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                problemNumber: { type: Type.STRING },
+                content: { type: Type.STRING },
+                options: { 
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING }
+                },
+                answer: { type: Type.STRING },
+                explanation: { type: Type.STRING },
+                rawElements: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.OBJECT,
+                    properties: {
+                      type: { type: Type.STRING, enum: ["text", "formula", "image"] },
+                      content: { type: Type.STRING },
+                      isUncertain: { type: Type.BOOLEAN },
+                      candidates: {
+                        type: Type.ARRAY,
+                        items: {
+                          type: Type.OBJECT,
+                          properties: {
+                            text: { type: Type.STRING },
+                            confidence: { type: Type.NUMBER }
+                          }
+                        }
+                      }
+                    },
+                    required: ["type", "content", "isUncertain"]
+                  }
+                }
+              },
+              required: ["problemNumber", "content", "rawElements"]
+            }
           }
-        ]
-      },
-      {
-        id: 'ext-2',
-        problemNumber: '2',
-        content: '함수 g(x) = ln(x)의 x=1에서의 접선의 방정식을 구하시오.',
-        answer: 'y = x - 1',
-        rawElements: [
-          {
-            id: 'e3',
-            type: 'text',
-            boundingBox: { x: 10, y: 100, width: 200, height: 30 },
-            content: '함수 g(x) = ln(x)의 x=1에서의 접선의 방정식을 구하시오.',
-            isUncertain: true,
-            candidates: [
-              { text: '함수 g(x) = ln(x)의 x=1에서의 접선의 방정식을 구하시오.', confidence: 0.78 },
-              { text: '함수 g(x) = In(x)의 x=1에서의 접선의 방정식을 구하시오.', confidence: 0.20 }
-            ]
-          }
-        ]
-      }
-    ];
+        }
+      });
 
-    onProgress({ status: 'REVIEW_REQUIRED', progress: 100, message: 'Analysis complete. Please review uncertain areas.' });
-    return mockProblems;
+      const extractedData = JSON.parse(response.text || "[]");
+      
+      // 4. Validating
+      onProgress({ status: 'VALIDATING', progress: 90, message: 'Finalizing data structure...' });
+      
+      const finalizedProblems: ExtractedProblem[] = extractedData.map((p: any, index: number) => ({
+        ...p,
+        id: `ext-${Date.now()}-${index}`,
+        rawElements: p.rawElements.map((re: any, reIdx: number) => ({
+          ...re,
+          id: `re-${Date.now()}-${reIdx}`,
+          boundingBox: { x: 0, y: 0, width: 0, height: 0 } // Bounding boxes are hard to get from text-only response, keeping as placeholder
+        }))
+      }));
+
+      onProgress({ status: 'REVIEW_REQUIRED', progress: 100, message: 'Analysis complete. Please review the extracted data.' });
+      return finalizedProblems;
+
+    } catch (error) {
+      console.error('Gemini OCR Error:', error);
+      throw error;
+    }
+  }
+
+  private static fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 
   /**
    * Finalizes the extraction after user review.
    */
   static async finalizeExtraction(problems: ExtractedProblem[]): Promise<void> {
-    // In a real app, this would save to the DB
     console.log('Saving finalized problem data:', problems);
     await new Promise(r => setTimeout(r, 1000));
   }

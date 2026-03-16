@@ -28,6 +28,7 @@ export const ProblemExtractor: React.FC = () => {
   });
   const [extractedProblems, setExtractedProblems] = useState<ExtractedProblem[]>([]);
   const [activeProblemIdx, setActiveProblemIdx] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,16 +37,35 @@ export const ProblemExtractor: React.FC = () => {
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+    }
+  };
+
   const startProcessing = async () => {
     if (!file) return;
+    setProcessingState({ status: 'UPLOADING', progress: 0, message: 'Starting analysis...' });
     try {
       const results = await OCRService.processFile(file, setProcessingState);
       setExtractedProblems(results);
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Extraction failed:', err);
       setProcessingState({
         status: 'IDLE',
         progress: 0,
-        message: 'Error processing file. Please try again.'
+        message: `Extraction failed: ${err.message || 'Unknown error'}. Please try again.`
       });
     }
   };
@@ -85,6 +105,14 @@ export const ProblemExtractor: React.FC = () => {
             <Upload className="text-black/20" size={40} />
           </div>
           <h1 className="text-3xl font-black mb-4">OCR Problem Extractor</h1>
+          
+          {processingState.message && processingState.status === 'IDLE' && (
+            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold">
+              <AlertCircle size={18} />
+              {processingState.message}
+            </div>
+          )}
+
           <p className="text-black/50 mb-12">
             Upload a PDF or image of a past exam paper. Our AI will separate handwriting, 
             extract text, formulas, and diagrams for digital storage.
@@ -92,7 +120,14 @@ export const ProblemExtractor: React.FC = () => {
 
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-black/10 rounded-2xl p-12 cursor-pointer hover:bg-gray-50 transition-all mb-8"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-2xl p-12 cursor-pointer transition-all mb-8 ${
+              isDragging 
+                ? 'border-emerald-500 bg-emerald-50' 
+                : 'border-black/10 hover:bg-gray-50'
+            }`}
           >
             <input 
               type="file" 
