@@ -19,6 +19,9 @@ import { InitialSkillService } from './services/initialSkillService';
 import { SkillUpdateService } from './services/skillUpdateService';
 import { WeightCalculationService } from './services/weightCalculationService';
 import { HierarchyService } from './services/hierarchyService';
+import { useAuth } from './components/AuthProvider';
+import { FirebaseService } from './services/firebaseService';
+import { LogOut } from 'lucide-react';
 
 /**
  * @interface NavButtonProps
@@ -77,12 +80,26 @@ const mockAbilityScores: Record<string, number> = {
 };
 
 export default function App() {
+  const { user, loading, login, logout } = useAuth();
   const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor' | 'gamification'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
   const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
   const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [prediction, setPrediction] = useState<WeightCalculationResponse | null>(null);
+
+  // Sync ability scores from Firestore
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = FirebaseService.subscribeToAbilityScores((scores) => {
+        setAbilityScores(scores);
+        if (Object.keys(scores).length > 0) {
+          setShowOnboarding(false);
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (selectedProblemId && Object.keys(abilityScores).length > 0) {
@@ -121,8 +138,8 @@ export default function App() {
     };
     const response = InitialSkillService.initializeSkills(request, {});
     const newScores: Record<string, AbilityScore> = {};
-    response.initializedSkills.forEach(s => {
-      newScores[s.id] = {
+    response.initializedSkills.forEach(async (s) => {
+      const score: AbilityScore = {
         id: s.id,
         name: mockHierarchy.find(h => h.id === s.id)?.name || s.id,
         level: s.level,
@@ -130,12 +147,15 @@ export default function App() {
         lastUpdated: Date.now(),
         solvedProblemCount: 0
       };
+      newScores[s.id] = score;
+      // Persist to Firestore
+      await FirebaseService.saveAbilityScore(score);
     });
     setAbilityScores(newScores);
     setShowOnboarding(false);
   };
 
-  const handleSolve = (result: SolvingResult) => {
+  const handleSolve = async (result: SolvingResult) => {
     const analysis = BehaviorCorrectionService.analyze(result);
     setLastBehavior(analysis);
     
@@ -163,6 +183,11 @@ export default function App() {
     );
 
     setAbilityScores(updatedScores);
+
+    // Persist updated scores to Firestore
+    for (const scoreId in updatedScores) {
+      await FirebaseService.saveAbilityScore(updatedScores[scoreId]);
+    }
   };
 
   const handleSelectProblemFromBookmarks = (problemId: string) => {
@@ -199,6 +224,33 @@ export default function App() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-[#F5F5F0]">
+        <div className="w-12 h-12 border-4 border-[#5A5A40] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-[#F5F5F0] p-6">
+        <div className="bg-white rounded-[40px] p-12 max-w-md w-full shadow-2xl text-center">
+          <div className="w-20 h-20 bg-emerald-500 rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl font-black shadow-lg shadow-emerald-500/20">M</div>
+          <h1 className="text-4xl font-serif italic mb-4 text-[#1A1A1A]">Welcome Back</h1>
+          <p className="text-gray-500 mb-10">Sign in to sync your learning progress and access personalized rewards.</p>
+          <button
+            onClick={login}
+            className="w-full bg-[#1A1A1A] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen flex flex-col">
       {/* Navigation Rail */}
@@ -217,6 +269,16 @@ export default function App() {
         <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI Analyzer" />
         <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="OCR Extractor" />
         <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="Rewards" />
+
+        <div className="ml-auto flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <img src={user.photoURL || ''} alt="" className="w-6 h-6 rounded-full border border-white/20" />
+            <span className="text-[10px] font-bold opacity-70 truncate max-w-[100px]">{user.displayName}</span>
+          </div>
+          <button onClick={logout} className="p-2 hover:bg-white/10 rounded-lg transition-all text-white/50 hover:text-white">
+            <LogOut size={16} />
+          </button>
+        </div>
       </nav>
 
       <main className="flex-1 overflow-auto relative">

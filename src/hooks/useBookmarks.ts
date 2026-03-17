@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { FirebaseService } from '../services/firebaseService';
+import { useAuth } from '../components/AuthProvider';
 
 export interface Bookmark {
   problemId: string;
@@ -8,43 +10,43 @@ export interface Bookmark {
   notes?: string;
 }
 
-export const useBookmarks = (userId: string = 'default-user') => {
-  const [bookmarks, setBookmarks] = useState<Record<string, Bookmark>>(() => {
-    const saved = localStorage.getItem(`bookmarks_${userId}`);
-    return saved ? JSON.parse(saved) : {};
-  });
+export const useBookmarks = () => {
+  const { user } = useAuth();
+  const [bookmarks, setBookmarks] = useState<Record<string, Bookmark>>({});
 
   useEffect(() => {
-    localStorage.setItem(`bookmarks_${userId}`, JSON.stringify(bookmarks));
-  }, [bookmarks, userId]);
+    if (user) {
+      const unsubscribe = FirebaseService.subscribeToBookmarks((ids) => {
+        const newBookmarks: Record<string, Bookmark> = {};
+        ids.forEach(id => {
+          newBookmarks[id] = {
+            problemId: id,
+            userId: user.uid,
+            tags: ['Saved'],
+            createdAt: new Date().toISOString()
+          };
+        });
+        setBookmarks(newBookmarks);
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
-  const toggleBookmark = (problemId: string, autoTags: string[] = []) => {
-    setBookmarks(prev => {
-      const newBookmarks = { ...prev };
-      if (newBookmarks[problemId]) {
-        delete newBookmarks[problemId];
-      } else {
-        newBookmarks[problemId] = {
-          problemId,
-          userId,
-          tags: autoTags.length > 0 ? autoTags : ['Saved'],
-          createdAt: new Date().toISOString(),
-        };
-      }
-      return newBookmarks;
-    });
+  const toggleBookmark = async (problemId: string, autoTags: string[] = []) => {
+    if (!user) return;
+
+    if (bookmarks[problemId]) {
+      await FirebaseService.deleteBookmark(problemId);
+    } else {
+      await FirebaseService.saveBookmark(problemId, 'Problem ' + problemId);
+    }
   };
 
   const isBookmarked = (problemId: string) => !!bookmarks[problemId];
 
   const updateBookmarkTags = (problemId: string, tags: string[]) => {
-    setBookmarks(prev => {
-      if (!prev[problemId]) return prev;
-      return {
-        ...prev,
-        [problemId]: { ...prev[problemId], tags }
-      };
-    });
+    // Note: Tag update not fully implemented in FirebaseService yet, 
+    // but we can extend it if needed.
   };
 
   return {

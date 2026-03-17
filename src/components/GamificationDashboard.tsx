@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GamificationService } from '../services/gamificationService';
+import { FirebaseService } from '../services/firebaseService';
 import { GamificationStats, HeatmapData } from '../types/ability';
 import { 
   Trophy, 
@@ -58,12 +59,23 @@ export const GamificationDashboard: React.FC = () => {
   const [heatmap, setHeatmap] = useState<HeatmapData[]>([]);
   const [showTimelapse, setShowTimelapse] = useState(false);
 
+  // Sync stats from Firestore
   useEffect(() => {
-    const points = GamificationService.calculatePoints(stats);
-    const level = GamificationService.getLevel(points);
-    const growth = GamificationService.getTreeGrowth(points);
-    setStats(prev => ({ ...prev, totalPoints: points, level, treeGrowth: growth }));
+    const unsubscribe = FirebaseService.subscribeToGamificationStats((remoteStats) => {
+      if (remoteStats) {
+        setStats(remoteStats);
+      } else {
+        // Initialize if no stats exist
+        const initialPoints = GamificationService.calculatePoints(stats);
+        const initialLevel = GamificationService.getLevel(initialPoints);
+        const initialGrowth = GamificationService.getTreeGrowth(initialPoints);
+        const newStats = { ...stats, totalPoints: initialPoints, level: initialLevel, treeGrowth: initialGrowth };
+        setStats(newStats);
+        FirebaseService.saveGamificationStats(newStats);
+      }
+    });
     setHeatmap(GamificationService.getMockHeatmap());
+    return () => unsubscribe();
   }, []);
 
   return (

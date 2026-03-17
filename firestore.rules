@@ -1,0 +1,128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: /users/{userId}
+    // Document ID: userId (Auth UID)
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required, email format)
+    //   - displayName: string (optional)
+    //   - photoURL: string (optional, url format)
+    //   - onboardingCompleted: bool (optional)
+    //   - createdAt: string (optional, date-time)
+    //
+    // Collection: /users/{userId}/abilityScores/{scoreId}
+    // Fields:
+    //   - id: string (required)
+    //   - name: string (optional)
+    //   - level: string (required, enum: L1-L5)
+    //   - score: number (required)
+    //   - lastUpdated: number (required)
+    //   - solvedProblemCount: number (optional)
+    //
+    // Collection: /users/{userId}/bookmarks/{bookmarkId}
+    // Fields:
+    //   - problemId: string (required)
+    //   - title: string (optional)
+    //   - bookmarkedAt: number (required)
+    //
+    // Collection: /users/{userId}/gamification/stats
+    // Fields:
+    //   - solvedCount: number
+    //   - avgDifficulty: number
+    //   - accuracy: number
+    //   - streakDays: number
+    //   - totalPoints: number (required)
+    //   - level: number (required)
+    //   - treeGrowth: number
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             data.uid.size() < 128 &&
+             data.email.size() < 256;
+    }
+
+    function isValidAbilityScore(data) {
+      return data.keys().hasAll(['id', 'score', 'lastUpdated']) &&
+             data.id is string && data.id.size() < 128 &&
+             data.score is number &&
+             data.lastUpdated is number;
+    }
+
+    function isValidBookmark(data) {
+      return data.keys().hasAll(['problemId', 'bookmarkedAt']) &&
+             data.problemId is string && data.problemId.size() < 128 &&
+             data.bookmarkedAt is number;
+    }
+
+    function isValidGamification(data) {
+      return data.keys().hasAll(['totalPoints', 'level']) &&
+             data.totalPoints is number &&
+             data.level is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // User Profile
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      
+      // Ability Scores
+      match /abilityScores/{scoreId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidAbilityScore(request.resource.data);
+        allow update: if isOwner(userId) && isValidAbilityScore(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Bookmarks
+      match /bookmarks/{bookmarkId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidBookmark(request.resource.data);
+        allow update: if isOwner(userId) && isValidBookmark(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      // Gamification
+      match /gamification/stats {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidGamification(request.resource.data);
+        allow update: if isOwner(userId) && isValidGamification(request.resource.data);
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "onboardingCompleted": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "AbilityScore": {
+      "title": "Ability Score",
+      "description": "User ability score for a specific skill node",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Skill node ID" },
+        "name": { "type": "string" },
+        "level": { "type": "string", "enum": ["L1", "L2", "L3", "L4", "L5"] },
+        "score": { "type": "number" },
+        "lastUpdated": { "type": "number" },
+        "solvedProblemCount": { "type": "number" }
+      },
+      "required": ["id", "score", "lastUpdated"]
+    },
+    "Bookmark": {
+      "title": "Bookmark",
+      "description": "A bookmarked problem",
+      "type": "object",
+      "properties": {
+        "problemId": { "type": "string" },
+        "title": { "type": "string" },
+        "bookmarkedAt": { "type": "number" }
+      },
+      "required": ["problemId", "bookmarkedAt"]
+    },
+    "GamificationStats": {
+      "title": "Gamification Stats",
+      "description": "User gamification metrics",
+      "type": "object",
+      "properties": {
+        "solvedCount": { "type": "number" },
+        "avgDifficulty": { "type": "number" },
+        "accuracy": { "type": "number" },
+        "streakDays": { "type": "number" },
+        "totalPoints": { "type": "number" },
+        "level": { "type": "number" },
+        "treeGrowth": { "type": "number" }
+      },
+      "required": ["totalPoints", "level"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document"
+    },
+    "/users/{userId}/abilityScores/{scoreId}": {
+      "schema": "AbilityScore",
+      "description": "User's ability scores"
+    },
+    "/users/{userId}/bookmarks/{bookmarkId}": {
+      "schema": "Bookmark",
+      "description": "User's bookmarked problems"
+    },
+    "/users/{userId}/gamification/stats": {
+      "schema": "GamificationStats",
+      "description": "User's gamification statistics"
+    }
+  }
+}
