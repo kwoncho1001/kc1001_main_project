@@ -16,6 +16,34 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+/**
+ * @interface StatCardProps
+ * @description Properties for the reusable StatCard component.
+ */
+interface StatCardProps {
+  icon: React.ElementType;
+  iconColor: string;
+  bgColor: string;
+  label: string;
+  value: string | number;
+}
+
+/**
+ * @component StatCard
+ * @description Reusable component for displaying quick statistics.
+ */
+const StatCard: React.FC<StatCardProps> = ({ icon: Icon, iconColor, bgColor, label, value }) => (
+  <div className="bg-white rounded-[32px] p-8 shadow-sm border border-black/5 flex items-center gap-6">
+    <div className={`w-16 h-16 ${bgColor} rounded-2xl flex items-center justify-center shrink-0`}>
+      <Icon className={iconColor} size={32} />
+    </div>
+    <div>
+      <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{label}</p>
+      <p className="text-3xl font-serif italic">{value}</p>
+    </div>
+  </div>
+);
+
 export const GamificationDashboard: React.FC = () => {
   const [stats, setStats] = useState<GamificationStats>({
     solvedCount: 124,
@@ -116,35 +144,27 @@ export const GamificationDashboard: React.FC = () => {
 
         {/* Quick Stats Cards */}
         <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-black/5 flex items-center gap-6">
-            <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center shrink-0">
-              <Flame className="text-orange-500" size={32} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Current Streak</p>
-              <p className="text-3xl font-serif italic">{stats.streakDays} Days</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-black/5 flex items-center gap-6">
-            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
-              <Target className="text-emerald-500" size={32} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Accuracy Rate</p>
-              <p className="text-3xl font-serif italic">{stats.accuracy}%</p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-[32px] p-8 shadow-sm border border-black/5 flex items-center gap-6">
-            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
-              <TrendingUp className="text-blue-500" size={32} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Problems Solved</p>
-              <p className="text-3xl font-serif italic">{stats.solvedCount}</p>
-            </div>
-          </div>
+          <StatCard 
+            icon={Flame} 
+            iconColor="text-orange-500" 
+            bgColor="bg-orange-50" 
+            label="Current Streak" 
+            value={`${stats.streakDays} Days`} 
+          />
+          <StatCard 
+            icon={Target} 
+            iconColor="text-emerald-500" 
+            bgColor="bg-emerald-50" 
+            label="Accuracy Rate" 
+            value={`${stats.accuracy}%`} 
+          />
+          <StatCard 
+            icon={TrendingUp} 
+            iconColor="text-blue-500" 
+            bgColor="bg-blue-50" 
+            label="Problems Solved" 
+            value={stats.solvedCount} 
+          />
         </div>
       </div>
 

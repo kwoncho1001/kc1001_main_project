@@ -20,6 +20,37 @@ import { SkillUpdateService } from './services/skillUpdateService';
 import { WeightCalculationService } from './services/weightCalculationService';
 import { HierarchyService } from './services/hierarchyService';
 
+/**
+ * @interface NavButtonProps
+ * @description Properties for the reusable navigation button component.
+ */
+interface NavButtonProps {
+  id: string;
+  currentView: string;
+  onClick: (id: any) => void;
+  icon: React.ElementType;
+  label: string;
+}
+
+/**
+ * @component NavButton
+ * @description Reusable navigation button for the sidebar/topbar.
+ */
+const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: Icon, label }) => {
+  const isActive = currentView === id;
+  return (
+    <button 
+      onClick={() => onClick(id)}
+      className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${
+        isActive ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'
+      }`}
+    >
+      <Icon size={14} />
+      {label}
+    </button>
+  );
+};
+
 const problems = [
   { id: 'p1', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'Mathematics - Calculus' },
   { id: 'p2', type: 'multiple', options: ['A', 'B', 'C', 'D'], title: 'Mathematics - Algebra' },
@@ -139,6 +170,35 @@ export default function App() {
     setView('exam');
   };
 
+  /**
+   * @constant VIEW_COMPONENTS
+   * @description Map of view IDs to their corresponding components to avoid long conditional chains.
+   */
+  const renderView = () => {
+    switch (view) {
+      case 'exam':
+        return <ExamInterface problems={problems as any} initialProblemId={selectedProblemId} onSolve={handleSolve} />;
+      case 'scanner':
+        return <ScannerUI />;
+      case 'bookmarks':
+        return <BookmarksView problems={problems as any} onSelectProblem={handleSelectProblemFromBookmarks} />;
+      case 'prediction':
+        return <GradePrediction />;
+      case 'ability':
+        return <AbilityTracker scores={abilityScores} hierarchy={mockHierarchy} lastBehavior={lastBehavior} />;
+      case 'hierarchy':
+        return <HierarchyManager />;
+      case 'ai-analyzer':
+        return <AIMetadataAnalyzer />;
+      case 'ocr-extractor':
+        return <ProblemExtractor />;
+      case 'gamification':
+        return <GamificationDashboard />;
+      default:
+        return <ScannerUI />;
+    }
+  };
+
   return (
     <div className="w-screen h-screen flex flex-col">
       {/* Navigation Rail */}
@@ -148,77 +208,15 @@ export default function App() {
           <span className="font-bold uppercase tracking-widest text-[10px]">Main Project</span>
         </div>
         
-        <button 
-          onClick={() => setView('scanner')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'scanner' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Scan size={14} />
-          Advanced Scanner
-        </button>
-
-        <button 
-          onClick={() => setView('exam')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'exam' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <PenTool size={14} />
-          Exam Interface
-        </button>
-
-        <button 
-          onClick={() => setView('bookmarks')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'bookmarks' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Star size={14} />
-          Bookmarks
-        </button>
-
-        <button 
-          onClick={() => setView('prediction')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'prediction' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <BarChart3 size={14} />
-          Grade Prediction
-        </button>
-
-        <button 
-          onClick={() => setView('ability')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ability' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Layers size={14} />
-          Ability Tracker
-        </button>
-
-        <button 
-          onClick={() => setView('hierarchy')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'hierarchy' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Database size={14} />
-          Hierarchy Manager
-        </button>
-
-        <button 
-          onClick={() => setView('ai-analyzer')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ai-analyzer' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Brain size={14} />
-          AI Analyzer
-        </button>
-
-        <button 
-          onClick={() => setView('ocr-extractor')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'ocr-extractor' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <FileSearch size={14} />
-          OCR Extractor
-        </button>
-
-        <button 
-          onClick={() => setView('gamification')}
-          className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${view === 'gamification' ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'}`}
-        >
-          <Trophy size={14} />
-          Rewards
-        </button>
+        <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="Advanced Scanner" />
+        <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="Exam Interface" />
+        <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="Bookmarks" />
+        <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="Grade Prediction" />
+        <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="Ability Tracker" />
+        <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="Hierarchy Manager" />
+        <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI Analyzer" />
+        <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="OCR Extractor" />
+        <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="Rewards" />
       </nav>
 
       <main className="flex-1 overflow-auto relative">
@@ -248,33 +246,7 @@ export default function App() {
           </div>
         )}
 
-        {view === 'exam' ? (
-          <ExamInterface 
-            problems={problems as any} 
-            initialProblemId={selectedProblemId} 
-            onSolve={handleSolve}
-          />
-        ) : view === 'scanner' ? (
-          <ScannerUI />
-        ) : view === 'bookmarks' ? (
-          <BookmarksView problems={problems as any} onSelectProblem={handleSelectProblemFromBookmarks} />
-        ) : view === 'prediction' ? (
-          <GradePrediction />
-        ) : view === 'ability' ? (
-          <AbilityTracker 
-            scores={abilityScores} 
-            hierarchy={mockHierarchy} 
-            lastBehavior={lastBehavior}
-          />
-        ) : view === 'hierarchy' ? (
-          <HierarchyManager />
-        ) : view === 'ai-analyzer' ? (
-          <AIMetadataAnalyzer />
-        ) : view === 'ocr-extractor' ? (
-          <ProblemExtractor />
-        ) : (
-          <GamificationDashboard />
-        )}
+        {renderView()}
       </main>
     </div>
   );
