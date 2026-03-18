@@ -109,6 +109,42 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
       const updatedPoints = [...(activeElement.points || []), pos.x, pos.y, pressure];
       const updatedEl = { ...activeElement, points: updatedPoints };
       setActiveElement(updatedEl);
+    } else if (appState.mode === 'eraser') {
+      // Stroke-based eraser logic
+      const eraserRadius = 15;
+      let elementsChanged = false;
+      const newElements = elements.map(el => {
+        if (el.isDeleted) return el;
+        
+        let intersects = false;
+        if (el.type === 'freedraw' && el.points) {
+          for (let i = 0; i < el.points.length; i += 3) {
+            const dx = el.points[i] - pos.x;
+            const dy = el.points[i+1] - pos.y;
+            if (Math.sqrt(dx * dx + dy * dy) < eraserRadius) {
+              intersects = true;
+              break;
+            }
+          }
+        } else {
+          // Simple bounding box check for other types
+          if (pos.x >= el.x && pos.x <= el.x + el.width &&
+              pos.y >= el.y && pos.y <= el.y + el.height) {
+            intersects = true;
+          }
+        }
+
+        if (intersects) {
+          elementsChanged = true;
+          return { ...el, isDeleted: true };
+        }
+        return el;
+      });
+
+      if (elementsChanged) {
+        setElements(newElements);
+        onChange?.(newElements, appState);
+      }
     }
 
     onPointerUpdate?.(e);

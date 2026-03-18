@@ -55,7 +55,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
           <input 
             type="text" 
             placeholder="문제 제목 또는 ID로 검색..."
-            className="w-full pl-16 pr-6 py-5 card focus:outline-none focus:border-accent/50 transition-all text-sm font-medium placeholder:text-muted-foreground/50"
+            className="w-full pl-16 pr-6 py-5 card focus:outline-none focus:border-accent/50 transition-all text-sm font-medium placeholder:text-muted-foreground"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -77,7 +77,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
 
       <div className="flex-1 overflow-y-auto pr-2 scrollbar-hide">
         {filteredProblems.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center opacity-10">
+          <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
             <BookOpen size={120} className="mb-8" />
             <h3 className="text-3xl font-bold uppercase tracking-[0.3em]">저장소 비어 있음</h3>
             <p className="text-sm font-medium tracking-widest">보관된 문제가 없습니다.</p>

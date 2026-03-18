@@ -75,7 +75,7 @@ const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: I
           : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
       }`}
     >
-      <Icon size={16} className={isActive ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground/70'} />
+      <Icon size={16} className={isActive ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground'} />
       {label}
     </button>
   );

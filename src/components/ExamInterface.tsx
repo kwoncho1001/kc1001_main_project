@@ -7,6 +7,7 @@ import { ExamManagerService } from '../services/examManagerService';
 import { ExamScorerService, QuestionStat } from '../services/examScorerService';
 import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star, Trophy, Users, FileDown, Loader2 } from 'lucide-react';
 import { Problem, SolvingResult, ExamStatus, ExamScoringResponse, ExamPaperMetadata } from '../types/ability';
+import { DigitalInkObject } from './canvas/types';
 
 const EXAM_DURATION = 60 * 30; // 30 minutes
 
@@ -33,6 +34,11 @@ export const ExamInterface: React.FC<{
   onSolve?: (result: SolvingResult) => void,
   theme: 'light' | 'dark' // Added theme prop
 }> = ({ problems, initialProblemId, onSolve, theme }) => {
+  const textColor = theme === 'light' ? 'text-black' : 'text-white';
+  const borderColor = theme === 'light' ? 'border-black' : 'border-white';
+  const mutedTextColor = theme === 'light' ? 'text-black/60' : 'text-white/60';
+  const cardBg = theme === 'light' ? 'bg-white' : 'bg-slate-900';
+
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
     if (initialProblemId) {
       const index = problems.findIndex(p => p.id === initialProblemId);
@@ -51,6 +57,18 @@ export const ExamInterface: React.FC<{
     const saved = localStorage.getItem('exam_answers_v3');
     return saved ? JSON.parse(saved) : {};
   });
+
+  // 1. 시험 세션 동안만 유지될 필기 데이터 상태 (초기값은 sessionStorage에서 로드)
+  const [drawingData, setDrawingData] = useState<Record<string, DigitalInkObject[]>>(() => {
+    const saved = sessionStorage.getItem('current_exam_drawings');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // 2. 필기 데이터가 변경될 때마다 세션 저장소에 임시 저장
+  useEffect(() => {
+    sessionStorage.setItem('current_exam_drawings', JSON.stringify(drawingData));
+  }, [drawingData]);
+
   const [examStatus, setExamStatus] = useState<ExamStatus>('ACTIVE');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [scoringResult, setScoringResult] = useState<ExamScoringResponse | null>(null);
@@ -141,6 +159,7 @@ export const ExamInterface: React.FC<{
     setQuestionStats(stats.questionStats);
     
     localStorage.removeItem('exam_answers_v3');
+    sessionStorage.removeItem('current_exam_drawings');
   }, [answers, problems, examStatus]);
 
   const handleDownloadReport = async () => {
@@ -244,14 +263,14 @@ export const ExamInterface: React.FC<{
       <div className="flex-1 flex flex-col min-w-0">
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-6">
-            <div className={`card px-6 py-3 flex items-center gap-3 ${remainingTime < 60 ? 'border-red-500/50 bg-red-500/5' : ''}`}>
+            <div className={`card px-6 py-3 flex items-center gap-3 border-2 ${borderColor} ${remainingTime < 60 ? 'bg-red-500/10' : ''}`}>
               <Clock size={18} className={remainingTime < 60 ? 'text-red-500' : 'text-accent'} />
-              <span className={`font-mono text-xl font-bold tracking-tighter ${remainingTime < 60 ? 'text-red-500' : 'text-foreground'}`}>
+              <span className={`font-mono text-xl font-bold tracking-tighter ${remainingTime < 60 ? 'text-red-500' : textColor}`}>
                 {formatTime(remainingTime)}
               </span>
             </div>
             {!isOnline && (
-              <div className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+              <div className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl border-2 border-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                 <WifiOff size={14} /> 오프라인 모드
               </div>
             )}
@@ -259,21 +278,21 @@ export const ExamInterface: React.FC<{
           
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-end">
-              <span className="text-micro text-muted-foreground">활성 노드</span>
+              <span className={`text-micro font-bold uppercase ${mutedTextColor}`}>활성 노드</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tighter text-foreground">{currentProblemIndex + 1}</span>
-                <span className="text-xs text-muted-foreground">/ {problems.length}</span>
+                <span className={`text-3xl font-black tracking-tighter ${textColor}`}>{currentProblemIndex + 1}</span>
+                <span className={`text-xs font-bold ${mutedTextColor}`}>/ {problems.length}</span>
               </div>
             </div>
             <button 
               onClick={handleToggleBookmark}
-              className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${
+              className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${
                 isBookmarked(currentProblem.id) 
-                  ? 'bg-accent/10 border-accent/30 text-accent shadow-lg' 
-                  : 'card border-border text-muted-foreground hover:text-foreground'
+                  ? 'bg-accent text-white border-accent shadow-lg' 
+                  : `card border-border ${textColor} hover:opacity-80`
               }`}
             >
-              <Star size={20} className={isBookmarked(currentProblem.id) ? 'fill-accent' : ''} />
+              <Star size={20} className={isBookmarked(currentProblem.id) ? 'fill-white' : ''} />
             </button>
           </div>
         </header>
@@ -281,22 +300,35 @@ export const ExamInterface: React.FC<{
         <div className="flex-1 card p-2 relative overflow-hidden group">
           <div className="absolute inset-0 grid-pattern opacity-10"></div>
           <div className="w-full h-full rounded-[32px] relative overflow-hidden bg-background/50">
-            <DigitalLearningCanvas theme={theme} />
+            <DigitalLearningCanvas 
+              key={currentProblem.id} // 문제 변경 시 캔버스 초기화를 위해 Key 사용
+              theme={theme}
+              initialData={{ 
+                elements: drawingData[currentProblem.id] || [], // 해당 문제의 필기 데이터 로드
+                appState: { mode: 'pen' } 
+              }}
+              onChange={(newElements) => {
+                setDrawingData(prev => ({
+                  ...prev,
+                  [currentProblem.id]: newElements // 실시간으로 해당 문제 ID에 필기 저장
+                }));
+              }}
+            />
             
             {/* Floating Navigation */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 card p-2 rounded-3xl shadow-2xl">
+            <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 card p-2 rounded-3xl shadow-2xl border-2 ${borderColor}`}>
               <button 
                 disabled={currentProblemIndex === 0}
                 onClick={() => setCurrentProblemIndex(i => i - 1)}
-                className="px-8 py-4 text-muted-foreground text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-accent/10 rounded-2xl transition-all"
+                className={`px-8 py-4 ${textColor} text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-accent/10 rounded-2xl transition-all`}
               >
                 이전
               </button>
-              <div className="w-px h-6 bg-border" />
+              <div className={`w-px h-6 ${theme === 'light' ? 'bg-black' : 'bg-white'} opacity-20`} />
               <button 
                 disabled={currentProblemIndex === problems.length - 1}
                 onClick={() => setCurrentProblemIndex(i => i + 1)}
-                className="px-8 py-4 text-muted-foreground text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-accent/10 rounded-2xl transition-all"
+                className={`px-8 py-4 ${textColor} text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-accent/10 rounded-2xl transition-all`}
               >
                 다음 노드
               </button>
@@ -307,21 +339,21 @@ export const ExamInterface: React.FC<{
 
       {/* Right: Answer Panel */}
       <aside className="w-96 flex flex-col gap-8">
-        <div className="card p-8 flex flex-col gap-8">
+        <div className={`card p-8 flex flex-col gap-8 border-2 ${borderColor}`}>
           <div className="flex items-center justify-between">
-            <h2 className="text-micro text-muted-foreground">응답 매트릭스</h2>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-accent uppercase tracking-widest">
+            <h2 className={`text-micro font-bold uppercase ${mutedTextColor}`}>응답 매트릭스</h2>
+            <div className="flex items-center gap-2 text-[10px] font-black text-accent uppercase tracking-widest">
               <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
               동기화됨
             </div>
           </div>
 
           <div className="space-y-8">
-            <div className="p-6 bg-background/50 rounded-3xl border border-border">
-              <span className="block text-micro text-muted-foreground mb-3">노드 지능</span>
+            <div className={`p-6 ${cardBg} rounded-3xl border-2 ${borderColor}`}>
+              <span className={`block text-micro font-bold uppercase ${mutedTextColor} mb-3`}>노드 지능</span>
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm uppercase tracking-tight text-foreground">문제 {currentProblemIndex + 1}</span>
-                <span className="font-mono text-xs text-accent">{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
+                <span className={`font-black text-sm uppercase tracking-tight ${textColor}`}>문제 {currentProblemIndex + 1}</span>
+                <span className={`font-mono text-xs font-bold text-accent`}>{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
               </div>
             </div>
 
@@ -331,10 +363,10 @@ export const ExamInterface: React.FC<{
                   <button 
                     key={opt}
                     onClick={() => handleAnswerChange(opt)}
-                    className={`h-16 rounded-2xl border text-xs font-bold uppercase tracking-widest transition-all ${
+                    className={`h-16 rounded-2xl border-2 text-xs font-black uppercase tracking-widest transition-all ${
                       answers[currentProblem.id] === opt 
                         ? 'bg-accent text-white border-accent shadow-lg scale-[1.02]' 
-                        : 'bg-background/50 border-border text-muted-foreground hover:border-accent/30'
+                        : `${cardBg} ${borderColor} ${textColor} hover:border-accent/50`
                     }`}
                   >
                     {opt}
@@ -344,7 +376,7 @@ export const ExamInterface: React.FC<{
             ) : (
               <div className="space-y-3">
                 <textarea 
-                  className="w-full h-48 p-6 bg-background/50 border border-border rounded-3xl text-sm focus:outline-none focus:border-accent/50 transition-all resize-none font-medium leading-relaxed text-foreground placeholder:text-muted-foreground"
+                  className={`w-full h-48 p-6 ${cardBg} border-2 ${borderColor} rounded-3xl text-sm focus:outline-none focus:border-accent transition-all resize-none font-bold leading-relaxed ${textColor} placeholder:${mutedTextColor}`}
                   placeholder="정답 입력..."
                   value={answers[currentProblem.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
@@ -355,21 +387,21 @@ export const ExamInterface: React.FC<{
         </div>
 
         {/* Progress Tracker */}
-        <div className="card p-8 flex-1 flex flex-col">
-          <h3 className="text-micro text-muted-foreground mb-8">동기화 진행률</h3>
+        <div className={`card p-8 flex-1 flex flex-col border-2 ${borderColor}`}>
+          <h3 className={`text-micro font-bold uppercase ${mutedTextColor} mb-8`}>동기화 진행률</h3>
           <div className="grid grid-cols-5 gap-3 overflow-y-auto pr-2 scrollbar-hide">
             {problems.map((p, idx) => (
               <button
                 key={p.id}
                 onClick={() => setCurrentProblemIndex(idx)}
-                className={`aspect-square rounded-xl flex items-center justify-center text-[10px] font-bold transition-all ${
+                className={`aspect-square rounded-xl flex items-center justify-center text-[10px] font-black transition-all ${
                   currentProblemIndex === idx 
                     ? 'ring-2 ring-accent ring-offset-4 ring-offset-background' 
                     : ''
                 } ${
                   answers[p.id] 
                     ? 'bg-accent text-white' 
-                    : 'bg-background/50 text-muted-foreground border border-border'
+                    : `${cardBg} ${textColor} border-2 ${borderColor}`
                 }`}
               >
                 {idx + 1}

@@ -178,7 +178,7 @@ export const GradePrediction: React.FC = () => {
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">예측</span>
-                    <span className="text-lg font-bold text-foreground/80">{data.predictedScore}</span>
+                    <span className="text-lg font-bold text-foreground">{data.predictedScore}</span>
                   </div>
                 </div>
               </div>

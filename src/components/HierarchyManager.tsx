@@ -270,7 +270,7 @@ export const HierarchyManager: React.FC = () => {
                   <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">노드 식별자 (고유)</label>
                   <input 
                     type="text" 
-                    className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20"
+                    className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground"
                     placeholder="예: node-alpha-01"
                     value={newNode.id || ''}
                     onChange={e => setNewNode({ ...newNode, id: e.target.value })}
@@ -282,7 +282,7 @@ export const HierarchyManager: React.FC = () => {
                 <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">노드 명칭</label>
                 <input 
                   type="text" 
-                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20"
+                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground"
                   placeholder="사람이 읽을 수 있는 이름"
                   value={editingNode?.name || newNode?.name || ''}
                   onChange={e => editingNode ? setEditingNode({ ...editingNode, name: e.target.value }) : setNewNode({ ...newNode, name: e.target.value })}
@@ -292,7 +292,7 @@ export const HierarchyManager: React.FC = () => {
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">기능적 설명</label>
                 <textarea 
-                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium h-32 focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20 resize-none"
+                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium h-32 focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground resize-none"
                   placeholder="노드 목적 및 범위..."
                   value={editingNode?.description || newNode?.description || ''}
                   onChange={e => editingNode ? setEditingNode({ ...editingNode, description: e.target.value }) : setNewNode({ ...newNode, description: e.target.value })}

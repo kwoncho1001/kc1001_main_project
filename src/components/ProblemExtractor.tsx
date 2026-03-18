@@ -255,7 +255,7 @@ export const ProblemExtractor: React.FC = () => {
                   분석하고자 하는 문제 텍스트를 아래에 입력하세요. AI가 즉시 교육과정을 매핑하고 난이도를 평가합니다.
                 </p>
                 <textarea 
-                  className="w-full p-8 card bg-muted/50 border-border rounded-3xl text-lg font-medium min-h-[240px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground/50 resize-none"
+                  className="w-full p-8 card bg-muted/50 border-border rounded-3xl text-lg font-medium min-h-[240px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground resize-none"
                   placeholder="예: f(x) = x^2 + 2x + 1 일 때, f'(1)의 값을 구하시오."
                   value={manualText}
                   onChange={(e) => setManualText(e.target.value)}
@@ -466,7 +466,7 @@ export const ProblemExtractor: React.FC = () => {
                 <div>
                   <label className="text-micro text-muted-foreground mb-3 block">문제 내용</label>
                   <textarea 
-                    className="w-full p-6 card bg-muted/50 border-border rounded-3xl text-lg font-medium min-h-[160px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground/50 resize-none"
+                    className="w-full p-6 card bg-muted/50 border-border rounded-3xl text-lg font-medium min-h-[160px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground resize-none"
                     value={activeProblem.content}
                     onChange={(e) => handleManualEdit(activeProblemIdx, 'content', e.target.value)}
                   />
@@ -516,7 +516,7 @@ export const ProblemExtractor: React.FC = () => {
                 <div>
                   <label className="text-micro text-muted-foreground mb-3 block">해설 및 풀이</label>
                   <textarea 
-                    className="w-full p-6 card bg-muted/50 border-border rounded-3xl text-xs font-medium min-h-[140px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground/50 resize-none"
+                    className="w-full p-6 card bg-muted/50 border-border rounded-3xl text-xs font-medium min-h-[140px] focus:outline-none focus:border-accent/30 transition-all placeholder:text-muted-foreground resize-none"
                     value={activeProblem.explanation || ''}
                     onChange={(e) => handleManualEdit(activeProblemIdx, 'explanation', e.target.value)}
                   />
