@@ -56,29 +56,29 @@ const historyData = [
 
 export const GradePrediction: React.FC = () => {
   return (
-    <div className="p-6 bg-gray-50 min-h-screen space-y-8">
-      <header className="flex justify-between items-end">
+    <div className="space-y-8">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Grade Prediction</h1>
-          <p className="text-gray-500">AI-driven analysis of your future performance</p>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2">Neural Forecasting</h1>
+          <p className="text-white/40 font-medium">AI-driven predictive analysis of future performance nodes</p>
         </div>
         <div className="flex gap-4">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <TrendingUp className="text-blue-600" size={20} />
+          <div className="glass p-6 rounded-3xl flex items-center gap-4 min-w-[200px]">
+            <div className="w-12 h-12 rounded-2xl bg-apex-accent/10 flex items-center justify-center text-apex-accent">
+              <TrendingUp size={24} />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-bold">Current Streak</p>
-              <p className="text-xl font-bold">{mockStats.streak} Days</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">Current Streak</p>
+              <p className="text-2xl font-bold tracking-tighter">{mockStats.streak} DAYS</p>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3">
-            <div className="p-2 bg-emerald-50 rounded-lg">
-              <CheckCircle className="text-emerald-600" size={20} />
+          <div className="glass p-6 rounded-3xl flex items-center gap-4 min-w-[200px]">
+            <div className="w-12 h-12 rounded-2xl bg-apex-accent/10 flex items-center justify-center text-apex-accent">
+              <CheckCircle size={24} />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase font-bold">Accuracy</p>
-              <p className="text-xl font-bold">{mockStats.accuracy}%</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">Accuracy</p>
+              <p className="text-2xl font-bold tracking-tighter">{mockStats.accuracy}%</p>
             </div>
           </div>
         </div>
@@ -86,135 +86,183 @@ export const GradePrediction: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Prediction Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Score Trend & Prediction</h2>
-            <div className="flex gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <span>Actual Score</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-300 rounded-full border-dashed border"></div>
-                <span>AI Prediction</span>
+        <div className="lg:col-span-2 glass rounded-[48px] p-8 relative overflow-hidden">
+          <div className="absolute inset-0 apex-grid opacity-10"></div>
+          <div className="relative z-10">
+            <div className="flex justify-between items-center mb-12">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Performance Trajectory</h2>
+              <div className="flex gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-apex-accent rounded-full"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Actual</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white/20 rounded-full border border-dashed border-white/40"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Forecast</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={historyData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} domain={[50, 100]} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="score" 
-                  stroke="#3b82f6" 
-                  strokeWidth={3} 
-                  dot={{ r: 6, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
-                  activeDot={{ r: 8 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="predicted" 
-                  stroke="#93c5fd" 
-                  strokeWidth={2} 
-                  strokeDasharray="5 5"
-                  dot={{ r: 4, fill: '#93c5fd' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={historyData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis 
+                    dataKey="month" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }}
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    domain={[50, 100]} 
+                    tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(10,10,10,0.9)', 
+                      borderRadius: '24px', 
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(10px)',
+                      padding: '16px'
+                    }}
+                    itemStyle={{ fontSize: '12px', fontWeight: 700 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="score" 
+                    stroke="#10b981" 
+                    strokeWidth={4} 
+                    dot={{ r: 6, fill: '#10b981', strokeWidth: 4, stroke: '#0a0a0a' }}
+                    activeDot={{ r: 8, strokeWidth: 0 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="predicted" 
+                    stroke="rgba(255,255,255,0.2)" 
+                    strokeWidth={2} 
+                    strokeDasharray="8 8"
+                    dot={{ r: 4, fill: 'rgba(255,255,255,0.1)' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
         {/* Target Progress */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold mb-6">Target Achievement</h2>
-          <div className="space-y-8">
+        <div className="glass rounded-[48px] p-8 flex flex-col">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Target Synchronization</h2>
+          <div className="space-y-12 flex-1">
             {mockPredictionData.map((data) => (
               <div key={data.subject}>
-                <div className="flex justify-between mb-2">
-                  <span className="font-bold">{data.subject}</span>
-                  <span className="text-sm text-gray-500">Target: {data.targetScore}</span>
+                <div className="flex justify-between items-end mb-4">
+                  <span className="text-xl font-bold tracking-tight">{data.subject}</span>
+                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Target: {data.targetScore}</span>
                 </div>
-                <div className="relative h-4 bg-gray-100 rounded-full overflow-hidden">
+                <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
                   <div 
-                    className="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-1000"
+                    className="absolute top-0 left-0 h-full bg-apex-accent transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
                     style={{ width: `${(data.currentScore / data.targetScore) * 100}%` }}
                   ></div>
                   <div 
-                    className="absolute top-0 left-0 h-full bg-blue-300 opacity-50 transition-all duration-1000"
+                    className="absolute top-0 left-0 h-full bg-white/10 transition-all duration-1000"
                     style={{ width: `${(data.predictedScore / data.targetScore) * 100}%` }}
                   ></div>
                 </div>
-                <div className="flex justify-between mt-2 text-xs">
-                  <span className="text-blue-600 font-bold">Current: {data.currentScore}</span>
-                  <span className="text-blue-400 font-bold">Predicted: {data.predictedScore}</span>
+                <div className="flex justify-between mt-4">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Current</span>
+                    <span className="text-lg font-bold text-apex-accent">{data.currentScore}</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Forecast</span>
+                    <span className="text-lg font-bold text-white/60">{data.predictedScore}</span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <div className="flex items-center gap-2 text-blue-700 font-bold mb-2">
-              <Zap size={18} />
-              <span>AI Insight</span>
+          <div className="mt-12 p-8 bg-apex-accent/5 rounded-[32px] border border-apex-accent/10 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Zap size={48} className="text-apex-accent" />
             </div>
-            <p className="text-sm text-blue-800 leading-relaxed">
-              Increasing your weekly study hours by just 2 hours could boost your predicted Math score by 3 points.
-            </p>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 text-apex-accent font-black text-[10px] uppercase tracking-[0.2em] mb-4">
+                <Zap size={14} />
+                <span>Neural Insight</span>
+              </div>
+              <p className="text-sm text-white/70 leading-relaxed font-medium">
+                Increasing your weekly study hours by just 2 hours could boost your predicted Math score by 3 points.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Weakness Analysis */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold mb-6">Weakness Analysis & Action Plan</h2>
+        <div className="glass rounded-[48px] p-8">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Optimization Protocols</h2>
           <div className="space-y-4">
             {mockPredictionData[0].weakTypes.map((weak, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-gray-100 hover:border-blue-200 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-amber-50 rounded-lg">
-                      <AlertTriangle className="text-amber-600" size={16} />
+              <div key={idx} className="p-8 rounded-[32px] bg-white/5 border border-white/5 hover:border-apex-accent/30 transition-all group cursor-pointer">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+                      <AlertTriangle size={20} />
                     </div>
-                    <span className="font-bold text-gray-900">{weak.type}</span>
+                    <span className="text-xl font-bold tracking-tight">{weak.type}</span>
                   </div>
-                  <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                    Impact: +{weak.impact} pts
+                  <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full uppercase tracking-widest">
+                    Impact: +{weak.impact} PTS
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">{weak.recommendation}</p>
-                <button className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline">
-                  Start Recommended Practice <ArrowRight size={12} />
-                </button>
+                <p className="text-white/40 text-sm mb-6 font-medium leading-relaxed">{weak.recommendation}</p>
+                <div className="flex items-center gap-2 text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
+                  Initiate Practice Protocol <ArrowRight size={14} />
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Detailed Guide */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-xl font-bold mb-6">Personalized Study Guide</h2>
-          <div className="prose prose-sm max-w-none text-gray-600">
-            <p className="mb-4">
-              Based on your recent performance in <strong>Mathematics</strong>, you have shown significant improvement in <em>Algebra</em>, but <em>Calculus</em> remains a challenge.
+        <div className="glass rounded-[48px] p-8">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Strategic Directive</h2>
+          <div className="space-y-8">
+            <p className="text-xl font-medium text-white/80 leading-tight">
+              Based on your recent performance in <span className="text-apex-accent">Mathematics</span>, you have shown significant improvement in <span className="italic">Algebra</span>, but <span className="text-red-500">Calculus</span> remains a challenge.
             </p>
-            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-4">
-              <h4 className="font-bold text-gray-900 mb-2">Recommended Weekly Schedule:</h4>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Math: 8 hours (Focus 4h on Calculus)</li>
-                <li>English: 5 hours (Focus 2h on Vocabulary)</li>
-                <li>Other: 5 hours</li>
-              </ul>
+            
+            <div className="p-8 rounded-[32px] bg-white/5 border border-white/5">
+              <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-6 text-center">Recommended Weekly Allocation</h4>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold tracking-tighter mb-1">8H</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Math</div>
+                </div>
+                <div className="text-center border-x border-white/10">
+                  <div className="text-2xl font-bold tracking-tighter mb-1">5H</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">English</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold tracking-tighter mb-1">5H</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Other</div>
+                </div>
+              </div>
             </div>
-            <p>
-              Your current predicted grade for the upcoming Mock Exam is <strong>Grade 2</strong>. To secure <strong>Grade 1</strong>, prioritize the "Calculus" practice sets assigned in your dashboard.
-            </p>
+
+            <div className="flex items-start gap-4 p-6 rounded-3xl bg-white/5 border border-white/5">
+              <div className="w-10 h-10 rounded-2xl bg-apex-accent/10 flex items-center justify-center text-apex-accent shrink-0">
+                <Target size={20} />
+              </div>
+              <p className="text-sm text-white/60 leading-relaxed font-medium">
+                Your current predicted grade for the upcoming Mock Exam is <span className="text-white font-bold">Grade 2</span>. To secure <span className="text-apex-accent font-bold">Grade 1</span>, prioritize the "Calculus" practice sets assigned in your dashboard.
+              </p>
+            </div>
           </div>
         </div>
       </div>

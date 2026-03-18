@@ -27,8 +27,6 @@ export const AIMetadataAnalyzer: React.FC = () => {
     setIsAnalyzing(true);
     setError(null);
     try {
-      // Using mock for now to ensure it works in preview without env keys immediately
-      // In real usage, swap to analyzeProblemMetadata
       const result = await AIMetadataService.mockAnalyze(problemText);
       setAnalysis(result);
     } catch (err) {
@@ -45,145 +43,157 @@ export const AIMetadataAnalyzer: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#E4E3E0] p-6 overflow-hidden">
-      <header className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-[#141414] rounded-lg">
-            <Brain className="text-white" size={24} />
+    <div className="flex flex-col h-full gap-8">
+      <header>
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-12 h-12 glass rounded-xl flex items-center justify-center text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+            <Brain size={28} />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">AI Metadata Analyzer</h1>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase">Neural Analyzer</h1>
         </div>
-        <p className="text-black/60 text-sm">
-          Extract hierarchical curriculum mapping and difficulty factors from problem text.
+        <p className="text-white/40 font-medium ml-16">
+          Extract hierarchical curriculum mapping and difficulty vectors from raw problem vectors.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 min-h-0">
         {/* Input Section */}
-        <div className="flex flex-col gap-4 overflow-hidden">
-          <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6 flex flex-col flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-black uppercase tracking-widest opacity-40">Problem Input (OCR Text)</h2>
-              <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">READY</span>
-            </div>
-            
-            <textarea
-              className="flex-1 w-full p-6 bg-gray-50 border border-black/5 rounded-2xl text-lg font-serif resize-none focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
-              placeholder="Paste problem text or LaTeX here... (e.g., Find the derivative of f(x) = sin(x^2) using implicit differentiation...)"
-              value={problemText}
-              onChange={(e) => setProblemText(e.target.value)}
-            />
+        <div className="flex flex-col gap-6 min-h-0">
+          <div className="glass rounded-[40px] p-8 border border-white/5 flex flex-col flex-1 relative overflow-hidden group">
+            <div className="absolute inset-0 apex-grid opacity-5"></div>
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Source Vector Input</h2>
+                <span className="text-[10px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">READY</span>
+              </div>
+              
+              <textarea
+                className="flex-1 w-full p-8 glass border border-white/5 rounded-3xl text-xl font-medium resize-none focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20"
+                placeholder="Paste problem text or LaTeX here... (e.g., Find the derivative of f(x) = sin(x^2) using implicit differentiation...)"
+                value={problemText}
+                onChange={(e) => setProblemText(e.target.value)}
+              />
 
-            <button
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || !problemText.trim()}
-              className="mt-6 w-full bg-[#141414] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all disabled:opacity-50"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Analyzing Context...
-                </>
-              ) : (
-                <>
-                  <Search size={20} />
-                  Analyze Metadata
-                </>
-              )}
-            </button>
+              <button
+                onClick={handleAnalyze}
+                disabled={isAnalyzing || !problemText.trim()}
+                className="mt-8 w-full bg-white text-apex-black py-6 rounded-2xl font-black uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-4 hover:bg-apex-accent transition-all disabled:opacity-50 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Processing Neural Context...
+                  </>
+                ) : (
+                  <>
+                    <Search size={20} />
+                    Execute Analysis
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Results Section */}
-        <div className="flex flex-col gap-4 overflow-y-auto pr-2">
+        <div className="flex flex-col gap-6 overflow-y-auto pr-2 scrollbar-hide">
           {analysis ? (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-700">
               {/* Confidence Score */}
-              <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xs font-black uppercase tracking-widest opacity-40">AI Confidence</h3>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-emerald-500 transition-all duration-1000" 
-                        style={{ width: `${analysis.confidence * 100}%` }}
-                      />
+              <div className="glass rounded-[40px] p-8 border border-white/5 relative overflow-hidden">
+                <div className="absolute inset-0 apex-grid opacity-5"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">AI Confidence Index</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="h-2 w-48 bg-white/5 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-apex-accent shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000" 
+                          style={{ width: `${analysis.confidence * 100}%` }}
+                        />
+                      </div>
+                      <span className="font-mono font-black text-apex-accent tracking-tighter text-lg">{(analysis.confidence * 100).toFixed(1)}%</span>
                     </div>
-                    <span className="font-mono font-bold text-emerald-600">{(analysis.confidence * 100).toFixed(1)}%</span>
                   </div>
+                  {analysis.confidence < 0.8 && (
+                    <div className="flex items-center gap-3 text-amber-500 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 text-[10px] font-black uppercase tracking-widest">
+                      <AlertTriangle size={16} />
+                      Low confidence detected. Manual verification required.
+                    </div>
+                  )}
                 </div>
-                {analysis.confidence < 0.8 && (
-                  <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 text-xs font-bold">
-                    <AlertTriangle size={14} />
-                    Low confidence detected. Manual review recommended.
-                  </div>
-                )}
               </div>
 
               {/* Hierarchy Mapping */}
-              <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6">
-                <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-6">Curriculum Mapping</h3>
-                <div className="space-y-3">
-                  {[
-                    { label: 'Field', id: analysis.metadata.fieldId },
-                    { label: 'Course', id: analysis.metadata.subjectId },
-                    { label: 'Major', id: analysis.metadata.majorUnitId },
-                    { label: 'Minor', id: analysis.metadata.minorUnitId },
-                    { label: 'Type', id: analysis.metadata.tagId },
-                  ].map((level, idx) => (
-                    <div key={idx} className="flex items-center gap-4 group">
-                      <div className="w-20 text-[10px] font-black uppercase opacity-30">{level.label}</div>
-                      <div className="flex-1 bg-gray-50 p-3 rounded-xl border border-black/5 flex items-center justify-between group-hover:border-black/20 transition-colors">
-                        <span className="font-bold text-sm">{getNodeName(level.id)}</span>
-                        <span className="font-mono text-[10px] opacity-30">{level.id}</span>
+              <div className="glass rounded-[40px] p-8 border border-white/5 relative overflow-hidden">
+                <div className="absolute inset-0 apex-grid opacity-5"></div>
+                <div className="relative z-10">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">Curriculum Topology Mapping</h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Field', id: analysis.metadata.fieldId },
+                      { label: 'Course', id: analysis.metadata.subjectId },
+                      { label: 'Major', id: analysis.metadata.majorUnitId },
+                      { label: 'Minor', id: analysis.metadata.minorUnitId },
+                      { label: 'Type', id: analysis.metadata.tagId },
+                    ].map((level, idx) => (
+                      <div key={idx} className="flex items-center gap-6 group">
+                        <div className="w-24 text-[9px] font-black uppercase tracking-[0.2em] text-white/20">{level.label}</div>
+                        <div className="flex-1 glass p-4 rounded-2xl border border-white/5 flex items-center justify-between group-hover:border-apex-accent/30 transition-all">
+                          <span className="font-bold text-sm tracking-tight">{getNodeName(level.id)}</span>
+                          <span className="font-mono text-[10px] text-white/10 tracking-widest">{level.id}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Difficulty Factors */}
-              <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6">
-                <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-6">Difficulty Fingerprint</h3>
-                <div className="space-y-6">
-                  {[
-                    { label: 'Computational Complexity', value: analysis.difficultyFactors.computationalComplexity },
-                    { label: 'Conceptual Depth', value: analysis.difficultyFactors.conceptualDepth },
-                    { label: 'Logical Reasoning', value: analysis.difficultyFactors.logicalReasoning },
-                  ].map((factor, idx) => (
-                    <div key={idx}>
-                      <div className="flex justify-between text-xs font-bold mb-2">
-                        <span>{factor.label}</span>
-                        <span className="font-mono opacity-50">{(factor.value * 10).toFixed(1)}/10</span>
+              <div className="glass rounded-[40px] p-8 border border-white/5 relative overflow-hidden">
+                <div className="absolute inset-0 apex-grid opacity-5"></div>
+                <div className="relative z-10">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">Difficulty Vector Analysis</h3>
+                  <div className="space-y-8">
+                    {[
+                      { label: 'Computational Complexity', value: analysis.difficultyFactors.computationalComplexity },
+                      { label: 'Conceptual Depth', value: analysis.difficultyFactors.conceptualDepth },
+                      { label: 'Logical Reasoning', value: analysis.difficultyFactors.logicalReasoning },
+                    ].map((factor, idx) => (
+                      <div key={idx}>
+                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest mb-3">
+                          <span className="text-white/60">{factor.label}</span>
+                          <span className="font-mono text-apex-accent">{(factor.value * 10).toFixed(1)}/10</span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-apex-accent shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000 delay-300" 
+                            style={{ width: `${factor.value * 100}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-[#141414] transition-all duration-1000 delay-300" 
-                          style={{ width: `${factor.value * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Tags & Concepts */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6">
-                  <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-4">Keywords</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="glass rounded-[40px] p-8 border border-white/5">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Neural Keywords</h3>
                   <div className="flex flex-wrap gap-2">
                     {analysis.keywords.map((kw, i) => (
-                      <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span key={i} className="px-3 py-1.5 bg-white/5 rounded-lg text-[9px] font-black uppercase tracking-widest text-white/60 border border-white/5">
                         {kw}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-6">
-                  <h3 className="text-xs font-black uppercase tracking-widest opacity-40 mb-4">Related Concepts</h3>
+                <div className="glass rounded-[40px] p-8 border border-white/5">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Related Nodes</h3>
                   <div className="flex flex-wrap gap-2">
                     {analysis.concepts.map((c, i) => (
-                      <span key={i} className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      <span key={i} className="px-3 py-1.5 bg-apex-accent/10 text-apex-accent rounded-lg text-[9px] font-black uppercase tracking-widest border border-apex-accent/20">
                         {c}
                       </span>
                     ))}
@@ -192,13 +202,11 @@ export const AIMetadataAnalyzer: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-white/50 rounded-3xl border border-dashed border-black/10">
-              <div className="p-4 bg-white rounded-2xl shadow-sm mb-4">
-                <Database className="text-black/20" size={32} />
-              </div>
-              <h3 className="font-bold text-black/40">No Analysis Data</h3>
-              <p className="text-sm text-black/30 max-w-[240px] mt-2">
-                Enter problem text on the left to generate rich metadata using AI.
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 glass rounded-[40px] border border-dashed border-white/10 opacity-20">
+              <Database size={64} className="mb-6" />
+              <h3 className="text-2xl font-bold uppercase tracking-[0.2em]">Awaiting Data</h3>
+              <p className="text-[10px] uppercase tracking-[0.3em] mt-3">
+                Initialize analysis by providing source vectors.
               </p>
             </div>
           )}

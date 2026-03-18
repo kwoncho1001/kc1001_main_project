@@ -37,18 +37,20 @@ interface NavButtonProps {
 
 /**
  * @component NavButton
- * @description Reusable navigation button for the sidebar/topbar.
+ * @description Reusable navigation button for the sidebar.
  */
 const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: Icon, label }) => {
   const isActive = currentView === id;
   return (
     <button 
       onClick={() => onClick(id)}
-      className={`h-full px-4 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all border-b-2 ${
-        isActive ? 'border-emerald-500 text-white' : 'border-transparent opacity-50 hover:opacity-100'
+      className={`w-full px-4 py-3 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-bold transition-all rounded-xl group ${
+        isActive 
+          ? 'bg-apex-accent/10 text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.1)]' 
+          : 'text-white/40 hover:text-white/80 hover:bg-white/5'
       }`}
     >
-      <Icon size={14} />
+      <Icon size={16} className={isActive ? 'text-apex-accent' : 'text-white/20 group-hover:text-white/40'} />
       {label}
     </button>
   );
@@ -226,25 +228,30 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-[#F5F5F0]">
-        <div className="w-12 h-12 border-4 border-[#5A5A40] border-t-transparent rounded-full animate-spin"></div>
+      <div className="w-screen h-screen flex items-center justify-center bg-apex-black">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 border-2 border-apex-accent/20 rounded-full"></div>
+          <div className="absolute inset-0 border-2 border-apex-accent border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center text-apex-accent font-black text-xs">A</div>
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-[#F5F5F0] p-6">
-        <div className="bg-white rounded-[40px] p-12 max-w-md w-full shadow-2xl text-center">
-          <div className="w-20 h-20 bg-emerald-500 rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl font-black shadow-lg shadow-emerald-500/20">M</div>
-          <h1 className="text-4xl font-serif italic mb-4 text-[#1A1A1A]">Welcome Back</h1>
-          <p className="text-gray-500 mb-10">Sign in to sync your learning progress and access personalized rewards.</p>
+      <div className="w-screen h-screen flex items-center justify-center bg-apex-black apex-grid p-6">
+        <div className="glass rounded-[40px] p-12 max-w-md w-full text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-apex-accent to-transparent"></div>
+          <div className="w-24 h-24 bg-apex-accent/10 border border-apex-accent/20 rounded-3xl mx-auto mb-8 flex items-center justify-center text-apex-accent text-5xl font-black shadow-[0_0_40px_rgba(16,185,129,0.2)] glow-text">A</div>
+          <h1 className="text-4xl font-bold mb-4 tracking-tighter">APEX NETWORK</h1>
+          <p className="text-white/40 mb-10 text-sm">Secure, high-performance learning infrastructure for the next generation of students.</p>
           <button
             onClick={login}
-            className="w-full bg-[#1A1A1A] text-white py-4 rounded-2xl font-bold hover:bg-black transition-all flex items-center justify-center gap-3 shadow-xl"
+            className="w-full bg-white text-apex-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-apex-accent transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
           >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
-            Sign in with Google
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+            Establish Connection
           </button>
         </div>
       </div>
@@ -252,54 +259,75 @@ export default function App() {
   }
 
   return (
-    <div className="w-screen h-screen flex flex-col">
-      {/* Navigation Rail */}
-      <nav className="h-12 bg-[#141414] text-[#E4E3E0] flex items-center px-6 gap-8 border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2 mr-4">
-          <div className="w-6 h-6 bg-emerald-500 rounded-sm flex items-center justify-center text-[#141414] font-bold text-xs">M</div>
-          <span className="font-bold uppercase tracking-widest text-[10px]">Main Project</span>
+    <div className="w-screen h-screen flex bg-apex-black overflow-hidden">
+      {/* Sidebar Navigation */}
+      <aside className="w-72 border-r border-apex-border flex flex-col shrink-0 bg-apex-dark/50 backdrop-blur-md">
+        <div className="p-8 flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-apex-accent/10 border border-apex-accent/30 rounded-xl flex items-center justify-center text-apex-accent font-black text-xl shadow-[0_0_20px_rgba(16,185,129,0.1)]">A</div>
+          <div>
+            <span className="block font-black uppercase tracking-[0.3em] text-xs glow-text">APEX</span>
+            <span className="block text-[8px] uppercase tracking-[0.5em] text-white/30">Infrastructure</span>
+          </div>
         </div>
         
-        <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="Advanced Scanner" />
-        <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="Exam Interface" />
-        <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="Bookmarks" />
-        <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="Grade Prediction" />
-        <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="Ability Tracker" />
-        <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="Hierarchy Manager" />
-        <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI Analyzer" />
-        <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="OCR Extractor" />
-        <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="Rewards" />
-
-        <div className="ml-auto flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <img src={user.photoURL || ''} alt="" className="w-6 h-6 rounded-full border border-white/20" />
-            <span className="text-[10px] font-bold opacity-70 truncate max-w-[100px]">{user.displayName}</span>
+        <div className="flex-1 px-4 space-y-2 overflow-y-auto">
+          <div className="px-4 mb-4">
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Core Systems</span>
           </div>
-          <button onClick={logout} className="p-2 hover:bg-white/10 rounded-lg transition-all text-white/50 hover:text-white">
-            <LogOut size={16} />
-          </button>
+          <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="Scanner" />
+          <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="Interface" />
+          <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="Vault" />
+          
+          <div className="px-4 mt-8 mb-4">
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Analytics</span>
+          </div>
+          <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="Prediction" />
+          <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="Ability" />
+          <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="Hierarchy" />
+          
+          <div className="px-4 mt-8 mb-4">
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Intelligence</span>
+          </div>
+          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="Analyzer" />
+          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="Extractor" />
+          <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="Rewards" />
         </div>
-      </nav>
 
-      <main className="flex-1 overflow-auto relative">
+        <div className="p-6 border-t border-apex-border">
+          <div className="flex items-center gap-4 p-3 glass rounded-2xl">
+            <img src={user.photoURL || ''} alt="" className="w-10 h-10 rounded-xl border border-white/10" />
+            <div className="flex-1 min-w-0">
+              <span className="block text-[10px] font-black uppercase tracking-widest truncate">{user.displayName}</span>
+              <span className="block text-[8px] text-white/30 uppercase tracking-widest">Active Node</span>
+            </div>
+            <button onClick={logout} className="p-2 hover:bg-white/5 rounded-lg transition-all text-white/20 hover:text-red-500">
+              <LogOut size={16} />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <main className="flex-1 overflow-auto relative apex-grid">
         {showOnboarding && (
-          <div className="absolute inset-0 z-50 bg-[#141414]/90 backdrop-blur-sm flex items-center justify-center p-6">
-            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-              <h2 className="text-2xl font-black mb-2">Welcome to AI Learning</h2>
-              <p className="text-gray-500 mb-8">To personalize your learning path, please select your current level in Mathematics.</p>
+          <div className="absolute inset-0 z-50 bg-apex-black/80 backdrop-blur-md flex items-center justify-center p-6">
+            <div className="glass rounded-[40px] p-10 max-w-md w-full shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
+              <h2 className="text-3xl font-bold mb-2 tracking-tighter">INITIALIZING NODE</h2>
+              <p className="text-white/40 mb-10 text-sm">Configure your cognitive baseline to optimize the learning neural network.</p>
               
               <div className="space-y-3">
                 {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
                   <button
                     key={level}
                     onClick={() => handleOnboarding(level)}
-                    className="w-full py-4 rounded-2xl border-2 border-gray-100 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left px-6 group"
+                    className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 hover:bg-apex-accent/10 hover:border-apex-accent/30 transition-all text-left px-8 group relative overflow-hidden"
                   >
-                    <div className="font-bold group-hover:text-emerald-700">{level}</div>
-                    <div className="text-xs text-gray-400">
-                      {level === 'HIGH' ? 'I am confident in this subject' : 
-                       level === 'MEDIUM' ? 'I have some basic knowledge' : 
-                       'I am just starting out'}
+                    <div className="absolute right-0 top-0 h-full w-1 bg-apex-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="font-black uppercase tracking-[0.2em] text-xs group-hover:text-apex-accent mb-1">{level}</div>
+                    <div className="text-[10px] text-white/30 uppercase tracking-widest">
+                      {level === 'HIGH' ? 'Advanced Cognitive State' : 
+                       level === 'MEDIUM' ? 'Standard Baseline' : 
+                       'Initial Learning Phase'}
                     </div>
                   </button>
                 ))}
@@ -308,7 +336,9 @@ export default function App() {
           </div>
         )}
 
-        {renderView()}
+        <div className="h-full p-8">
+          {renderView()}
+        </div>
       </main>
     </div>
   );

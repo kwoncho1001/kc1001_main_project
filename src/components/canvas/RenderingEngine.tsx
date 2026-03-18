@@ -64,7 +64,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
         y: pos.y,
         width: 0,
         height: 0,
-        strokeColor: '#000000',
+        strokeColor: '#ffffff',
         backgroundColor: 'transparent',
         strokeWidth: 4,
         opacity: 1,
@@ -133,7 +133,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
             data={pathData}
             fill={el.strokeColor}
             opacity={el.opacity}
-            stroke={selectedElementIds[el.id] ? '#3b82f6' : undefined}
+            stroke={selectedElementIds[el.id] ? '#10b981' : undefined}
             strokeWidth={selectedElementIds[el.id] ? 2 : 0}
           />
         );
@@ -146,7 +146,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
             y={el.y}
             width={el.width}
             height={el.height}
-            stroke={selectedElementIds[el.id] ? '#3b82f6' : el.strokeColor}
+            stroke={selectedElementIds[el.id] ? '#10b981' : el.strokeColor}
             strokeWidth={selectedElementIds[el.id] ? Math.max(el.strokeWidth, 2) : el.strokeWidth}
             fill={el.backgroundColor}
             opacity={el.opacity}
@@ -185,7 +185,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
   };
 
   return (
-    <div className="w-full h-full bg-white relative overflow-hidden touch-none">
+    <div className="w-full h-full bg-black/40 relative overflow-hidden touch-none">
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}

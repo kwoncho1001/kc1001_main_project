@@ -42,15 +42,17 @@ class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center p-6">
-          <div className="bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl text-center">
-            <h2 className="text-3xl font-serif italic mb-4 text-[#1A1A1A]">Oops!</h2>
-            <p className="text-gray-500 mb-8">{errorMessage}</p>
+        <div className="min-h-screen bg-apex-black flex items-center justify-center p-6 apex-grid">
+          <div className="glass rounded-[40px] p-12 max-w-md w-full text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
+            <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-3xl mx-auto mb-8 flex items-center justify-center text-red-500 text-4xl font-black shadow-[0_0_40px_rgba(239,68,68,0.2)]">!</div>
+            <h2 className="text-3xl font-bold mb-4 tracking-tighter uppercase">System Failure</h2>
+            <p className="text-white/40 mb-10 text-sm leading-relaxed">{errorMessage}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-[#5A5A40] text-white px-8 py-3 rounded-2xl font-bold hover:bg-[#4A4A30] transition-all"
+              className="w-full bg-white text-apex-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-red-500 hover:text-white transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
             >
-              Reload Application
+              Re-Initialize System
             </button>
           </div>
         </div>

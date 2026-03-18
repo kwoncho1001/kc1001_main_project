@@ -56,7 +56,7 @@ export const ProblemExtractor: React.FC = () => {
 
   const startProcessing = async () => {
     if (!file) return;
-    setProcessingState({ status: 'UPLOADING', progress: 0, message: 'Starting analysis...' });
+    setProcessingState({ status: 'UPLOADING', progress: 0, message: 'Initializing Neural Extraction...' });
     try {
       const results = await OCRService.processFile(file, setProcessingState);
       setExtractedProblems(results);
@@ -79,7 +79,6 @@ export const ProblemExtractor: React.FC = () => {
         element.content = text;
         element.isUncertain = false;
       }
-      // Rebuild problem content if needed (simplified here)
       next[problemIdx] = problem;
       return next;
     });
@@ -99,61 +98,68 @@ export const ProblemExtractor: React.FC = () => {
 
   if (processingState.status === 'IDLE') {
     return (
-      <div className="flex flex-col h-full bg-[#E4E3E0] p-8 items-center justify-center">
-        <div className="max-w-2xl w-full bg-white rounded-3xl border border-black/5 shadow-xl p-12 text-center">
-          <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-8">
-            <Upload className="text-black/20" size={40} />
-          </div>
-          <h1 className="text-3xl font-black mb-4">OCR Problem Extractor</h1>
+      <div className="flex flex-col h-full items-center justify-center">
+        <div className="glass rounded-[40px] p-16 max-w-2xl w-full text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
+          <div className="absolute inset-0 apex-grid opacity-5"></div>
           
-          {processingState.message && processingState.status === 'IDLE' && (
-            <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold">
-              <AlertCircle size={18} />
-              {processingState.message}
+          <div className="relative z-10">
+            <div className="w-24 h-24 glass rounded-3xl flex items-center justify-center mx-auto mb-10 text-apex-accent shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              <Upload size={48} />
             </div>
-          )}
-
-          <p className="text-black/50 mb-12">
-            Upload a PDF or image of a past exam paper. Our AI will separate handwriting, 
-            extract text, formulas, and diagrams for digital storage.
-          </p>
-
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-2xl p-12 cursor-pointer transition-all mb-8 ${
-              isDragging 
-                ? 'border-emerald-500 bg-emerald-50' 
-                : 'border-black/10 hover:bg-gray-50'
-            }`}
-          >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              onChange={handleFileChange}
-              accept=".pdf,image/*"
-            />
-            {file ? (
-              <div className="flex items-center justify-center gap-3 text-emerald-600 font-bold">
-                <FileText size={24} />
-                <span>{file.name}</span>
+            <h1 className="text-4xl font-bold mb-4 tracking-tighter uppercase">Neural Extractor</h1>
+            
+            {processingState.message && (
+              <div className="mb-10 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-500 text-[10px] font-black uppercase tracking-widest">
+                <AlertCircle size={20} />
+                {processingState.message}
               </div>
-            ) : (
-              <span className="text-black/30 font-bold">Click to select or drag & drop file</span>
             )}
-          </div>
 
-          <button
-            disabled={!file}
-            onClick={startProcessing}
-            className="w-full bg-[#141414] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all disabled:opacity-50"
-          >
-            Start AI Analysis
-            <ArrowRight size={20} />
-          </button>
+            <p className="text-white/40 mb-12 font-medium">
+              Upload past exam vectors (PDF/IMG). Our neural pipeline will isolate handwriting, 
+              extract symbolic logic, and normalize content for digital archival.
+            </p>
+
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`border-2 border-dashed rounded-3xl p-16 cursor-pointer transition-all mb-10 group ${
+                isDragging 
+                  ? 'border-apex-accent bg-apex-accent/5' 
+                  : 'border-white/10 hover:bg-white/5 hover:border-white/20'
+              }`}
+            >
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                onChange={handleFileChange}
+                accept=".pdf,image/*"
+              />
+              {file ? (
+                <div className="flex items-center justify-center gap-4 text-apex-accent font-black uppercase tracking-widest text-xs">
+                  <FileText size={28} />
+                  <span>{file.name}</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-4">
+                  <span className="text-white/20 font-black uppercase tracking-[0.3em] text-[10px] group-hover:text-white/40 transition-colors">Select Source Vector or Drag & Drop</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              disabled={!file}
+              onClick={startProcessing}
+              className="w-full bg-white text-apex-black py-6 rounded-2xl font-black uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-4 hover:bg-apex-accent transition-all disabled:opacity-50 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+            >
+              Initialize Neural Extraction
+              <ArrowRight size={20} />
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -161,18 +167,19 @@ export const ProblemExtractor: React.FC = () => {
 
   if (processingState.status !== 'REVIEW_REQUIRED' && processingState.status !== 'COMPLETED') {
     return (
-      <div className="flex flex-col h-full bg-[#E4E3E0] p-8 items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-black/5 shadow-xl p-12 text-center">
-          <Loader2 className="animate-spin text-emerald-500 mx-auto mb-8" size={48} />
-          <h2 className="text-xl font-black mb-2">{processingState.message}</h2>
-          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mt-6">
+      <div className="flex flex-col h-full items-center justify-center">
+        <div className="glass rounded-[40px] p-16 max-w-md w-full text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
+          <Loader2 className="animate-spin text-apex-accent mx-auto mb-10" size={64} />
+          <h2 className="text-2xl font-bold uppercase tracking-tighter mb-4">{processingState.message}</h2>
+          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mt-8">
             <div 
-              className="h-full bg-emerald-500 transition-all duration-500" 
+              className="h-full bg-apex-accent shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-700" 
               style={{ width: `${processingState.progress}%` }}
             />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-30 mt-4">
-            Step {Math.ceil(processingState.progress / 20)} of 5
+          <p className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20 mt-6">
+            Sequence Phase {Math.ceil(processingState.progress / 20)} / 5
           </p>
         </div>
       </div>
@@ -182,29 +189,29 @@ export const ProblemExtractor: React.FC = () => {
   const activeProblem = extractedProblems[activeProblemIdx];
 
   return (
-    <div className="flex flex-col h-full bg-[#E4E3E0] overflow-hidden">
-      <header className="h-20 bg-white border-b border-black/5 px-8 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="p-2 bg-[#141414] rounded-lg">
-            <Layers className="text-white" size={20} />
+    <div className="flex flex-col h-full gap-8">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-6">
+          <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+            <Layers size={32} />
           </div>
           <div>
-            <h1 className="text-lg font-black tracking-tight">Data Review & Correction</h1>
-            <p className="text-[10px] font-bold text-black/40 uppercase tracking-wider">
-              {file?.name} • {extractedProblems.length} Problems Extracted
+            <h1 className="text-4xl font-bold tracking-tighter uppercase">Data Synthesis & Review</h1>
+            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">
+              Source: {file?.name} • {extractedProblems.length} Neural Nodes Extracted
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl border border-black/5">
-            <span className="text-xs font-bold opacity-40">Progress:</span>
-            <div className="flex gap-1">
+        <div className="flex items-center gap-6">
+          <div className="glass px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-4">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Extraction Progress</span>
+            <div className="flex gap-1.5">
               {extractedProblems.map((p, i) => (
                 <div 
                   key={i} 
-                  className={`w-2 h-2 rounded-full ${
-                    p.rawElements.every(e => !e.isUncertain) ? 'bg-emerald-500' : 'bg-amber-400'
+                  className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    p.rawElements.every(e => !e.isUncertain) ? 'bg-apex-accent shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'bg-amber-500/40'
                   }`} 
                 />
               ))}
@@ -212,39 +219,40 @@ export const ProblemExtractor: React.FC = () => {
           </div>
           <button
             disabled={!isAllReviewed}
-            className="bg-emerald-500 text-white px-6 py-2 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-emerald-600 transition-all disabled:opacity-50"
+            className="bg-white text-apex-black px-8 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center gap-3 hover:bg-apex-accent transition-all disabled:opacity-50 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
           >
-            <Save size={16} />
-            Finalize Data
+            <Save size={18} />
+            Commit to Vault
           </button>
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex gap-8 min-h-0">
         {/* Sidebar: Problem List */}
-        <aside className="w-80 bg-white border-r border-black/5 flex flex-col shrink-0">
-          <div className="p-6 overflow-y-auto flex-1">
-            <h3 className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-4">Extracted Problems</h3>
-            <div className="space-y-2">
+        <aside className="w-80 flex flex-col shrink-0 min-h-0">
+          <div className="flex-1 glass rounded-[40px] p-6 border border-white/5 overflow-y-auto scrollbar-hide">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6 px-2">Extracted Nodes</h3>
+            <div className="space-y-3">
               {extractedProblems.map((p, i) => (
                 <button
                   key={p.id}
                   onClick={() => setActiveProblemIdx(i)}
-                  className={`w-full p-4 rounded-2xl border text-left transition-all ${
+                  className={`w-full p-6 rounded-3xl border text-left transition-all relative overflow-hidden group ${
                     activeProblemIdx === i 
-                      ? 'bg-[#141414] text-white border-[#141414] shadow-lg' 
-                      : 'bg-white border-black/5 hover:border-black/10'
+                      ? 'bg-apex-accent/10 border-apex-accent/40 shadow-lg' 
+                      : 'bg-white/5 border-white/5 hover:border-white/20'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-black">Problem {p.problemNumber}</span>
+                  {activeProblemIdx === i && <div className="absolute top-0 left-0 w-1 h-full bg-apex-accent"></div>}
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${activeProblemIdx === i ? 'text-apex-accent' : 'text-white/40'}`}>Node {p.problemNumber}</span>
                     {p.rawElements.every(e => !e.isUncertain) ? (
-                      <CheckCircle2 size={14} className="text-emerald-500" />
+                      <CheckCircle2 size={14} className="text-apex-accent" />
                     ) : (
-                      <AlertCircle size={14} className="text-amber-400" />
+                      <AlertCircle size={14} className="text-amber-500" />
                     )}
                   </div>
-                  <p className={`text-[10px] line-clamp-2 ${activeProblemIdx === i ? 'text-white/60' : 'text-black/40'}`}>
+                  <p className={`text-[11px] line-clamp-2 font-medium ${activeProblemIdx === i ? 'text-white' : 'text-white/40'}`}>
                     {p.content}
                   </p>
                 </button>
@@ -254,85 +262,89 @@ export const ProblemExtractor: React.FC = () => {
         </aside>
 
         {/* Main: Review Area */}
-        <main className="flex-1 flex flex-col overflow-hidden p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full overflow-hidden">
-            {/* Left: Raw Elements & Correction */}
-            <div className="flex flex-col gap-6 overflow-y-auto pr-2">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xs font-black uppercase tracking-widest opacity-40">OCR Raw Elements</h2>
-                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
-                  {activeProblem.rawElements.filter(e => e.isUncertain).length} Uncertain
-                </span>
-              </div>
+        <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-0">
+          {/* Left: Raw Elements & Correction */}
+          <div className="flex flex-col gap-6 overflow-y-auto pr-2 scrollbar-hide">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Neural Raw Elements</h2>
+              <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20 tracking-widest">
+                {activeProblem.rawElements.filter(e => e.isUncertain).length} Uncertain Vectors
+              </span>
+            </div>
 
-              {activeProblem.rawElements.map((element) => (
-                <div 
-                  key={element.id}
-                  className={`bg-white rounded-3xl border p-6 transition-all ${
-                    element.isUncertain ? 'border-amber-200 shadow-md' : 'border-black/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-gray-50 rounded-lg">
-                        {element.type === 'text' ? <Type size={16} /> : element.type === 'formula' ? <Sigma size={16} /> : <ImageIcon size={16} />}
+            {activeProblem.rawElements.map((element) => (
+              <div 
+                key={element.id}
+                className={`glass rounded-[40px] p-8 border transition-all relative overflow-hidden ${
+                  element.isUncertain ? 'border-amber-500/30 bg-amber-500/5' : 'border-white/5'
+                }`}
+              >
+                <div className="absolute inset-0 apex-grid opacity-5"></div>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 glass rounded-xl flex items-center justify-center text-white/40">
+                        {element.type === 'text' ? <Type size={18} /> : element.type === 'formula' ? <Sigma size={18} /> : <ImageIcon size={18} />}
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-30">{element.type}</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">{element.type} Vector</span>
                     </div>
                     {element.isUncertain && (
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600">
-                        <AlertCircle size={12} /> NEEDS REVIEW
+                      <div className="flex items-center gap-2 text-[10px] font-black text-amber-500 uppercase tracking-widest">
+                        <AlertCircle size={14} /> Review Required
                       </div>
                     )}
                   </div>
 
-                  <div className="font-serif text-lg mb-6 p-4 bg-gray-50 rounded-xl border border-black/5">
+                  <div className="text-lg font-medium mb-8 p-6 glass rounded-2xl border border-white/5 bg-black/20">
                     {element.content}
                   </div>
 
                   {element.isUncertain && element.candidates && (
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2">AI Candidates (Select one)</p>
+                    <div className="space-y-3">
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">Neural Candidates (Select to Resolve)</p>
                       {element.candidates.map((cand, idx) => (
                         <button
                           key={idx}
                           onClick={() => handleCandidateSelect(activeProblemIdx, element.id, cand.text)}
-                          className="w-full flex items-center justify-between p-3 rounded-xl border border-black/5 hover:border-black/20 hover:bg-gray-50 transition-all group"
+                          className="w-full flex items-center justify-between p-4 rounded-2xl glass border border-white/5 hover:border-apex-accent/30 hover:bg-apex-accent/5 transition-all group"
                         >
-                          <span className="text-sm font-medium">{cand.text}</span>
-                          <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-mono opacity-30">{(cand.confidence * 100).toFixed(0)}%</span>
-                            <div className="w-6 h-6 rounded-full border border-black/10 flex items-center justify-center group-hover:border-emerald-500 group-hover:bg-emerald-500 transition-all">
-                              <Check size={12} className="text-white opacity-0 group-hover:opacity-100" />
+                          <span className="text-sm font-bold tracking-tight">{cand.text}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-[10px] font-mono text-white/20">{(cand.confidence * 100).toFixed(0)}%</span>
+                            <div className="w-8 h-8 rounded-xl border border-white/10 flex items-center justify-center group-hover:border-apex-accent group-hover:bg-apex-accent transition-all">
+                              <Check size={16} className="text-apex-black opacity-0 group-hover:opacity-100" />
                             </div>
                           </div>
                         </button>
                       ))}
-                      <div className="pt-2">
-                        <button className="text-[10px] font-bold text-black/40 hover:text-black flex items-center gap-1">
-                          <Edit3 size={12} /> Manual Edit
+                      <div className="pt-4">
+                        <button className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white flex items-center gap-2 transition-colors">
+                          <Edit3 size={14} /> Manual Override
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            {/* Right: Structured Data Editor */}
-            <div className="bg-white rounded-3xl border border-black/5 shadow-sm p-8 flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xs font-black uppercase tracking-widest opacity-40">Structured Problem Data</h2>
+          {/* Right: Structured Data Editor */}
+          <div className="glass rounded-[40px] p-10 border border-white/5 flex flex-col min-h-0 relative overflow-hidden">
+            <div className="absolute inset-0 apex-grid opacity-5"></div>
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Structured Node Metadata</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">AUTO-SAVING</span>
+                  <span className="text-[8px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">LIVE SYNC</span>
                 </div>
               </div>
 
-              <div className="space-y-6 flex-1 overflow-y-auto pr-2">
+              <div className="space-y-8 flex-1 overflow-y-auto pr-2 scrollbar-hide">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">Problem Body</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Node Content</label>
                   <textarea 
-                    className="w-full p-4 bg-gray-50 border border-black/5 rounded-2xl text-sm font-serif min-h-[120px] focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                    className="w-full p-6 glass border border-white/5 rounded-3xl text-lg font-medium min-h-[160px] focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20 resize-none"
                     value={activeProblem.content}
                     onChange={(e) => handleManualEdit(activeProblemIdx, 'content', e.target.value)}
                   />
@@ -340,13 +352,13 @@ export const ProblemExtractor: React.FC = () => {
 
                 {activeProblem.options && (
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">Options</label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Discrete Options</label>
+                    <div className="grid grid-cols-2 gap-4">
                       {activeProblem.options.map((opt, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <span className="text-[10px] font-black opacity-20">{i + 1}</span>
+                        <div key={i} className="flex items-center gap-4">
+                          <span className="text-[10px] font-black text-white/10 uppercase">{String.fromCharCode(65 + i)}</span>
                           <input 
-                            className="flex-1 p-3 bg-gray-50 border border-black/5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                            className="flex-1 p-4 glass border border-white/5 rounded-2xl text-sm font-bold focus:outline-none focus:border-apex-accent/30 transition-all bg-black/10"
                             value={opt}
                             onChange={(e) => {
                               const newOpts = [...(activeProblem.options || [])];
@@ -360,19 +372,19 @@ export const ProblemExtractor: React.FC = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">Correct Answer</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Verified Response</label>
                     <input 
-                      className="w-full p-3 bg-gray-50 border border-black/5 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                      className="w-full p-4 glass border border-white/5 rounded-2xl text-sm font-black text-apex-accent focus:outline-none focus:border-apex-accent/30 transition-all bg-black/10"
                       value={activeProblem.answer || ''}
                       onChange={(e) => handleManualEdit(activeProblemIdx, 'answer', e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">Problem Number</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Node Identifier</label>
                     <input 
-                      className="w-full p-3 bg-gray-50 border border-black/5 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                      className="w-full p-4 glass border border-white/5 rounded-2xl text-sm font-black text-white/60 focus:outline-none focus:border-apex-accent/30 transition-all bg-black/10"
                       value={activeProblem.problemNumber}
                       onChange={(e) => handleManualEdit(activeProblemIdx, 'problemNumber', e.target.value)}
                     />
@@ -380,9 +392,9 @@ export const ProblemExtractor: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">Explanation / Solution</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Neural Explanation / Protocol</label>
                   <textarea 
-                    className="w-full p-4 bg-gray-50 border border-black/5 rounded-2xl text-xs min-h-[100px] focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                    className="w-full p-6 glass border border-white/5 rounded-3xl text-xs font-medium min-h-[140px] focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20 resize-none"
                     value={activeProblem.explanation || ''}
                     onChange={(e) => handleManualEdit(activeProblemIdx, 'explanation', e.target.value)}
                   />

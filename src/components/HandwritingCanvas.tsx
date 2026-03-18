@@ -22,7 +22,7 @@ export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId 
     const pos = e.target.getStage().getPointerPosition();
     setActiveStroke({
       points: [pos.x, pos.y],
-      color: '#000000',
+      color: '#ffffff',
     });
   };
 
@@ -46,7 +46,7 @@ export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId 
   };
 
   return (
-    <div className="w-full h-full border border-gray-300 rounded-xl overflow-hidden touch-none">
+    <div className="w-full h-full border border-white/5 rounded-2xl overflow-hidden touch-none bg-black/20">
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}

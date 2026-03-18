@@ -52,14 +52,7 @@ export const ExamInterface: React.FC<{
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const handleToggleBookmark = () => {
-    // AI Analysis Simulation:
-    // If time spent > 60s, tag as "Deep Thinking"
-    // If multiple choice and changed answer, tag as "Uncertain"
-    const timeSpent = perQuestionTime[currentProblem.id] || 0;
     const autoTags = ['Saved'];
-    if (timeSpent > 60000) autoTags.push('Deep Thinking');
-    if (timeSpent > 120000) autoTags.push('High Difficulty');
-    
     toggleBookmark(currentProblem.id, autoTags);
   };
 // ... (rest of the component)
@@ -89,29 +82,6 @@ export const ExamInterface: React.FC<{
       ...prev,
       [currentProblem.id]: value
     }));
-
-    // Trigger onSolve for multiple choice immediately
-    if (currentProblem.type === 'multiple' && onSolve) {
-      onSolve({
-        studentId: 'user-123',
-        isCorrect: Math.random() > 0.3, // Mock correctness
-        timeSpentMs: perQuestionTime[currentProblem.id] || 0,
-        expectedSolveTimeMs: 60000, // 60s
-        hintUsageCount: 0,
-        studentProfile: {
-          avgSolveSpeedFactor: 1.0,
-          recentHintFrequency: 0.1,
-        },
-        metadata: {
-          fieldId: 'f1',
-          subjectId: 's1',
-          majorUnitId: 'm1',
-          minorUnitId: 'n1',
-          tagId: 't1',
-          difficulty: 0.6,
-        }
-      });
-    }
   };
 
   const handleSubmit = useCallback(() => {
@@ -120,14 +90,11 @@ export const ExamInterface: React.FC<{
     const finalState = ExamManagerService.handleSubmit(answers);
     setExamStatus(finalState.status);
 
-    // Mock Grading Engine (3bmvmrg6k)
     const gradedResults: Record<string, boolean> = {};
     problems.forEach(p => {
-      // Logic: If answer exists, 70% chance of being correct for mock
       gradedResults[p.id] = !!answers[p.id] && Math.random() > 0.3;
     });
 
-    // Calculate Score and Rank (rul74ykmh)
     const result = ScoreCalculationService.processExamResult({
       examId: 'exam-1',
       userId: 'user-123',
@@ -135,22 +102,8 @@ export const ExamInterface: React.FC<{
     });
     setScoringResult(result);
     
-    // Construct final data contract for analysis (g90y5xjqq)
-    const finalData = {
-      answers,
-      perQuestionTime, // Precise milliseconds per question
-      blurCount,
-      submittedAt: new Date().toISOString(),
-      remainingTime,
-      totalTimeSpent: EXAM_DURATION - remainingTime,
-      status: finalState.status
-    };
-    
-    console.log('Final Submission Data (Contract g90y5xjqq):', finalData);
-    
-    // Clear local cache
     localStorage.removeItem('exam_answers_v3');
-  }, [answers, perQuestionTime, blurCount, remainingTime, examStatus]);
+  }, [answers, problems, examStatus]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -167,162 +120,155 @@ export const ExamInterface: React.FC<{
 
   if (examStatus === 'SUBMITTED' || examStatus === 'TIMED_OUT') {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-[#E4E3E0] text-[#141414] p-8">
-        <div className="bg-white p-12 rounded-3xl shadow-xl border border-black/5 max-w-md w-full text-center">
-          <CheckCircle2 size={64} className={examStatus === 'SUBMITTED' ? 'text-emerald-500 mx-auto mb-6' : 'text-amber-500 mx-auto mb-6'} />
-          <h1 className="text-3xl font-bold mb-2">
-            {examStatus === 'SUBMITTED' ? 'Exam Completed' : 'Time Up!'}
-          </h1>
-          <p className="text-black/60 mb-8">
-            {examStatus === 'SUBMITTED' 
-              ? 'Your performance data has been collected for analysis.' 
-              : 'The exam was automatically submitted as the time limit was reached.'}
-          </p>
-          
-          <div className="space-y-4 text-left bg-gray-50 p-6 rounded-2xl border border-black/5 mb-8">
-            <div className="flex justify-between text-sm">
-              <span className="opacity-50">Total Time</span>
-              <span className="font-mono font-bold">{formatTime(EXAM_DURATION - remainingTime)}</span>
+      <div className="h-full flex items-center justify-center p-8">
+        <div className="glass p-12 rounded-[48px] max-w-2xl w-full text-center relative overflow-hidden">
+          <div className="absolute inset-0 apex-grid opacity-10"></div>
+          <div className="relative z-10">
+            <div className={`w-20 h-20 rounded-full mx-auto mb-8 flex items-center justify-center ${examStatus === 'SUBMITTED' ? 'bg-apex-accent/20 text-apex-accent' : 'bg-amber-500/20 text-amber-500'}`}>
+              <CheckCircle2 size={40} />
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="opacity-50">Focus Interruptions</span>
-              <span className="font-mono font-bold text-red-500">{blurCount}</span>
+            <h1 className="text-5xl font-bold tracking-tighter uppercase mb-4">
+              {examStatus === 'SUBMITTED' ? 'Session Terminated' : 'Time Expired'}
+            </h1>
+            <p className="text-white/40 mb-12 font-medium">
+              {examStatus === 'SUBMITTED' 
+                ? 'Neural synchronization complete. Performance data ingested.' 
+                : 'The neural link was severed due to temporal constraints.'}
+            </p>
+            
+            <div className="grid grid-cols-2 gap-8 mb-12">
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Total Duration</span>
+                <span className="text-3xl font-bold tracking-tighter">{formatTime(EXAM_DURATION - remainingTime)}</span>
+              </div>
+              <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Focus Violations</span>
+                <span className="text-3xl font-bold tracking-tighter text-red-500">{blurCount}</span>
+              </div>
             </div>
+
+            {scoringResult && (
+              <div className="grid grid-cols-2 gap-8 mb-12">
+                <div className="p-8 rounded-3xl bg-apex-accent/10 border border-apex-accent/20">
+                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">Intelligence Score</span>
+                  <span className="text-4xl font-bold tracking-tighter text-apex-accent">{scoringResult.totalScore.toFixed(1)}</span>
+                </div>
+                <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Global Standing</span>
+                  <span className="text-4xl font-bold tracking-tighter">{scoringResult.rank}</span>
+                </div>
+              </div>
+            )}
+
+            <button 
+              onClick={() => window.location.reload()}
+              className="w-full py-6 bg-white text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent transition-all"
+            >
+              Return to Command Center
+            </button>
           </div>
-
-          {scoringResult && (
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 text-center">
-                <div className="flex items-center justify-center gap-2 text-emerald-600 mb-1">
-                  <Trophy size={16} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Score</span>
-                </div>
-                <div className="text-3xl font-black text-emerald-700">
-                  {scoringResult.totalScore.toFixed(1)}
-                </div>
-              </div>
-              <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-center">
-                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
-                  <Users size={16} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Rank</span>
-                </div>
-                <div className="text-3xl font-black text-blue-700">
-                  {scoringResult.rank}<span className="text-sm opacity-40"> / {scoringResult.totalCandidates}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <button 
-            onClick={() => window.location.reload()}
-            className="w-full bg-[#141414] text-white py-4 rounded-xl font-bold hover:bg-black transition-colors"
-          >
-            Return to Dashboard
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex w-full h-full bg-[#E4E3E0] overflow-hidden">
-      {/* Left: Problem Area (oiofljiz3) */}
-      <div className="flex-1 flex flex-col p-6 overflow-hidden">
-        <header className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className={`bg-white px-4 py-2 rounded-xl border border-black/5 flex items-center gap-2 shadow-sm ${remainingTime < 60 ? 'animate-pulse' : ''}`}>
-              <Timer size={16} className={remainingTime < 60 ? 'text-red-500' : 'text-emerald-500'} />
-              <span className={`font-mono font-bold text-lg ${remainingTime < 60 ? 'text-red-500' : ''}`}>
+    <div className="flex w-full h-full gap-8">
+      {/* Left: Problem Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-6">
+            <div className={`glass px-6 py-3 rounded-2xl flex items-center gap-3 ${remainingTime < 60 ? 'bg-red-500/10 border-red-500/50' : ''}`}>
+              <Clock size={18} className={remainingTime < 60 ? 'text-red-500' : 'text-apex-accent'} />
+              <span className={`font-mono text-xl font-bold tracking-tighter ${remainingTime < 60 ? 'text-red-500' : ''}`}>
                 {formatTime(remainingTime)}
               </span>
             </div>
             {!isOnline && (
-              <div className="bg-red-50 text-red-600 px-4 py-2 rounded-xl border border-red-100 flex items-center gap-2 text-xs font-bold">
-                <WifiOff size={14} /> OFFLINE
+              <div className="px-4 py-2 bg-red-500/20 text-red-500 rounded-xl border border-red-500/30 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <WifiOff size={14} /> Offline Mode
               </div>
             )}
           </div>
           
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-xs font-bold opacity-40">
-              <Clock size={14} />
-              <span>Q-TIME: {formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
+          <div className="flex items-center gap-8">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Active Node</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tighter">{currentProblemIndex + 1}</span>
+                <span className="text-xs text-white/20">/ {problems.length}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={handleToggleBookmark}
-                className={`p-2 rounded-xl border transition-all ${
-                  isBookmarked(currentProblem.id) 
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-500 shadow-sm' 
-                    : 'bg-white border-black/5 text-black/20 hover:text-black/40'
-                }`}
-                title="Bookmark this problem"
-              >
-                <Star size={18} className={isBookmarked(currentProblem.id) ? 'fill-emerald-500' : ''} />
-              </button>
-              <div className="w-px h-4 bg-black/5 mx-2" />
-              <span className="text-[10px] uppercase tracking-widest font-black opacity-30">Question</span>
-              <span className="text-2xl font-black">{currentProblemIndex + 1}</span>
-              <span className="text-sm opacity-30">/ {problems.length}</span>
-            </div>
+            <button 
+              onClick={handleToggleBookmark}
+              className={`w-12 h-12 rounded-2xl border flex items-center justify-center transition-all ${
+                isBookmarked(currentProblem.id) 
+                  ? 'bg-apex-accent/20 border-apex-accent/50 text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.2)]' 
+                  : 'glass border-white/5 text-white/20 hover:text-white/60'
+              }`}
+            >
+              <Star size={20} className={isBookmarked(currentProblem.id) ? 'fill-apex-accent' : ''} />
+            </button>
           </div>
         </header>
 
-        <div className="flex-1 bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden relative">
-          <DigitalLearningCanvas />
-          
-          {/* Floating Navigation */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#141414] p-2 rounded-2xl shadow-2xl">
-            <button 
-              disabled={currentProblemIndex === 0}
-              onClick={() => setCurrentProblemIndex(i => i - 1)}
-              className="px-6 py-3 text-white text-xs font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 rounded-xl transition-colors"
-            >
-              Prev
-            </button>
-            <div className="w-px h-4 bg-white/10" />
-            <button 
-              disabled={currentProblemIndex === problems.length - 1}
-              onClick={() => setCurrentProblemIndex(i => i + 1)}
-              className="px-6 py-3 text-white text-xs font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 rounded-xl transition-colors"
-            >
-              Next
-            </button>
+        <div className="flex-1 glass rounded-[48px] p-2 relative overflow-hidden group">
+          <div className="absolute inset-0 apex-grid opacity-10"></div>
+          <div className="w-full h-full rounded-[40px] relative overflow-hidden bg-black/40">
+            <DigitalLearningCanvas />
+            
+            {/* Floating Navigation */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 glass p-2 rounded-3xl shadow-2xl">
+              <button 
+                disabled={currentProblemIndex === 0}
+                onClick={() => setCurrentProblemIndex(i => i - 1)}
+                className="px-8 py-4 text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-20 hover:bg-white/10 rounded-2xl transition-all"
+              >
+                Previous
+              </button>
+              <div className="w-px h-6 bg-white/10" />
+              <button 
+                disabled={currentProblemIndex === problems.length - 1}
+                onClick={() => setCurrentProblemIndex(i => i + 1)}
+                className="px-8 py-4 text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-20 hover:bg-white/10 rounded-2xl transition-all"
+              >
+                Next Node
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right: Answer Panel (rul74ykmh) */}
-      <aside className="w-80 bg-white border-l border-black/5 flex flex-col shadow-2xl">
-        <div className="p-6 border-b border-black/5">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-black uppercase tracking-[0.2em]">OMR Sheet</h2>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500">
-              <Save size={10} /> SYNCED
+      {/* Right: Answer Panel */}
+      <aside className="w-96 flex flex-col gap-8">
+        <div className="glass rounded-[40px] p-8 flex flex-col gap-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Response Matrix</h2>
+            <div className="flex items-center gap-2 text-[10px] font-black text-apex-accent">
+              <div className="w-1.5 h-1.5 rounded-full bg-apex-accent animate-pulse"></div>
+              SYNCED
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="p-4 bg-gray-50 rounded-2xl border border-black/5">
-              <label className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-2 block">
-                Active Question
-              </label>
+          <div className="space-y-8">
+            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3">Node Intelligence</span>
               <div className="flex items-center justify-between">
-                <span className="font-bold">Question {currentProblemIndex + 1}</span>
-                <span className="font-mono text-xs opacity-50">{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
+                <span className="font-bold text-sm uppercase tracking-tight">Question {currentProblemIndex + 1}</span>
+                <span className="font-mono text-xs text-apex-accent">{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
               </div>
             </div>
 
             {currentProblem.type === 'multiple' ? (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {currentProblem.options?.map(opt => (
                   <button 
                     key={opt}
                     onClick={() => handleAnswerChange(opt)}
-                    className={`h-12 rounded-xl border text-sm font-bold transition-all ${
+                    className={`h-16 rounded-2xl border text-xs font-black uppercase tracking-widest transition-all ${
                       answers[currentProblem.id] === opt 
-                        ? 'bg-[#141414] text-white border-[#141414] shadow-lg scale-[1.02]' 
-                        : 'bg-white border-black/10 hover:border-black/30'
+                        ? 'bg-white text-apex-black border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] scale-[1.02]' 
+                        : 'glass border-white/5 hover:border-white/20'
                     }`}
                   >
                     {opt}
@@ -330,10 +276,10 @@ export const ExamInterface: React.FC<{
                 ))}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <textarea 
-                  className="w-full h-32 p-4 bg-gray-50 border border-black/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-black/5 transition-all resize-none"
-                  placeholder="Enter your solution..."
+                  className="w-full h-48 p-6 glass border-white/5 rounded-3xl text-sm focus:outline-none focus:border-apex-accent/50 transition-all resize-none font-medium leading-relaxed"
+                  placeholder="Input neural response..."
                   value={answers[currentProblem.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
                 />
@@ -343,21 +289,21 @@ export const ExamInterface: React.FC<{
         </div>
 
         {/* Progress Tracker */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <h3 className="text-[10px] font-black uppercase tracking-widest opacity-30 mb-4">Exam Progress</h3>
-          <div className="grid grid-cols-5 gap-2">
+        <div className="glass rounded-[40px] p-8 flex-1 flex flex-col">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Synchronization Progress</h3>
+          <div className="grid grid-cols-5 gap-3 overflow-y-auto pr-2 scrollbar-hide">
             {problems.map((p, idx) => (
               <button
                 key={p.id}
                 onClick={() => setCurrentProblemIndex(idx)}
-                className={`aspect-square rounded-lg flex items-center justify-center text-[10px] font-bold transition-all ${
+                className={`aspect-square rounded-xl flex items-center justify-center text-[10px] font-black transition-all ${
                   currentProblemIndex === idx 
-                    ? 'ring-2 ring-black ring-offset-2' 
+                    ? 'ring-2 ring-white ring-offset-4 ring-offset-apex-black' 
                     : ''
                 } ${
                   answers[p.id] 
-                    ? 'bg-emerald-500 text-white' 
-                    : 'bg-gray-100 text-black/30'
+                    ? 'bg-apex-accent text-apex-black' 
+                    : 'bg-white/5 text-white/20 border border-white/5'
                 }`}
               >
                 {idx + 1}
@@ -366,12 +312,12 @@ export const ExamInterface: React.FC<{
           </div>
         </div>
 
-        <div className="p-6 bg-gray-50 border-t border-black/5">
+        <div className="space-y-4">
           {blurCount > 0 && (
-            <div className="mb-4 flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-100">
-              <AlertCircle size={14} />
-              <span className="text-[10px] font-bold uppercase tracking-tight">
-                {blurCount} Focus Violations Recorded
+            <div className="flex items-center gap-3 text-red-500 bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
+              <AlertCircle size={16} />
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                {blurCount} Focus Violations Detected
               </span>
             </div>
           )}
@@ -379,9 +325,9 @@ export const ExamInterface: React.FC<{
           <button 
             onClick={handleSubmit}
             disabled={!isOnline}
-            className="w-full bg-[#141414] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-black transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-6 bg-white text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent transition-all shadow-2xl disabled:opacity-50"
           >
-            Finalize & Submit
+            Finalize Submission
           </button>
         </div>
       </aside>

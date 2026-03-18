@@ -21,44 +21,53 @@ export const PIPELINE_STEPS: PipelineStep[] = [
 ];
 
 export const runPipeline = async (
-  imageSrc: string,
-  onStepComplete: (stepIndex: number, canvas: HTMLCanvasElement) => void
+  imageSrcs: string[],
+  onStepComplete: (pageIndex: number, stepIndex: number, canvas: HTMLCanvasElement) => void
 ): Promise<string> => {
-  // Load image into canvas
-  const img = new Image();
-  img.src = imageSrc;
-  await new Promise((resolve) => (img.onload = resolve));
+  const finalCanvases: HTMLCanvasElement[] = [];
 
-  let canvas = document.createElement('canvas');
-  canvas.width = img.width;
-  canvas.height = img.height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Could not get canvas context');
-  ctx.drawImage(img, 0, 0);
+  for (let p = 0; p < imageSrcs.length; p++) {
+    const imageSrc = imageSrcs[p];
+    
+    // Load image into canvas
+    const img = new Image();
+    img.src = imageSrc;
+    await new Promise((resolve) => (img.onload = resolve));
 
-  // Step 1: Fix Orientation
-  canvas = await fixOrientation(canvas);
-  onStepComplete(0, canvas);
+    let canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Could not get canvas context');
+    ctx.drawImage(img, 0, 0);
 
-  // Step 2: Deskew
-  canvas = await deskew(canvas);
-  onStepComplete(1, canvas);
+    // Step 1: Fix Orientation
+    canvas = await fixOrientation(canvas);
+    onStepComplete(p, 0, canvas);
 
-  // Step 3: Select Content
-  canvas = await selectContent(canvas);
-  onStepComplete(2, canvas);
+    // Step 2: Deskew
+    canvas = await deskew(canvas);
+    onStepComplete(p, 1, canvas);
 
-  // Step 4: Dewarping
-  canvas = await dewarp(canvas);
-  onStepComplete(3, canvas);
+    // Step 3: Select Content
+    canvas = await selectContent(canvas);
+    onStepComplete(p, 2, canvas);
 
-  // Step 5: Binarization
-  canvas = await binarize(canvas);
-  onStepComplete(4, canvas);
+    // Step 4: Dewarping
+    canvas = await dewarp(canvas);
+    onStepComplete(p, 3, canvas);
 
-  // Step 6: Page Layout
-  const pdfUrl = await pageLayout(canvas);
-  onStepComplete(5, canvas);
+    // Step 5: Binarization
+    canvas = await binarize(canvas);
+    onStepComplete(p, 4, canvas);
+
+    finalCanvases.push(canvas);
+  }
+
+  // Step 6: Page Layout (Global)
+  const pdfUrl = await pageLayout(finalCanvases);
+  // For the final step, we use the last canvas to show completion in UI
+  onStepComplete(imageSrcs.length - 1, 5, finalCanvases[finalCanvases.length - 1]);
 
   return pdfUrl;
 };

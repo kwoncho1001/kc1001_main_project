@@ -38,29 +38,30 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
   const getLevelColor = (level: AbilityLevel) => {
     switch (level) {
       case 'FIELD': return 'bg-purple-500';
-      case 'COURSE': return 'bg-blue-500';
-      case 'MAJOR_CHAPTER': return 'bg-emerald-500';
+      case 'COURSE': return 'bg-apex-accent';
+      case 'MAJOR_CHAPTER': return 'bg-blue-500';
       case 'MINOR_CHAPTER': return 'bg-amber-500';
       case 'TYPE': return 'bg-rose-500';
-      default: return 'bg-gray-500';
+      default: return 'bg-white/20';
     }
   };
 
   return (
-    <div className="p-6 bg-[#f8f9fa] min-h-screen space-y-8">
-      <header className="flex justify-between items-center">
+    <div className="space-y-8">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Layers className="text-blue-600" />
-            Hierarchical Ability Tracking
+          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2 flex items-center gap-4">
+            <Layers className="text-apex-accent" size={40} />
+            Neural Matrix
           </h1>
-          <p className="text-gray-500 mt-1">5-Level Multi-Weighted Ability Model (0.0 - 1.0)</p>
+          <p className="text-white/40 font-medium">5-Level Multi-Weighted Ability Propagation Model</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-3">
           {Object.entries(ABILITY_WEIGHTS).reverse().map(([level, weight]) => (
-            <div key={level} className="flex items-center gap-1 px-3 py-1 bg-white rounded-full border border-gray-100 shadow-sm text-[10px] font-bold uppercase tracking-wider">
+            <div key={level} className="flex items-center gap-2 px-4 py-2 glass rounded-full text-[10px] font-black uppercase tracking-widest border border-white/5">
               <div className={`w-2 h-2 rounded-full ${getLevelColor(level as AbilityLevel)}`}></div>
-              <span>{level}: {weight * 100}%</span>
+              <span className="text-white/40">{level}:</span>
+              <span className="text-white">{weight * 100}%</span>
             </div>
           ))}
         </div>
@@ -68,51 +69,58 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Radar Chart: Subject Overview */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <TrendingUp size={20} className="text-blue-500" />
-              Subject Ability Profile
-            </h2>
-            <div className="text-xs text-gray-400 flex items-center gap-1">
-              <Info size={14} />
-              Aggregated from 5-level weights
+        <div className="lg:col-span-2 glass rounded-[48px] p-8 relative overflow-hidden">
+          <div className="absolute inset-0 apex-grid opacity-10"></div>
+          <div className="relative z-10">
+            <div className="flex justify-between items-center mb-12">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-3">
+                <TrendingUp size={16} className="text-apex-accent" />
+                Intelligence Profile
+              </h2>
+              <div className="text-[10px] font-black text-white/20 flex items-center gap-2 uppercase tracking-widest">
+                <Info size={14} />
+                Weighted Aggregation
+              </div>
             </div>
-          </div>
-          <div className="h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="#e5e7eb" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                <Radar
-                  name="Ability"
-                  dataKey="score"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
-                  fillOpacity={0.2}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
+            <div className="h-[450px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                  <PolarAngleAxis 
+                    dataKey="subject" 
+                    tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }} 
+                  />
+                  <Radar
+                    name="Ability"
+                    dataKey="score"
+                    stroke="#10b981"
+                    fill="#10b981"
+                    fillOpacity={0.15}
+                    dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#0a0a0a' }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
         {/* Top Tags / Weaknesses */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Zap size={18} className="text-amber-500" />
-              Top Mastery Tags
+        <div className="space-y-8">
+          <div className="glass rounded-[40px] p-8">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
+              <Zap size={16} className="text-amber-500" />
+              Mastery Nodes
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-8">
               {tagData.map((tag, idx) => (
                 <div key={idx} className="group">
-                  <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-gray-700 font-medium">{tag.name}</span>
-                    <span className="text-blue-600 font-bold">{Math.round(tag.score * 100)}%</span>
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="text-lg font-bold tracking-tight text-white/80">{tag.name}</span>
+                    <span className="text-sm font-black text-apex-accent">{(tag.score * 100).toFixed(0)}%</span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                      className="h-full bg-apex-accent rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(16,185,129,0.3)]"
                       style={{ width: `${tag.score * 100}%` }}
                     ></div>
                   </div>
@@ -121,40 +129,45 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-3xl text-white shadow-lg shadow-blue-200">
-            <h3 className="font-bold text-lg mb-2">Real-time Propagation</h3>
-            <p className="text-blue-100 text-sm leading-relaxed mb-4">
-              Your "Calculus" tag update will propagate to "Major: Analysis" and "Subject: Math" with decreasing weights.
-            </p>
-            <button className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2">
-              View Detailed Hierarchy <ChevronRight size={16} />
-            </button>
+          <div className="p-8 rounded-[40px] bg-apex-accent/10 border border-apex-accent/20 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
+              <TrendingUp size={64} className="text-apex-accent" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] mb-4">Neural Propagation</h3>
+              <p className="text-sm text-white/70 leading-relaxed font-medium mb-8">
+                Your "Calculus" tag update will propagate to "Major: Analysis" and "Subject: Math" with decreasing weights.
+              </p>
+              <button className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3">
+                View Detailed Hierarchy <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
 
           {lastBehavior && (
-            <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-              <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <Info size={18} className="text-blue-500" />
-                Behavior Analysis
+            <div className="glass rounded-[40px] p-8">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
+                <Info size={16} className="text-apex-accent" />
+                Behavioral Analysis
               </h2>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Tag</span>
-                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                    lastBehavior.behaviorTag === 'NORMAL' ? 'bg-green-50 text-green-600' :
-                    lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-amber-50 text-amber-600' :
-                    'bg-blue-50 text-blue-600'
+              <div className="space-y-6">
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Tag</span>
+                  <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ${
+                    lastBehavior.behaviorTag === 'NORMAL' ? 'bg-apex-accent/10 text-apex-accent' :
+                    lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-amber-500/10 text-amber-500' :
+                    'bg-blue-500/10 text-blue-500'
                   }`}>
                     {lastBehavior.behaviorTag}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Correction</span>
-                  <span className="text-sm font-mono font-bold">x{lastBehavior.correctionFactor.toFixed(2)}</span>
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Correction</span>
+                  <span className="text-lg font-bold tracking-tighter">x{lastBehavior.correctionFactor.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Reliability</span>
-                  <span className="text-sm font-mono font-bold">{(lastBehavior.reliabilityIndex * 100).toFixed(0)}%</span>
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Reliability</span>
+                  <span className="text-lg font-bold tracking-tighter">{(lastBehavior.reliabilityIndex * 100).toFixed(0)}%</span>
                 </div>
               </div>
             </div>
@@ -163,32 +176,32 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
       </div>
 
       {/* Detailed Hierarchy List */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-50">
-          <h2 className="text-xl font-bold">Hierarchical Breakdown</h2>
+      <div className="glass rounded-[48px] overflow-hidden">
+        <div className="p-8 border-b border-white/5">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Hierarchical Breakdown</h2>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-white/5">
           {hierarchy.filter(h => h.level === 'FIELD' || h.level === 'COURSE').map((item) => (
-            <div key={item.id} className="p-6 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-2xl ${getLevelColor(item.level)} flex items-center justify-center text-white font-bold`}>
+            <div key={item.id} className="p-8 hover:bg-white/5 transition-all group">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-6">
+                  <div className={`w-14 h-14 rounded-2xl ${getLevelColor(item.level)} flex items-center justify-center text-apex-black font-black text-xl shadow-lg`}>
                     {item.name[0]}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900">{item.name}</h4>
-                    <p className="text-xs text-gray-400 uppercase tracking-widest">{item.level}</p>
+                    <h4 className="text-xl font-bold tracking-tight text-white/90 mb-1">{item.name}</h4>
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">{item.level}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-12">
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 mb-1">Current $\theta$</p>
-                    <p className="text-xl font-black text-gray-900">{(scores[item.id]?.score ?? 0.5).toFixed(3)}</p>
-                    <p className="text-[10px] text-gray-400">Solved: {scores[item.id]?.solvedProblemCount ?? 0}</p>
+                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Current $\theta$</p>
+                    <p className="text-3xl font-bold tracking-tighter text-white">{(scores[item.id]?.score ?? 0.5).toFixed(3)}</p>
+                    <p className="text-[10px] font-black text-apex-accent uppercase tracking-widest mt-1">Solved: {scores[item.id]?.solvedProblemCount ?? 0}</p>
                   </div>
-                  <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-48 h-3 bg-white/5 rounded-full overflow-hidden hidden md:block">
                     <div 
-                      className={`h-full ${getLevelColor(item.level)}`}
+                      className={`h-full ${getLevelColor(item.level)} shadow-[0_0_10px_rgba(255,255,255,0.2)]`}
                       style={{ width: `${(scores[item.id]?.score ?? 0.5) * 100}%` }}
                     ></div>
                   </div>
