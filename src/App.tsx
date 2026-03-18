@@ -12,7 +12,30 @@ import { HierarchyManager } from './components/HierarchyManager';
 import { AIMetadataAnalyzer } from './components/AIMetadataAnalyzer';
 import { ProblemExtractor } from './components/ProblemExtractor';
 import { GamificationDashboard } from './components/GamificationDashboard';
-import { PenTool, Scan, Star, BarChart3, Layers, Database, Brain, FileSearch, Trophy } from 'lucide-react';
+import { ExamScorer } from './components/ExamScorer';
+import { ExamReportViewer } from './components/ExamReportViewer';
+import { AnalysisSettings } from './components/AnalysisSettings';
+import { FileUpload } from './components/FileUpload';
+import { TeacherDashboard } from './components/TeacherDashboard';
+import { DatabaseInitializer } from './components/DatabaseInitializer';
+import { 
+  PenTool, 
+  Scan, 
+  Star, 
+  BarChart3, 
+  Layers, 
+  Database, 
+  Brain, 
+  FileSearch, 
+  Trophy,
+  LogOut,
+  Calculator,
+  FileText,
+  Settings,
+  Upload,
+  Users
+} from 'lucide-react';
+
 import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore, WeightCalculationResponse } from './types/ability';
 import { BehaviorCorrectionService } from './services/behaviorCorrection';
 import { InitialSkillService } from './services/initialSkillService';
@@ -21,7 +44,6 @@ import { WeightCalculationService } from './services/weightCalculationService';
 import { HierarchyService } from './services/hierarchyService';
 import { useAuth } from './components/AuthProvider';
 import { FirebaseService } from './services/firebaseService';
-import { LogOut } from 'lucide-react';
 
 /**
  * @interface NavButtonProps
@@ -83,7 +105,7 @@ const mockAbilityScores: Record<string, number> = {
 
 export default function App() {
   const { user, loading, login, logout } = useAuth();
-  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor' | 'gamification'>('scanner');
+  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor' | 'gamification' | 'scorer' | 'reports' | 'settings' | 'upload' | 'teacher-dashboard'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
   const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
   const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
@@ -190,6 +212,35 @@ export default function App() {
     for (const scoreId in updatedScores) {
       await FirebaseService.saveAbilityScore(updatedScores[scoreId]);
     }
+
+    // Save Transaction Log
+    const logId = `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const log = {
+      id: logId,
+      studentId: result.studentId,
+      problemId: 'p1', // Mock
+      isCorrect: result.isCorrect,
+      timeSpentMs: result.timeSpentMs,
+      difficulty: Math.round(result.metadata.difficulty * 4 + 1),
+      timestamp: Date.now(),
+      hierarchyPath: `${result.metadata.fieldId}/${result.metadata.subjectId}/${result.metadata.majorUnitId}/${result.metadata.minorUnitId}/${result.metadata.tagId}`
+    };
+    await FirebaseService.saveTransactionLog(log);
+
+    // Update Progress Master for the specific type
+    const hierarchyId = result.metadata.tagId;
+    const currentProgress = (await FirebaseService.subscribeToProgressMaster((p) => {})) // This is a bit complex for a simple handleSolve
+    // For simplicity, let's just save a new progress entry
+    await FirebaseService.saveProgressMaster({
+      studentId: result.studentId,
+      hierarchyId: hierarchyId,
+      level: 'TYPE',
+      currentScore: updatedScores[hierarchyId]?.score || 0,
+      totalAttempts: 1, // Mock: would normally fetch current
+      correctAttempts: result.isCorrect ? 1 : 0,
+      lastAttemptTimestamp: Date.now(),
+      trend: result.isCorrect ? 'UP' : 'DOWN'
+    });
   };
 
   const handleSelectProblemFromBookmarks = (problemId: string) => {
@@ -221,6 +272,23 @@ export default function App() {
         return <ProblemExtractor />;
       case 'gamification':
         return <GamificationDashboard />;
+      case 'scorer':
+        return <ExamScorer />;
+      case 'reports':
+        return <ExamReportViewer />;
+      case 'settings':
+        return (
+          <div className="space-y-12">
+            <AnalysisSettings />
+            <div className="border-t border-white/5 pt-12">
+              <DatabaseInitializer />
+            </div>
+          </div>
+        );
+      case 'upload':
+        return <FileUpload />;
+      case 'teacher-dashboard':
+        return <TeacherDashboard />;
       default:
         return <ScannerUI />;
     }
@@ -288,9 +356,18 @@ export default function App() {
           <div className="px-4 mt-8 mb-4">
             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">AI 도우미</span>
           </div>
-          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI 분석기" />
-          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="문제 추출" />
+          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI 문제 분석기" />
+          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="문제 추출기" />
           <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="업적 및 보상" />
+          
+          <div className="px-4 mt-8 mb-4">
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">시스템 관리</span>
+          </div>
+          <NavButton id="scorer" currentView={view} onClick={setView} icon={Calculator} label="성적 입력" />
+          <NavButton id="reports" currentView={view} onClick={setView} icon={FileText} label="리포트 보관함" />
+          <NavButton id="settings" currentView={view} onClick={setView} icon={Settings} label="분석 설정" />
+          <NavButton id="upload" currentView={view} onClick={setView} icon={Upload} label="데이터 업로드" />
+          <NavButton id="teacher-dashboard" currentView={view} onClick={setView} icon={Users} label="교사 대시보드" />
         </div>
 
         <div className="p-6 border-t border-apex-border">

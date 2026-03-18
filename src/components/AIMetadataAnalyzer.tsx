@@ -27,7 +27,7 @@ export const AIMetadataAnalyzer: React.FC = () => {
     setIsAnalyzing(true);
     setError(null);
     try {
-      const result = await AIMetadataService.mockAnalyze(problemText);
+      const result = await AIMetadataService.analyzeProblemMetadata(problemText);
       setAnalysis(result);
     } catch (err) {
       setError('Failed to analyze problem metadata. Please check your API configuration.');

@@ -42,6 +42,34 @@ service cloud.firestore {
     //   - level: number (required)
     //   - treeGrowth: number
     //
+    // Collection: /users/{userId}/transactionLogs/{logId}
+    // Fields:
+    //   - id: string (required)
+    //   - studentId: string (required)
+    //   - problemId: string (required)
+    //   - isCorrect: bool (required)
+    //   - timeSpentMs: number
+    //   - difficulty: number
+    //   - timestamp: number (required)
+    //   - hierarchyPath: string
+    //
+    // Collection: /users/{userId}/progressMaster/{progressId}
+    // Fields:
+    //   - studentId: string (required)
+    //   - hierarchyId: string (required)
+    //   - level: string
+    //   - currentScore: number (required)
+    //   - totalAttempts: number
+    //   - correctAttempts: number
+    //   - lastAttemptTimestamp: number
+    //   - trend: string (enum: UP, DOWN, STABLE)
+    //
+    // Collection: /teachers/{teacherId}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - role: string (required, value: 'teacher')
+    //
     // ===============================================================
 
     // ===============================================================
@@ -54,6 +82,12 @@ service cloud.firestore {
 
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && 
+             (exists(/databases/$(database)/documents/teachers/$(request.auth.uid)) ||
+              (request.auth.token.email == "kwoncho1001@gmail.com" && request.auth.token.email_verified == true));
     }
 
     function isValidEmail(email) {
@@ -91,19 +125,47 @@ service cloud.firestore {
              data.level is number;
     }
 
+    function isValidTransactionLog(data) {
+      return data.keys().hasAll(['id', 'studentId', 'problemId', 'isCorrect', 'timestamp']) &&
+             data.id is string && data.id.size() < 128 &&
+             data.studentId == request.auth.uid &&
+             data.problemId is string && data.problemId.size() < 128 &&
+             data.isCorrect is bool &&
+             data.timestamp is number;
+    }
+
+    function isValidProgressMaster(data) {
+      return data.keys().hasAll(['studentId', 'hierarchyId', 'currentScore']) &&
+             data.studentId == request.auth.uid &&
+             data.hierarchyId is string && data.hierarchyId.size() < 128 &&
+             data.currentScore is number;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
 
+    // Questions
+    match /questions/{questionId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher(); // Only teachers can add questions
+    }
+
+    // Teachers
+    match /teachers/{teacherId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacher(); // Teachers/Admins can manage the list
+    }
+
     // User Profile
     match /users/{userId} {
-      allow read: if isOwner(userId);
+      allow read: if isOwner(userId) || isTeacher();
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow update: if isOwner(userId) && isValidUser(request.resource.data);
       
       // Ability Scores
       match /abilityScores/{scoreId} {
-        allow read: if isOwner(userId);
+        allow read: if isOwner(userId) || isTeacher();
         allow create: if isOwner(userId) && isValidAbilityScore(request.resource.data);
         allow update: if isOwner(userId) && isValidAbilityScore(request.resource.data);
         allow delete: if isOwner(userId);
@@ -111,7 +173,7 @@ service cloud.firestore {
 
       // Bookmarks
       match /bookmarks/{bookmarkId} {
-        allow read: if isOwner(userId);
+        allow read: if isOwner(userId) || isTeacher();
         allow create: if isOwner(userId) && isValidBookmark(request.resource.data);
         allow update: if isOwner(userId) && isValidBookmark(request.resource.data);
         allow delete: if isOwner(userId);
@@ -119,9 +181,25 @@ service cloud.firestore {
 
       // Gamification
       match /gamification/stats {
-        allow read: if isOwner(userId);
+        allow read: if isOwner(userId) || isTeacher();
         allow create: if isOwner(userId) && isValidGamification(request.resource.data);
         allow update: if isOwner(userId) && isValidGamification(request.resource.data);
+      }
+
+      // Transaction Logs
+      match /transactionLogs/{logId} {
+        allow read: if isOwner(userId) || isTeacher();
+        allow create: if isOwner(userId) && isValidTransactionLog(request.resource.data);
+        allow update: if false; // Logs should be immutable
+        allow delete: if false;
+      }
+
+      // Progress Master
+      match /progressMaster/{progressId} {
+        allow read: if isOwner(userId) || isTeacher();
+        allow create: if isOwner(userId) && isValidProgressMaster(request.resource.data);
+        allow update: if isOwner(userId) && isValidProgressMaster(request.resource.data);
+        allow delete: if false;
       }
     }
   }

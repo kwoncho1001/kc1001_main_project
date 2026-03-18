@@ -8,10 +8,12 @@ import {
   where, 
   onSnapshot, 
   deleteDoc,
-  FirestoreError
+  FirestoreError,
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { AbilityScore, GamificationStats } from '../types/ability';
+import { AbilityScore, GamificationStats, TransactionLog, ProgressMaster } from '../types/ability';
 
 export enum OperationType {
   CREATE = 'create',
@@ -190,6 +192,95 @@ export class FirebaseService {
       } else {
         callback(null);
       }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    });
+  }
+
+  /**
+   * Saves a transaction log (learning log).
+   */
+  static async saveTransactionLog(log: TransactionLog): Promise<void> {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    const path = `users/${userId}/transactionLogs/${log.id}`;
+    try {
+      await setDoc(doc(db, path), log);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  }
+
+  /**
+   * Saves a teacher profile to Firestore.
+   */
+  static async saveTeacher(uid: string, email: string): Promise<void> {
+    const path = `teachers/${uid}`;
+    try {
+      await setDoc(doc(db, path), {
+        uid,
+        email,
+        role: 'teacher',
+        createdAt: Date.now()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  }
+
+  /**
+   * Subscribes to recent transaction logs.
+   */
+  static subscribeToRecentLogs(callback: (logs: TransactionLog[]) => void, userId?: string, limitCount: number = 50): () => void {
+    const targetId = userId || auth.currentUser?.uid;
+    if (!targetId) return () => {};
+
+    const path = `users/${targetId}/transactionLogs`;
+    const q = query(collection(db, path), orderBy('timestamp', 'desc'), limit(limitCount));
+
+    return onSnapshot(q, (snapshot) => {
+      const logs: TransactionLog[] = [];
+      snapshot.forEach((doc) => {
+        logs.push(doc.data() as TransactionLog);
+      });
+      callback(logs);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, path);
+    });
+  }
+
+  /**
+   * Saves or updates progress master data.
+   */
+  static async saveProgressMaster(progress: ProgressMaster): Promise<void> {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    const path = `users/${userId}/progressMaster/${progress.hierarchyId}`;
+    try {
+      await setDoc(doc(db, path), progress);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    }
+  }
+
+  /**
+   * Subscribes to progress master data.
+   */
+  static subscribeToProgressMaster(callback: (progress: ProgressMaster[]) => void, userId?: string): () => void {
+    const targetId = userId || auth.currentUser?.uid;
+    if (!targetId) return () => {};
+
+    const path = `users/${targetId}/progressMaster`;
+    const q = collection(db, path);
+
+    return onSnapshot(q, (snapshot) => {
+      const progress: ProgressMaster[] = [];
+      snapshot.forEach((doc) => {
+        progress.push(doc.data() as ProgressMaster);
+      });
+      callback(progress);
     }, (error) => {
       handleFirestoreError(error, OperationType.GET, path);
     });

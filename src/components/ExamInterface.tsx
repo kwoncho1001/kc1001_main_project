@@ -2,12 +2,30 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DigitalLearningCanvas } from './canvas/DigitalLearningCanvas';
 import { useExamTimer } from '../hooks/useExamTimer';
 import { useBookmarks } from '../hooks/useBookmarks';
+import { usePdfGenerator } from '../hooks/usePdfGenerator';
 import { ExamManagerService } from '../services/examManagerService';
-import { ScoreCalculationService } from '../services/scoreCalculationService';
-import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star, Trophy, Users } from 'lucide-react';
-import { Problem, SolvingResult, ExamStatus, ExamScoringResponse } from '../types/ability';
+import { ExamScorerService, QuestionStat } from '../services/examScorerService';
+import { Timer, AlertCircle, CheckCircle2, Save, Wifi, WifiOff, Layout, ListChecks, History, Clock, Star, Trophy, Users, FileDown, Loader2 } from 'lucide-react';
+import { Problem, SolvingResult, ExamStatus, ExamScoringResponse, ExamPaperMetadata } from '../types/ability';
 
 const EXAM_DURATION = 60 * 30; // 30 minutes
+
+// Mock metadata for the exam
+const MOCK_EXAM_METADATA: ExamPaperMetadata = {
+  examId: 'exam-1',
+  questions: [
+    { questionId: 'p1', weight: 10 },
+    { questionId: 'p2', weight: 10 },
+    { questionId: 'p3', weight: 10 },
+    { questionId: 'p4', weight: 10 },
+    { questionId: 'p5', weight: 10 },
+    { questionId: 'p6', weight: 10 },
+    { questionId: 'p7', weight: 10 },
+    { questionId: 'p8', weight: 10 },
+    { questionId: 'p9', weight: 10 },
+    { questionId: 'p10', weight: 10 },
+  ]
+};
 
 export const ExamInterface: React.FC<{ 
   problems: Problem[], 
@@ -35,6 +53,9 @@ export const ExamInterface: React.FC<{
   const [examStatus, setExamStatus] = useState<ExamStatus>('ACTIVE');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [scoringResult, setScoringResult] = useState<ExamScoringResponse | null>(null);
+  const [questionStats, setQuestionStats] = useState<QuestionStat[]>([]);
+
+  const { generateReport, isGenerating } = usePdfGenerator();
 
   const currentProblem = problems[currentProblemIndex];
 
@@ -92,18 +113,46 @@ export const ExamInterface: React.FC<{
 
     const gradedResults: Record<string, boolean> = {};
     problems.forEach(p => {
+      // Simple mock grading logic: if answered, 70% chance of being correct
       gradedResults[p.id] = !!answers[p.id] && Math.random() > 0.3;
     });
 
-    const result = ScoreCalculationService.processExamResult({
-      examId: 'exam-1',
-      userId: 'user-123',
-      gradedResults
-    });
+    // Calculate score using new service
+    const score = ExamScorerService.calculateScore(
+      { examId: 'exam-1', userId: 'user-123', gradedResults },
+      MOCK_EXAM_METADATA
+    );
+
+    // Get rank using new service
+    const result = ExamScorerService.getMockRank(score);
     setScoringResult(result);
+
+    // Generate mock stats for the report
+    const stats = ExamScorerService.generateStats(
+      [gradedResults, ...Array.from({ length: 19 }, () => {
+        const mockR: Record<string, boolean> = {};
+        problems.forEach(p => mockR[p.id] = Math.random() > 0.5);
+        return mockR;
+      })],
+      MOCK_EXAM_METADATA
+    );
+    setQuestionStats(stats.questionStats);
     
     localStorage.removeItem('exam_answers_v3');
   }, [answers, problems, examStatus]);
+
+  const handleDownloadReport = async () => {
+    if (!scoringResult) return;
+    
+    await generateReport({
+      studentName: '권초', // This would come from auth context in a real app
+      examTitle: '수학 실력 진단 평가',
+      date: new Date().toLocaleDateString('ko-KR'),
+      scoring: scoringResult,
+      questionStats: questionStats,
+      teacherComment: '전반적으로 우수한 성적을 거두었습니다. 특히 고난도 문항에서의 논리적 사고력이 돋보입니다. 다만, 기초적인 연산 실수에 주의한다면 더 완벽한 결과를 얻을 수 있을 것입니다.'
+    });
+  };
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -148,16 +197,31 @@ export const ExamInterface: React.FC<{
             </div>
 
             {scoringResult && (
-              <div className="grid grid-cols-2 gap-8 mb-12">
-                <div className="p-8 rounded-3xl bg-apex-accent/10 border border-apex-accent/20">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">지능 점수</span>
-                  <span className="text-4xl font-bold tracking-tighter text-apex-accent">{scoringResult.totalScore.toFixed(1)}</span>
+              <>
+                <div className="grid grid-cols-2 gap-8 mb-12">
+                  <div className="p-8 rounded-3xl bg-apex-accent/10 border border-apex-accent/20">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">최종 점수</span>
+                    <span className="text-4xl font-bold tracking-tighter text-apex-accent">{scoringResult.totalScore.toFixed(1)}</span>
+                  </div>
+                  <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">전체 석차</span>
+                    <span className="text-4xl font-bold tracking-tighter">{scoringResult.rank} / {scoringResult.totalCandidates}</span>
+                  </div>
                 </div>
-                <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">글로벌 순위</span>
-                  <span className="text-4xl font-bold tracking-tighter">{scoringResult.rank}</span>
-                </div>
-              </div>
+
+                <button 
+                  onClick={handleDownloadReport}
+                  disabled={isGenerating}
+                  className="w-full py-6 mb-4 bg-apex-accent/20 text-apex-accent border border-apex-accent/30 rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent/30 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                  {isGenerating ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <FileDown size={18} />
+                  )}
+                  분석 보고서 다운로드 (PDF)
+                </button>
+              </>
             )}
 
             <button 

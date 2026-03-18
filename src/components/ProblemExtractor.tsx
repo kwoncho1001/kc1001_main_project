@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { OCRService } from '../services/ocrService';
+import { AIMetadataService } from '../services/aiMetadataService';
+import { HierarchyService } from '../services/hierarchyService';
 import { ExtractedProblem, OCRProcessingState, OCRResult } from '../types/ability';
 import { 
   Upload, 
@@ -16,7 +18,10 @@ import {
   Check,
   X,
   Save,
-  ArrowRight
+  ArrowRight,
+  Brain,
+  Target,
+  BarChart3
 } from 'lucide-react';
 
 export const ProblemExtractor: React.FC = () => {
@@ -59,7 +64,30 @@ export const ProblemExtractor: React.FC = () => {
     setProcessingState({ status: 'UPLOADING', progress: 0, message: '문제 추출 준비 중...' });
     try {
       const results = await OCRService.processFile(file, setProcessingState);
-      setExtractedProblems(results);
+      
+      // AI Metadata Analysis Step
+      setProcessingState({ 
+        status: 'ANALYZING', 
+        progress: 95, 
+        message: 'AI가 문제의 교육과정 단원과 난이도를 자동으로 분류하고 있습니다...' 
+      });
+
+      const analyzedResults = await Promise.all(results.map(async (p) => {
+        try {
+          const analysis = await AIMetadataService.analyzeProblemMetadata(p.content);
+          return { ...p, analysis };
+        } catch (e) {
+          console.error(`[ProblemExtractor] Analysis failed for problem ${p.problemNumber}:`, e);
+          return p;
+        }
+      }));
+
+      setExtractedProblems(analyzedResults);
+      setProcessingState({ 
+        status: 'REVIEW_REQUIRED', 
+        progress: 100, 
+        message: '분석 완료. 추출된 데이터와 AI 분류 결과를 검토해 주세요.' 
+      });
     } catch (err: any) {
       console.error('Extraction failed:', err);
       setProcessingState({
@@ -117,7 +145,7 @@ export const ProblemExtractor: React.FC = () => {
             )}
 
             <p className="text-white/40 mb-12 font-medium">
-              과거 시험지(PDF/이미지)를 업로드하세요. AI가 필기체를 인식하고 수식과 텍스트를 분리하여 디지털 데이터로 변환합니다.
+              과거 시험지(PDF/이미지)를 업로드하세요. AI가 필기체를 인식하고 수식과 텍스트를 분리하여 디지털 데이터로 변환하며, <b>교육과정 단원과 난이도를 자동으로 분류</b>합니다.
             </p>
 
             <div 
@@ -244,7 +272,10 @@ export const ProblemExtractor: React.FC = () => {
                 >
                   {activeProblemIdx === i && <div className="absolute top-0 left-0 w-1 h-full bg-apex-accent"></div>}
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${activeProblemIdx === i ? 'text-apex-accent' : 'text-white/40'}`}>문제 {p.problemNumber}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${activeProblemIdx === i ? 'text-apex-accent' : 'text-white/40'}`}>문제 {p.problemNumber}</span>
+                      {p.analysis && <Brain size={10} className="text-apex-accent animate-pulse" />}
+                    </div>
                     {p.rawElements.every(e => !e.isUncertain) ? (
                       <CheckCircle2 size={14} className="text-apex-accent" />
                     ) : (
@@ -398,6 +429,79 @@ export const ProblemExtractor: React.FC = () => {
                     onChange={(e) => handleManualEdit(activeProblemIdx, 'explanation', e.target.value)}
                   />
                 </div>
+
+                {/* AI Analysis Results */}
+                {activeProblem.analysis && (
+                  <div className="pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-3 mb-8">
+                      <Brain size={16} className="text-apex-accent" />
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">AI 자동 분석 결과</h3>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="p-6 bg-apex-accent/5 border border-apex-accent/20 rounded-3xl">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Target size={14} className="text-apex-accent" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/40">교육과정 분류</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            activeProblem.analysis.metadata.fieldId,
+                            activeProblem.analysis.metadata.subjectId,
+                            activeProblem.analysis.metadata.majorUnitId,
+                            activeProblem.analysis.metadata.minorUnitId,
+                            activeProblem.analysis.metadata.tagId
+                          ].map((id, idx) => {
+                            const node = HierarchyService.getAllNodes().find(n => n.id === id);
+                            return node ? (
+                              <div key={id} className="flex items-center gap-2">
+                                <span className="px-3 py-1 bg-white/5 text-white/80 text-[10px] font-bold rounded-lg border border-white/10">
+                                  {node.name}
+                                </span>
+                                {idx < 4 && <ChevronRight size={10} className="text-white/20" />}
+                              </div>
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-6 bg-white/5 border border-white/10 rounded-3xl">
+                          <div className="flex items-center gap-3 mb-4">
+                            <BarChart3 size={14} className="text-apex-accent" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">난이도 분석</span>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">종합 난이도</span>
+                              <span className="text-xs font-bold text-apex-accent">
+                                {(activeProblem.analysis.confidence * 5).toFixed(1)} / 5.0
+                              </span>
+                            </div>
+                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-apex-accent" 
+                                style={{ width: `${activeProblem.analysis.confidence * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-6 bg-white/5 border border-white/10 rounded-3xl">
+                          <div className="flex items-center gap-3 mb-4">
+                            <Layers size={14} className="text-apex-accent" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">키워드</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {activeProblem.analysis.keywords.map((kw, i) => (
+                              <span key={i} className="text-[9px] font-bold text-white/60">#{kw}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

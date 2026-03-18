@@ -53,9 +53,64 @@
         "treeGrowth": { "type": "number" }
       },
       "required": ["totalPoints", "level"]
+    },
+    "TransactionLog": {
+      "title": "Transaction Log",
+      "description": "A log of a student's problem solving attempt",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "problemId": { "type": "string" },
+        "isCorrect": { "type": "boolean" },
+        "timeSpentMs": { "type": "number" },
+        "difficulty": { "type": "number" },
+        "timestamp": { "type": "number" },
+        "hierarchyPath": { "type": "string" }
+      },
+      "required": ["id", "studentId", "problemId", "isCorrect", "timestamp"]
+    },
+    "ProgressMaster": {
+      "title": "Progress Master",
+      "description": "Aggregated progress data for a student at a specific hierarchy node",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "hierarchyId": { "type": "string" },
+        "level": { "type": "string" },
+        "currentScore": { "type": "number" },
+        "totalAttempts": { "type": "number" },
+        "correctAttempts": { "type": "number" },
+        "lastAttemptTimestamp": { "type": "number" },
+        "trend": { "type": "string", "enum": ["UP", "DOWN", "STABLE"] }
+      },
+      "required": ["studentId", "hierarchyId", "currentScore"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "A mathematical problem with metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "content": { "type": "string", "description": "LaTeX content" },
+        "answer": { "type": "string" },
+        "difficulty": { "type": "number", "minimum": 1, "maximum": 5 },
+        "fieldId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "majorUnitId": { "type": "string" },
+        "minorUnitId": { "type": "string" },
+        "tagId": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "content", "answer", "difficulty", "tagId"]
     }
   },
   "firestore": {
+    "/questions/{questionId}": {
+      "schema": "Question",
+      "description": "Global question database"
+    },
     "/users/{userId}": {
       "schema": "User",
       "description": "User profile document"
@@ -71,6 +126,14 @@
     "/users/{userId}/gamification/stats": {
       "schema": "GamificationStats",
       "description": "User's gamification statistics"
+    },
+    "/users/{userId}/transactionLogs/{logId}": {
+      "schema": "TransactionLog",
+      "description": "User's learning transaction logs"
+    },
+    "/users/{userId}/progressMaster/{progressId}": {
+      "schema": "ProgressMaster",
+      "description": "User's aggregated progress data"
     }
   }
 }

@@ -290,10 +290,11 @@ export interface ExtractedProblem {
   answer?: string;
   explanation?: string;
   rawElements: OCRResult[];
+  analysis?: AIMetadataAnalysisResponse;
 }
 
 export interface OCRProcessingState {
-  status: 'IDLE' | 'UPLOADING' | 'PREPROCESSING' | 'EXTRACTING' | 'VALIDATING' | 'REVIEW_REQUIRED' | 'COMPLETED';
+  status: 'IDLE' | 'UPLOADING' | 'PREPROCESSING' | 'EXTRACTING' | 'ANALYZING' | 'VALIDATING' | 'REVIEW_REQUIRED' | 'COMPLETED';
   progress: number;
   message: string;
 }
@@ -318,4 +319,36 @@ export interface LearningReport {
   level: number;
   heatmap: HeatmapData[];
   timelapseUrl?: string;
+}
+
+export interface TransactionLog {
+  id: string;
+  studentId: string;
+  problemId: string;
+  isCorrect: boolean;
+  timeSpentMs: number;
+  difficulty: number; // 1 to 5
+  timestamp: number;
+  hierarchyPath: string; // e.g., "f1/s1/m1/n1/t1"
+}
+
+export interface ProgressMaster {
+  studentId: string;
+  hierarchyId: string;
+  level: AbilityLevel;
+  currentScore: number;
+  totalAttempts: number;
+  correctAttempts: number;
+  lastAttemptTimestamp: number;
+  trend: 'UP' | 'DOWN' | 'STABLE';
+}
+
+export interface AnalysisResult {
+  studentId: string;
+  weakPoints: string[]; // Hierarchy IDs
+  strongPoints: string[]; // Hierarchy IDs
+  recommendedProblems: string[]; // Problem IDs
+  overallProgress: number; // 0 to 1
+  aiFeedback?: string;
+  recommendations?: string[];
 }
