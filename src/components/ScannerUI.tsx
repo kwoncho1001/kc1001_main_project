@@ -79,9 +79,9 @@ export const ScannerUI: React.FC = () => {
         <div>
           <div className="flex items-center gap-2 text-apex-accent mb-2">
             <Scan size={16} />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] glow-text">Neural Digitization</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] glow-text">이미지 분석 중</span>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase">Advanced Scanner</h1>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase">문제 스캐너</h1>
         </div>
         <div className="flex gap-4">
           <button 
@@ -89,7 +89,7 @@ export const ScannerUI: React.FC = () => {
             className="px-8 py-3 glass hover:bg-white/10 transition-all uppercase text-[10px] font-black tracking-[0.2em] flex items-center gap-3 rounded-xl"
           >
             <Camera size={16} className="text-apex-accent" />
-            Ingest Source
+            이미지 불러오기
           </button>
           <input 
             type="file" 
@@ -117,7 +117,7 @@ export const ScannerUI: React.FC = () => {
               ) : (
                 <div className="text-center opacity-20">
                   <Camera size={64} className="mx-auto mb-6" />
-                  <p className="font-black text-[10px] uppercase tracking-[0.5em]">Waiting for Input</p>
+                  <p className="font-black text-[10px] uppercase tracking-[0.5em]">이미지를 추가해주세요</p>
                 </div>
               )}
               
@@ -130,10 +130,10 @@ export const ScannerUI: React.FC = () => {
                     </div>
                     <div className="text-center">
                       <span className="block font-black text-[10px] uppercase tracking-[0.3em] text-apex-accent mb-1">
-                        Processing Page {currentPage + 1} / {images.length}
+                        페이지 분석 중 {currentPage + 1} / {images.length}
                       </span>
                       <span className="block font-mono text-[8px] uppercase tracking-[0.2em] text-white/40">
-                        Task: {PIPELINE_STEPS[currentStep]?.name}
+                        작업: {PIPELINE_STEPS[currentStep]?.name}
                       </span>
                     </div>
                   </div>
@@ -153,7 +153,7 @@ export const ScannerUI: React.FC = () => {
                       onClick={() => removeImage(idx)}
                       className="text-red-500 text-[8px] font-black uppercase tracking-widest hover:scale-110 transition-transform"
                     >
-                      Purge
+                      제거
                     </button>
                   </div>
                   <div className="absolute bottom-2 left-2 bg-apex-accent text-apex-black px-2 py-0.5 text-[8px] font-black rounded-sm">
@@ -166,7 +166,7 @@ export const ScannerUI: React.FC = () => {
                 className="shrink-0 w-32 aspect-[3/4] glass rounded-xl border-dashed border-white/10 flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-all"
               >
                 <Camera size={20} className="text-white/20" />
-                <span className="text-[8px] font-black uppercase tracking-widest text-white/20">Append</span>
+                <span className="text-[8px] font-black uppercase tracking-widest text-white/20">추가</span>
               </button>
             </div>
           )}
@@ -177,7 +177,7 @@ export const ScannerUI: React.FC = () => {
               className="w-full py-6 bg-white text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent transition-all flex items-center justify-center gap-4 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
             >
               <RefreshCw size={20} />
-              Execute Pipeline ({images.length} Nodes)
+              스캔 시작 ({images.length} 페이지)
             </button>
           )}
 
@@ -189,13 +189,13 @@ export const ScannerUI: React.FC = () => {
                 className="flex-1 py-6 bg-apex-accent text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-white transition-all flex items-center justify-center gap-4 shadow-[0_0_40px_rgba(16,185,129,0.2)]"
               >
                 <Download size={20} />
-                Extract PDF
+                PDF 저장
               </a>
               <button 
                 onClick={() => reset()}
                 className="px-12 py-6 glass rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-white/10 transition-all"
               >
-                Reset
+                초기화
               </button>
             </div>
           )}
@@ -206,7 +206,7 @@ export const ScannerUI: React.FC = () => {
           <div className="glass rounded-[40px] p-8">
             <div className="flex items-center gap-2 mb-8 text-white/40">
               <RefreshCw size={14} />
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em]">Pipeline Sequence</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em]">분석 단계</h2>
             </div>
             
             <div className="space-y-4">
@@ -228,7 +228,7 @@ export const ScannerUI: React.FC = () => {
                     )}
                     <div className="flex justify-between items-start mb-3">
                       <span className={`font-mono text-[8px] uppercase tracking-widest ${isCurrent ? 'text-apex-accent' : 'text-white/40'}`}>
-                        Sequence 0{index + 1}
+                        단계 0{index + 1}
                       </span>
                       {isCompleted && <CheckCircle2 size={14} className="text-apex-accent" />}
                       {isCurrent && <Loader2 size={14} className="animate-spin text-apex-accent" />}
@@ -254,8 +254,8 @@ export const ScannerUI: React.FC = () => {
               <div className="absolute top-0 right-0 p-4 opacity-20">
                 <CheckCircle2 size={48} className="text-apex-accent" />
               </div>
-              <h3 className="font-black uppercase tracking-[0.2em] text-xs mb-2 text-apex-accent">Optimization Complete</h3>
-              <p className="text-[10px] text-white/60 leading-relaxed">The source material has been successfully normalized, deskewed, and binarized for maximum OCR accuracy.</p>
+              <h3 className="font-black uppercase tracking-[0.2em] text-xs mb-2 text-apex-accent">분석 완료</h3>
+              <p className="text-[10px] text-white/60 leading-relaxed">이미지가 깔끔하게 보정되어 텍스트를 읽을 준비가 되었습니다.</p>
             </div>
           )}
         </div>

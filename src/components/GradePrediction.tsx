@@ -8,7 +8,7 @@ import { GradePredictionData, UserLearningStats } from '../types/prediction';
 
 const mockPredictionData: GradePredictionData[] = [
   {
-    subject: 'Mathematics',
+    subject: '수학',
     currentScore: 72,
     predictedScore: 85,
     targetScore: 92,
@@ -17,13 +17,13 @@ const mockPredictionData: GradePredictionData[] = [
     targetGrade: 1,
     confidenceInterval: [82, 88],
     weakTypes: [
-      { type: 'Calculus', impact: 8, recommendation: 'Focus on integration by parts and its applications.' },
-      { type: 'Probability', impact: 5, recommendation: 'Review conditional probability and Bayes theorem.' }
+      { type: '미적분', impact: 8, recommendation: '부분 적분 및 그 응용에 집중하세요.' },
+      { type: '확률', impact: 5, recommendation: '조건부 확률과 베이즈 정리를 복습하세요.' }
     ],
-    studyGuide: 'Currently, based on your learning pace, you are expected to reach Grade 2. To reach your target of Grade 1, you need to improve your Calculus performance by 15%.'
+    studyGuide: '현재 학습 속도에 따르면 2등급 달성이 예상됩니다. 목표인 1등급에 도달하려면 미적분 성취도를 15% 향상시켜야 합니다.'
   },
   {
-    subject: 'English',
+    subject: '영어',
     currentScore: 88,
     predictedScore: 91,
     targetScore: 95,
@@ -32,9 +32,9 @@ const mockPredictionData: GradePredictionData[] = [
     targetGrade: 1,
     confidenceInterval: [89, 93],
     weakTypes: [
-      { type: 'Vocabulary', impact: 3, recommendation: 'Daily practice of advanced academic vocabulary.' }
+      { type: '어휘', impact: 3, recommendation: '고급 학술 어휘를 매일 연습하세요.' }
     ],
-    studyGuide: 'You are very close to your target. Maintaining your current consistency will likely result in a Grade 1.'
+    studyGuide: '목표에 매우 근접했습니다. 현재의 꾸준함을 유지한다면 1등급 달성이 가능할 것으로 보입니다.'
   }
 ];
 
@@ -47,11 +47,11 @@ const mockStats: UserLearningStats = {
 };
 
 const historyData = [
-  { month: 'Jan', score: 65, predicted: 68 },
-  { month: 'Feb', score: 68, predicted: 72 },
-  { month: 'Mar', score: 72, predicted: 78 },
-  { month: 'Apr', score: null, predicted: 85 },
-  { month: 'May', score: null, predicted: 88 },
+  { month: '1월', score: 65, predicted: 68 },
+  { month: '2월', score: 68, predicted: 72 },
+  { month: '3월', score: 72, predicted: 78 },
+  { month: '4월', score: null, predicted: 85 },
+  { month: '5월', score: null, predicted: 88 },
 ];
 
 export const GradePrediction: React.FC = () => {
@@ -59,8 +59,8 @@ export const GradePrediction: React.FC = () => {
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2">Neural Forecasting</h1>
-          <p className="text-white/40 font-medium">AI-driven predictive analysis of future performance nodes</p>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2">성적 예측 분석</h1>
+          <p className="text-white/40 font-medium">미래 성취 노드에 대한 AI 기반 예측 분석</p>
         </div>
         <div className="flex gap-4">
           <div className="glass p-6 rounded-3xl flex items-center gap-4 min-w-[200px]">
@@ -68,8 +68,8 @@ export const GradePrediction: React.FC = () => {
               <TrendingUp size={24} />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">Current Streak</p>
-              <p className="text-2xl font-bold tracking-tighter">{mockStats.streak} DAYS</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">현재 연속 학습</p>
+              <p className="text-2xl font-bold tracking-tighter">{mockStats.streak} 일</p>
             </div>
           </div>
           <div className="glass p-6 rounded-3xl flex items-center gap-4 min-w-[200px]">
@@ -77,7 +77,7 @@ export const GradePrediction: React.FC = () => {
               <CheckCircle size={24} />
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">Accuracy</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-1">정밀도</p>
               <p className="text-2xl font-bold tracking-tighter">{mockStats.accuracy}%</p>
             </div>
           </div>
@@ -90,15 +90,15 @@ export const GradePrediction: React.FC = () => {
           <div className="absolute inset-0 apex-grid opacity-10"></div>
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-12">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Performance Trajectory</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">성취 궤적</h2>
               <div className="flex gap-6">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-apex-accent rounded-full"></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Actual</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">실제</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-white/20 rounded-full border border-dashed border-white/40"></div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Forecast</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">예측</span>
                 </div>
               </div>
             </div>
@@ -153,13 +153,13 @@ export const GradePrediction: React.FC = () => {
 
         {/* Target Progress */}
         <div className="glass rounded-[48px] p-8 flex flex-col">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Target Synchronization</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">목표 동기화</h2>
           <div className="space-y-12 flex-1">
             {mockPredictionData.map((data) => (
               <div key={data.subject}>
                 <div className="flex justify-between items-end mb-4">
                   <span className="text-xl font-bold tracking-tight">{data.subject}</span>
-                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Target: {data.targetScore}</span>
+                  <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">목표: {data.targetScore}</span>
                 </div>
                 <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
                   <div 
@@ -173,11 +173,11 @@ export const GradePrediction: React.FC = () => {
                 </div>
                 <div className="flex justify-between mt-4">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Current</span>
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">현재</span>
                     <span className="text-lg font-bold text-apex-accent">{data.currentScore}</span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Forecast</span>
+                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">예측</span>
                     <span className="text-lg font-bold text-white/60">{data.predictedScore}</span>
                   </div>
                 </div>
@@ -192,10 +192,10 @@ export const GradePrediction: React.FC = () => {
             <div className="relative z-10">
               <div className="flex items-center gap-3 text-apex-accent font-black text-[10px] uppercase tracking-[0.2em] mb-4">
                 <Zap size={14} />
-                <span>Neural Insight</span>
+                <span>AI 분석 통찰</span>
               </div>
               <p className="text-sm text-white/70 leading-relaxed font-medium">
-                Increasing your weekly study hours by just 2 hours could boost your predicted Math score by 3 points.
+                주간 학습 시간을 2시간만 늘려도 예상 수학 점수가 3점 상승할 수 있습니다.
               </p>
             </div>
           </div>
@@ -205,7 +205,7 @@ export const GradePrediction: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Weakness Analysis */}
         <div className="glass rounded-[48px] p-8">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Optimization Protocols</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">최적화 프로토콜</h2>
           <div className="space-y-4">
             {mockPredictionData[0].weakTypes.map((weak, idx) => (
               <div key={idx} className="p-8 rounded-[32px] bg-white/5 border border-white/5 hover:border-apex-accent/30 transition-all group cursor-pointer">
@@ -217,12 +217,12 @@ export const GradePrediction: React.FC = () => {
                     <span className="text-xl font-bold tracking-tight">{weak.type}</span>
                   </div>
                   <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full uppercase tracking-widest">
-                    Impact: +{weak.impact} PTS
+                    영향: +{weak.impact} 점
                   </span>
                 </div>
                 <p className="text-white/40 text-sm mb-6 font-medium leading-relaxed">{weak.recommendation}</p>
                 <div className="flex items-center gap-2 text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
-                  Initiate Practice Protocol <ArrowRight size={14} />
+                  연습 프로토콜 시작 <ArrowRight size={14} />
                 </div>
               </div>
             ))}
@@ -231,26 +231,26 @@ export const GradePrediction: React.FC = () => {
 
         {/* Detailed Guide */}
         <div className="glass rounded-[48px] p-8">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">Strategic Directive</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-12">전략적 지침</h2>
           <div className="space-y-8">
             <p className="text-xl font-medium text-white/80 leading-tight">
-              Based on your recent performance in <span className="text-apex-accent">Mathematics</span>, you have shown significant improvement in <span className="italic">Algebra</span>, but <span className="text-red-500">Calculus</span> remains a challenge.
+              최근 <span className="text-apex-accent">수학</span> 성취도 분석 결과, <span className="italic">대수학</span>에서는 유의미한 향상을 보였으나 <span className="text-red-500">미적분</span>은 여전히 과제로 남아 있습니다.
             </p>
             
             <div className="p-8 rounded-[32px] bg-white/5 border border-white/5">
-              <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-6 text-center">Recommended Weekly Allocation</h4>
+              <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-6 text-center">권장 주간 할당</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold tracking-tighter mb-1">8H</div>
-                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Math</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">수학</div>
                 </div>
                 <div className="text-center border-x border-white/10">
                   <div className="text-2xl font-bold tracking-tighter mb-1">5H</div>
-                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">English</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">영어</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold tracking-tighter mb-1">5H</div>
-                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">Other</div>
+                  <div className="text-[10px] font-black text-white/40 uppercase tracking-widest">기타</div>
                 </div>
               </div>
             </div>
@@ -260,7 +260,7 @@ export const GradePrediction: React.FC = () => {
                 <Target size={20} />
               </div>
               <p className="text-sm text-white/60 leading-relaxed font-medium">
-                Your current predicted grade for the upcoming Mock Exam is <span className="text-white font-bold">Grade 2</span>. To secure <span className="text-apex-accent font-bold">Grade 1</span>, prioritize the "Calculus" practice sets assigned in your dashboard.
+                다가오는 모의고사 예상 등급은 <span className="text-white font-bold">2등급</span>입니다. <span className="text-apex-accent font-bold">1등급</span>을 확보하려면 대시보드에 할당된 '미적분' 연습 세트를 우선적으로 학습하세요.
               </p>
             </div>
           </div>

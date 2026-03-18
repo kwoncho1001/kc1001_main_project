@@ -101,8 +101,8 @@ export class AIMetadataService {
         minorUnitId: 'n1',
         tagId: 't1'
       },
-      keywords: ['Differentiation', 'Implicit', 'Calculus'],
-      concepts: ['Chain Rule', 'Derivative'],
+      keywords: ['미분', '음함수', '미적분'],
+      concepts: ['연쇄법칙', '도함수'],
       difficultyFactors: {
         computationalComplexity: 0.7,
         conceptualDepth: 0.5,

@@ -49,10 +49,10 @@ export const AIMetadataAnalyzer: React.FC = () => {
           <div className="w-12 h-12 glass rounded-xl flex items-center justify-center text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.2)]">
             <Brain size={28} />
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase">Neural Analyzer</h1>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase">AI 문제 분석기</h1>
         </div>
         <p className="text-white/40 font-medium ml-16">
-          Extract hierarchical curriculum mapping and difficulty vectors from raw problem vectors.
+          문제 텍스트를 분석하여 교육과정 단원과 난이도를 자동으로 분류합니다.
         </p>
       </header>
 
@@ -63,13 +63,13 @@ export const AIMetadataAnalyzer: React.FC = () => {
             <div className="absolute inset-0 apex-grid opacity-5"></div>
             <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Source Vector Input</h2>
-                <span className="text-[10px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">READY</span>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">문제 텍스트 입력</h2>
+                <span className="text-[10px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">준비됨</span>
               </div>
               
               <textarea
                 className="flex-1 w-full p-8 glass border border-white/5 rounded-3xl text-xl font-medium resize-none focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20"
-                placeholder="Paste problem text or LaTeX here... (e.g., Find the derivative of f(x) = sin(x^2) using implicit differentiation...)"
+                placeholder="문제 텍스트 또는 LaTeX를 여기에 붙여넣으세요... (예: 미분 f(x) = sin(x^2)를 구하시오...)"
                 value={problemText}
                 onChange={(e) => setProblemText(e.target.value)}
               />
@@ -82,12 +82,12 @@ export const AIMetadataAnalyzer: React.FC = () => {
                 {isAnalyzing ? (
                   <>
                     <Loader2 className="animate-spin" size={20} />
-                    Processing Neural Context...
+                    AI 분석 중...
                   </>
                 ) : (
                   <>
                     <Search size={20} />
-                    Execute Analysis
+                    분석 실행
                   </>
                 )}
               </button>
@@ -104,7 +104,7 @@ export const AIMetadataAnalyzer: React.FC = () => {
                 <div className="absolute inset-0 apex-grid opacity-5"></div>
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">AI Confidence Index</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">AI 분석 신뢰도</h3>
                     <div className="flex items-center gap-4">
                       <div className="h-2 w-48 bg-white/5 rounded-full overflow-hidden">
                         <div 
@@ -118,7 +118,7 @@ export const AIMetadataAnalyzer: React.FC = () => {
                   {analysis.confidence < 0.8 && (
                     <div className="flex items-center gap-3 text-amber-500 bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 text-[10px] font-black uppercase tracking-widest">
                       <AlertTriangle size={16} />
-                      Low confidence detected. Manual verification required.
+                      낮은 신뢰도가 감지되었습니다. 수동 확인이 필요합니다.
                     </div>
                   )}
                 </div>
@@ -128,14 +128,14 @@ export const AIMetadataAnalyzer: React.FC = () => {
               <div className="glass rounded-[40px] p-8 border border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 apex-grid opacity-5"></div>
                 <div className="relative z-10">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">Curriculum Topology Mapping</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">교육과정 단원 분류</h3>
                   <div className="space-y-4">
                     {[
-                      { label: 'Field', id: analysis.metadata.fieldId },
-                      { label: 'Course', id: analysis.metadata.subjectId },
-                      { label: 'Major', id: analysis.metadata.majorUnitId },
-                      { label: 'Minor', id: analysis.metadata.minorUnitId },
-                      { label: 'Type', id: analysis.metadata.tagId },
+                      { label: '분야', id: analysis.metadata.fieldId },
+                      { label: '과목', id: analysis.metadata.subjectId },
+                      { label: '대단원', id: analysis.metadata.majorUnitId },
+                      { label: '소단원', id: analysis.metadata.minorUnitId },
+                      { label: '유형', id: analysis.metadata.tagId },
                     ].map((level, idx) => (
                       <div key={idx} className="flex items-center gap-6 group">
                         <div className="w-24 text-[9px] font-black uppercase tracking-[0.2em] text-white/20">{level.label}</div>
@@ -153,12 +153,12 @@ export const AIMetadataAnalyzer: React.FC = () => {
               <div className="glass rounded-[40px] p-8 border border-white/5 relative overflow-hidden">
                 <div className="absolute inset-0 apex-grid opacity-5"></div>
                 <div className="relative z-10">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">Difficulty Vector Analysis</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-8">상세 난이도 분석</h3>
                   <div className="space-y-8">
                     {[
-                      { label: 'Computational Complexity', value: analysis.difficultyFactors.computationalComplexity },
-                      { label: 'Conceptual Depth', value: analysis.difficultyFactors.conceptualDepth },
-                      { label: 'Logical Reasoning', value: analysis.difficultyFactors.logicalReasoning },
+                      { label: '계산 복잡도', value: analysis.difficultyFactors.computationalComplexity },
+                      { label: '개념적 깊이', value: analysis.difficultyFactors.conceptualDepth },
+                      { label: '논리적 추론', value: analysis.difficultyFactors.logicalReasoning },
                     ].map((factor, idx) => (
                       <div key={idx}>
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest mb-3">
@@ -180,7 +180,7 @@ export const AIMetadataAnalyzer: React.FC = () => {
               {/* Tags & Concepts */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="glass rounded-[40px] p-8 border border-white/5">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Neural Keywords</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">핵심 키워드</h3>
                   <div className="flex flex-wrap gap-2">
                     {analysis.keywords.map((kw, i) => (
                       <span key={i} className="px-3 py-1.5 bg-white/5 rounded-lg text-[9px] font-black uppercase tracking-widest text-white/60 border border-white/5">
@@ -190,7 +190,7 @@ export const AIMetadataAnalyzer: React.FC = () => {
                   </div>
                 </div>
                 <div className="glass rounded-[40px] p-8 border border-white/5">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">Related Nodes</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6">관련 개념</h3>
                   <div className="flex flex-wrap gap-2">
                     {analysis.concepts.map((c, i) => (
                       <span key={i} className="px-3 py-1.5 bg-apex-accent/10 text-apex-accent rounded-lg text-[9px] font-black uppercase tracking-widest border border-apex-accent/20">
@@ -204,9 +204,9 @@ export const AIMetadataAnalyzer: React.FC = () => {
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-12 glass rounded-[40px] border border-dashed border-white/10 opacity-20">
               <Database size={64} className="mb-6" />
-              <h3 className="text-2xl font-bold uppercase tracking-[0.2em]">Awaiting Data</h3>
+              <h3 className="text-2xl font-bold uppercase tracking-[0.2em]">분석 대기 중</h3>
               <p className="text-[10px] uppercase tracking-[0.3em] mt-3">
-                Initialize analysis by providing source vectors.
+                문제를 입력하여 분석을 시작하세요.
               </p>
             </div>
           )}

@@ -128,21 +128,21 @@ export const ExamInterface: React.FC<{
               <CheckCircle2 size={40} />
             </div>
             <h1 className="text-5xl font-bold tracking-tighter uppercase mb-4">
-              {examStatus === 'SUBMITTED' ? 'Session Terminated' : 'Time Expired'}
+              {examStatus === 'SUBMITTED' ? '세션 종료' : '시간 초과'}
             </h1>
             <p className="text-white/40 mb-12 font-medium">
               {examStatus === 'SUBMITTED' 
-                ? 'Neural synchronization complete. Performance data ingested.' 
-                : 'The neural link was severed due to temporal constraints.'}
+                ? '시험이 완료되었습니다. 성능 데이터가 성공적으로 저장되었습니다.' 
+                : '제한 시간이 초과되어 시험이 종료되었습니다.'}
             </p>
             
             <div className="grid grid-cols-2 gap-8 mb-12">
               <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Total Duration</span>
+                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">총 소요 시간</span>
                 <span className="text-3xl font-bold tracking-tighter">{formatTime(EXAM_DURATION - remainingTime)}</span>
               </div>
               <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Focus Violations</span>
+                <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">집중력 위반</span>
                 <span className="text-3xl font-bold tracking-tighter text-red-500">{blurCount}</span>
               </div>
             </div>
@@ -150,11 +150,11 @@ export const ExamInterface: React.FC<{
             {scoringResult && (
               <div className="grid grid-cols-2 gap-8 mb-12">
                 <div className="p-8 rounded-3xl bg-apex-accent/10 border border-apex-accent/20">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">Intelligence Score</span>
+                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">지능 점수</span>
                   <span className="text-4xl font-bold tracking-tighter text-apex-accent">{scoringResult.totalScore.toFixed(1)}</span>
                 </div>
                 <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Global Standing</span>
+                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">글로벌 순위</span>
                   <span className="text-4xl font-bold tracking-tighter">{scoringResult.rank}</span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export const ExamInterface: React.FC<{
               onClick={() => window.location.reload()}
               className="w-full py-6 bg-white text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent transition-all"
             >
-              Return to Command Center
+              커맨드 센터로 돌아가기
             </button>
           </div>
         </div>
@@ -186,14 +186,14 @@ export const ExamInterface: React.FC<{
             </div>
             {!isOnline && (
               <div className="px-4 py-2 bg-red-500/20 text-red-500 rounded-xl border border-red-500/30 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                <WifiOff size={14} /> Offline Mode
+                <WifiOff size={14} /> 오프라인 모드
               </div>
             )}
           </div>
           
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Active Node</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">활성 노드</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold tracking-tighter">{currentProblemIndex + 1}</span>
                 <span className="text-xs text-white/20">/ {problems.length}</span>
@@ -224,7 +224,7 @@ export const ExamInterface: React.FC<{
                 onClick={() => setCurrentProblemIndex(i => i - 1)}
                 className="px-8 py-4 text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-20 hover:bg-white/10 rounded-2xl transition-all"
               >
-                Previous
+                이전
               </button>
               <div className="w-px h-6 bg-white/10" />
               <button 
@@ -232,7 +232,7 @@ export const ExamInterface: React.FC<{
                 onClick={() => setCurrentProblemIndex(i => i + 1)}
                 className="px-8 py-4 text-white text-[10px] font-black uppercase tracking-[0.2em] disabled:opacity-20 hover:bg-white/10 rounded-2xl transition-all"
               >
-                Next Node
+                다음 노드
               </button>
             </div>
           </div>
@@ -243,18 +243,18 @@ export const ExamInterface: React.FC<{
       <aside className="w-96 flex flex-col gap-8">
         <div className="glass rounded-[40px] p-8 flex flex-col gap-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Response Matrix</h2>
+            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">응답 매트릭스</h2>
             <div className="flex items-center gap-2 text-[10px] font-black text-apex-accent">
               <div className="w-1.5 h-1.5 rounded-full bg-apex-accent animate-pulse"></div>
-              SYNCED
+              동기화됨
             </div>
           </div>
 
           <div className="space-y-8">
             <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3">Node Intelligence</span>
+              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3">노드 지능</span>
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm uppercase tracking-tight">Question {currentProblemIndex + 1}</span>
+                <span className="font-bold text-sm uppercase tracking-tight">문제 {currentProblemIndex + 1}</span>
                 <span className="font-mono text-xs text-apex-accent">{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
               </div>
             </div>
@@ -279,7 +279,7 @@ export const ExamInterface: React.FC<{
               <div className="space-y-3">
                 <textarea 
                   className="w-full h-48 p-6 glass border-white/5 rounded-3xl text-sm focus:outline-none focus:border-apex-accent/50 transition-all resize-none font-medium leading-relaxed"
-                  placeholder="Input neural response..."
+                  placeholder="정답 입력..."
                   value={answers[currentProblem.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
                 />
@@ -290,7 +290,7 @@ export const ExamInterface: React.FC<{
 
         {/* Progress Tracker */}
         <div className="glass rounded-[40px] p-8 flex-1 flex flex-col">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Synchronization Progress</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">동기화 진행률</h3>
           <div className="grid grid-cols-5 gap-3 overflow-y-auto pr-2 scrollbar-hide">
             {problems.map((p, idx) => (
               <button
@@ -317,7 +317,7 @@ export const ExamInterface: React.FC<{
             <div className="flex items-center gap-3 text-red-500 bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
               <AlertCircle size={16} />
               <span className="text-[10px] font-black uppercase tracking-widest">
-                {blurCount} Focus Violations Detected
+                {blurCount}회의 집중력 위반이 감지되었습니다
               </span>
             </div>
           )}
@@ -327,7 +327,7 @@ export const ExamInterface: React.FC<{
             disabled={!isOnline}
             className="w-full py-6 bg-white text-apex-black rounded-3xl font-black uppercase tracking-[0.3em] text-xs hover:bg-apex-accent transition-all shadow-2xl disabled:opacity-50"
           >
-            Finalize Submission
+            최종 제출
           </button>
         </div>
       </aside>

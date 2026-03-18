@@ -56,7 +56,7 @@ export const ProblemExtractor: React.FC = () => {
 
   const startProcessing = async () => {
     if (!file) return;
-    setProcessingState({ status: 'UPLOADING', progress: 0, message: 'Initializing Neural Extraction...' });
+    setProcessingState({ status: 'UPLOADING', progress: 0, message: '문제 추출 준비 중...' });
     try {
       const results = await OCRService.processFile(file, setProcessingState);
       setExtractedProblems(results);
@@ -65,7 +65,7 @@ export const ProblemExtractor: React.FC = () => {
       setProcessingState({
         status: 'IDLE',
         progress: 0,
-        message: `Extraction failed: ${err.message || 'Unknown error'}. Please try again.`
+        message: `추출 실패: ${err.message || '알 수 없는 오류'}. 다시 시도해 주세요.`
       });
     }
   };
@@ -107,7 +107,7 @@ export const ProblemExtractor: React.FC = () => {
             <div className="w-24 h-24 glass rounded-3xl flex items-center justify-center mx-auto mb-10 text-apex-accent shadow-[0_0_30px_rgba(16,185,129,0.2)]">
               <Upload size={48} />
             </div>
-            <h1 className="text-4xl font-bold mb-4 tracking-tighter uppercase">Neural Extractor</h1>
+            <h1 className="text-4xl font-bold mb-4 tracking-tighter uppercase">문제 추출기</h1>
             
             {processingState.message && (
               <div className="mb-10 p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-500 text-[10px] font-black uppercase tracking-widest">
@@ -117,8 +117,7 @@ export const ProblemExtractor: React.FC = () => {
             )}
 
             <p className="text-white/40 mb-12 font-medium">
-              Upload past exam vectors (PDF/IMG). Our neural pipeline will isolate handwriting, 
-              extract symbolic logic, and normalize content for digital archival.
+              과거 시험지(PDF/이미지)를 업로드하세요. AI가 필기체를 인식하고 수식과 텍스트를 분리하여 디지털 데이터로 변환합니다.
             </p>
 
             <div 
@@ -146,7 +145,7 @@ export const ProblemExtractor: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4">
-                  <span className="text-white/20 font-black uppercase tracking-[0.3em] text-[10px] group-hover:text-white/40 transition-colors">Select Source Vector or Drag & Drop</span>
+                  <span className="text-white/20 font-black uppercase tracking-[0.3em] text-[10px] group-hover:text-white/40 transition-colors">파일 선택 또는 드래그 앤 드롭</span>
                 </div>
               )}
             </div>
@@ -156,7 +155,7 @@ export const ProblemExtractor: React.FC = () => {
               onClick={startProcessing}
               className="w-full bg-white text-apex-black py-6 rounded-2xl font-black uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-4 hover:bg-apex-accent transition-all disabled:opacity-50 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
             >
-              Initialize Neural Extraction
+              추출 시작
               <ArrowRight size={20} />
             </button>
           </div>
@@ -179,7 +178,7 @@ export const ProblemExtractor: React.FC = () => {
             />
           </div>
           <p className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20 mt-6">
-            Sequence Phase {Math.ceil(processingState.progress / 20)} / 5
+            시퀀스 단계 {Math.ceil(processingState.progress / 20)} / 5
           </p>
         </div>
       </div>
@@ -196,16 +195,16 @@ export const ProblemExtractor: React.FC = () => {
             <Layers size={32} />
           </div>
           <div>
-            <h1 className="text-4xl font-bold tracking-tighter uppercase">Data Synthesis & Review</h1>
+            <h1 className="text-4xl font-bold tracking-tighter uppercase">데이터 합성 및 검토</h1>
             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-1">
-              Source: {file?.name} • {extractedProblems.length} Neural Nodes Extracted
+              소스: {file?.name} • {extractedProblems.length}개의 문제 추출됨
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <div className="glass px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-4">
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Extraction Progress</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-white/20">추출 진행 상황</span>
             <div className="flex gap-1.5">
               {extractedProblems.map((p, i) => (
                 <div 
@@ -222,7 +221,7 @@ export const ProblemExtractor: React.FC = () => {
             className="bg-white text-apex-black px-8 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center gap-3 hover:bg-apex-accent transition-all disabled:opacity-50 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
           >
             <Save size={18} />
-            Commit to Vault
+            보관소에 저장
           </button>
         </div>
       </header>
@@ -231,7 +230,7 @@ export const ProblemExtractor: React.FC = () => {
         {/* Sidebar: Problem List */}
         <aside className="w-80 flex flex-col shrink-0 min-h-0">
           <div className="flex-1 glass rounded-[40px] p-6 border border-white/5 overflow-y-auto scrollbar-hide">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6 px-2">Extracted Nodes</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-6 px-2">추출된 문제</h3>
             <div className="space-y-3">
               {extractedProblems.map((p, i) => (
                 <button
@@ -245,7 +244,7 @@ export const ProblemExtractor: React.FC = () => {
                 >
                   {activeProblemIdx === i && <div className="absolute top-0 left-0 w-1 h-full bg-apex-accent"></div>}
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${activeProblemIdx === i ? 'text-apex-accent' : 'text-white/40'}`}>Node {p.problemNumber}</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${activeProblemIdx === i ? 'text-apex-accent' : 'text-white/40'}`}>문제 {p.problemNumber}</span>
                     {p.rawElements.every(e => !e.isUncertain) ? (
                       <CheckCircle2 size={14} className="text-apex-accent" />
                     ) : (
@@ -266,9 +265,9 @@ export const ProblemExtractor: React.FC = () => {
           {/* Left: Raw Elements & Correction */}
           <div className="flex flex-col gap-6 overflow-y-auto pr-2 scrollbar-hide">
             <div className="flex items-center justify-between">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Neural Raw Elements</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">추출된 원본 요소</h2>
               <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20 tracking-widest">
-                {activeProblem.rawElements.filter(e => e.isUncertain).length} Uncertain Vectors
+                {activeProblem.rawElements.filter(e => e.isUncertain).length}개의 불확실한 요소
               </span>
             </div>
 
@@ -286,11 +285,11 @@ export const ProblemExtractor: React.FC = () => {
                       <div className="w-10 h-10 glass rounded-xl flex items-center justify-center text-white/40">
                         {element.type === 'text' ? <Type size={18} /> : element.type === 'formula' ? <Sigma size={18} /> : <ImageIcon size={18} />}
                       </div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">{element.type} Vector</span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">{element.type === 'text' ? '텍스트' : element.type === 'formula' ? '수식' : '이미지'}</span>
                     </div>
                     {element.isUncertain && (
                       <div className="flex items-center gap-2 text-[10px] font-black text-amber-500 uppercase tracking-widest">
-                        <AlertCircle size={14} /> Review Required
+                        <AlertCircle size={14} /> 검토 필요
                       </div>
                     )}
                   </div>
@@ -301,7 +300,7 @@ export const ProblemExtractor: React.FC = () => {
 
                   {element.isUncertain && element.candidates && (
                     <div className="space-y-3">
-                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">Neural Candidates (Select to Resolve)</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">인식 결과 후보 (정답 선택)</p>
                       {element.candidates.map((cand, idx) => (
                         <button
                           key={idx}
@@ -319,7 +318,7 @@ export const ProblemExtractor: React.FC = () => {
                       ))}
                       <div className="pt-4">
                         <button className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white flex items-center gap-2 transition-colors">
-                          <Edit3 size={14} /> Manual Override
+                          <Edit3 size={14} /> 수동 수정
                         </button>
                       </div>
                     </div>
@@ -334,15 +333,15 @@ export const ProblemExtractor: React.FC = () => {
             <div className="absolute inset-0 apex-grid opacity-5"></div>
             <div className="relative z-10 flex flex-col h-full">
               <div className="flex items-center justify-between mb-10">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Structured Node Metadata</h2>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">문제 상세 정보</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">LIVE SYNC</span>
+                  <span className="text-[8px] font-black text-apex-accent bg-apex-accent/10 px-3 py-1 rounded-lg border border-apex-accent/20 tracking-widest">실시간 동기화</span>
                 </div>
               </div>
 
               <div className="space-y-8 flex-1 overflow-y-auto pr-2 scrollbar-hide">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Node Content</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">문제 내용</label>
                   <textarea 
                     className="w-full p-6 glass border border-white/5 rounded-3xl text-lg font-medium min-h-[160px] focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20 resize-none"
                     value={activeProblem.content}
@@ -352,7 +351,7 @@ export const ProblemExtractor: React.FC = () => {
 
                 {activeProblem.options && (
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Discrete Options</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">선택지</label>
                     <div className="grid grid-cols-2 gap-4">
                       {activeProblem.options.map((opt, i) => (
                         <div key={i} className="flex items-center gap-4">
@@ -374,7 +373,7 @@ export const ProblemExtractor: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Verified Response</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">검증된 정답</label>
                     <input 
                       className="w-full p-4 glass border border-white/5 rounded-2xl text-sm font-black text-apex-accent focus:outline-none focus:border-apex-accent/30 transition-all bg-black/10"
                       value={activeProblem.answer || ''}
@@ -382,7 +381,7 @@ export const ProblemExtractor: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Node Identifier</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">문제 번호</label>
                     <input 
                       className="w-full p-4 glass border border-white/5 rounded-2xl text-sm font-black text-white/60 focus:outline-none focus:border-apex-accent/30 transition-all bg-black/10"
                       value={activeProblem.problemNumber}
@@ -392,7 +391,7 @@ export const ProblemExtractor: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">Neural Explanation / Protocol</label>
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-3 block">해설 및 풀이</label>
                   <textarea 
                     className="w-full p-6 glass border border-white/5 rounded-3xl text-xs font-medium min-h-[140px] focus:outline-none focus:border-apex-accent/30 transition-all placeholder:text-white/5 bg-black/20 resize-none"
                     value={activeProblem.explanation || ''}

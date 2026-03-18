@@ -52,9 +52,9 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
         <div>
           <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2 flex items-center gap-4">
             <Layers className="text-apex-accent" size={40} />
-            Neural Matrix
+            학습 성취도 분석
           </h1>
-          <p className="text-white/40 font-medium">5-Level Multi-Weighted Ability Propagation Model</p>
+          <p className="text-white/40 font-medium">5단계 학습 성취도 분석 모델</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {Object.entries(ABILITY_WEIGHTS).reverse().map(([level, weight]) => (
@@ -75,11 +75,11 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
             <div className="flex justify-between items-center mb-12">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-3">
                 <TrendingUp size={16} className="text-apex-accent" />
-                Intelligence Profile
+                학습 성취도
               </h2>
               <div className="text-[10px] font-black text-white/20 flex items-center gap-2 uppercase tracking-widest">
                 <Info size={14} />
-                Weighted Aggregation
+                가중치 합산
               </div>
             </div>
             <div className="h-[450px]">
@@ -109,7 +109,7 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
           <div className="glass rounded-[40px] p-8">
             <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
               <Zap size={16} className="text-amber-500" />
-              Mastery Nodes
+              주요 학습 주제
             </h2>
             <div className="space-y-8">
               {tagData.map((tag, idx) => (
@@ -134,12 +134,12 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
               <TrendingUp size={64} className="text-apex-accent" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] mb-4">Neural Propagation</h3>
+              <h3 className="text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] mb-4">학습 데이터 전파</h3>
               <p className="text-sm text-white/70 leading-relaxed font-medium mb-8">
-                Your "Calculus" tag update will propagate to "Major: Analysis" and "Subject: Math" with decreasing weights.
+                "미적분" 태그 업데이트는 가중치가 감소하면서 "전공: 해석학" 및 "과목: 수학"으로 전파됩니다.
               </p>
               <button className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3">
-                View Detailed Hierarchy <ChevronRight size={16} />
+                상세 계층 보기 <ChevronRight size={16} />
               </button>
             </div>
           </div>
@@ -148,25 +148,26 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
             <div className="glass rounded-[40px] p-8">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
                 <Info size={16} className="text-apex-accent" />
-                Behavioral Analysis
+                행동 분석
               </h2>
               <div className="space-y-6">
                 <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Tag</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">태그</span>
                   <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ${
                     lastBehavior.behaviorTag === 'NORMAL' ? 'bg-apex-accent/10 text-apex-accent' :
                     lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-amber-500/10 text-amber-500' :
                     'bg-blue-500/10 text-blue-500'
                   }`}>
-                    {lastBehavior.behaviorTag}
+                    {lastBehavior.behaviorTag === 'NORMAL' ? '정상' : 
+                     lastBehavior.behaviorTag === 'LUCKY_GUESS' ? '찍기' : '실수'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Correction</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">보정</span>
                   <span className="text-lg font-bold tracking-tighter">x{lastBehavior.correctionFactor.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">Reliability</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">신뢰도</span>
                   <span className="text-lg font-bold tracking-tighter">{(lastBehavior.reliabilityIndex * 100).toFixed(0)}%</span>
                 </div>
               </div>
@@ -178,7 +179,7 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
       {/* Detailed Hierarchy List */}
       <div className="glass rounded-[48px] overflow-hidden">
         <div className="p-8 border-b border-white/5">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Hierarchical Breakdown</h2>
+          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">계층적 세부 분석</h2>
         </div>
         <div className="divide-y divide-white/5">
           {hierarchy.filter(h => h.level === 'FIELD' || h.level === 'COURSE').map((item) => (
@@ -190,14 +191,19 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
                   </div>
                   <div>
                     <h4 className="text-xl font-bold tracking-tight text-white/90 mb-1">{item.name}</h4>
-                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">{item.level}</p>
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">{
+                      item.level === 'FIELD' ? '분야' : 
+                      item.level === 'COURSE' ? '과목' : 
+                      item.level === 'MAJOR_CHAPTER' ? '대단원' : 
+                      item.level === 'MINOR_CHAPTER' ? '소단원' : '유형'
+                    }</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-12">
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Current $\theta$</p>
+                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">현재 숙련도</p>
                     <p className="text-3xl font-bold tracking-tighter text-white">{(scores[item.id]?.score ?? 0.5).toFixed(3)}</p>
-                    <p className="text-[10px] font-black text-apex-accent uppercase tracking-widest mt-1">Solved: {scores[item.id]?.solvedProblemCount ?? 0}</p>
+                    <p className="text-[10px] font-black text-apex-accent uppercase tracking-widest mt-1">해결: {scores[item.id]?.solvedProblemCount ?? 0}</p>
                   </div>
                   <div className="w-48 h-3 bg-white/5 rounded-full overflow-hidden hidden md:block">
                     <div 

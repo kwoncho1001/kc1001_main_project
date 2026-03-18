@@ -12,12 +12,12 @@ export interface PipelineStep {
 }
 
 export const PIPELINE_STEPS: PipelineStep[] = [
-  { name: 'Fix Orientation', description: 'Detects and corrects image orientation.', thought: 'Is this photo landscape or portrait?' },
-  { name: 'Deskew', description: 'Corrects the tilt of the paper.', thought: 'The paper is slightly diagonal. Let me straighten it.' },
-  { name: 'Select Content', description: 'Detects paper boundaries and crops.', thought: "I don't need the desk background. Just the paper." },
-  { name: 'Dewarping', description: 'Flattens curved or wrinkled paper.', thought: 'The paper is bumpy. Let me iron it out.' },
-  { name: 'Binarization', description: 'Converts to high-contrast B&W.', thought: 'The photo is dark. Let me make it look like a real scan.' },
-  { name: 'Page Layout', description: 'Standardizes to A4 and creates PDF.', thought: 'Let me fit this to A4 and prepare the final PDF.' },
+  { name: '방향 수정', description: '이미지 방향을 감지하고 수정합니다.', thought: '이 사진은 가로인가요, 세로인가요?' },
+  { name: '기울기 보정', description: '종이의 기울기를 수정합니다.', thought: '종이가 약간 대각선이네요. 똑바로 펴겠습니다.' },
+  { name: '콘텐츠 선택', description: '종이 경계를 감지하고 자릅니다.', thought: '책상 배경은 필요 없어요. 종이만 남기겠습니다.' },
+  { name: '디워핑', description: '구부러지거나 구겨진 종이를 평평하게 폅니다.', thought: '종이가 울퉁불퉁하네요. 다림질하듯 펴겠습니다.' },
+  { name: '이진화', description: '고대비 흑백으로 변환합니다.', thought: '사진이 어둡네요. 실제 스캔처럼 보이게 만들겠습니다.' },
+  { name: '페이지 레이아웃', description: 'A4 규격으로 표준화하고 PDF를 생성합니다.', thought: 'A4에 맞추고 최종 PDF를 준비하겠습니다.' },
 ];
 
 export const runPipeline = async (

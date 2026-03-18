@@ -245,13 +245,13 @@ export default function App() {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-apex-accent to-transparent"></div>
           <div className="w-24 h-24 bg-apex-accent/10 border border-apex-accent/20 rounded-3xl mx-auto mb-8 flex items-center justify-center text-apex-accent text-5xl font-black shadow-[0_0_40px_rgba(16,185,129,0.2)] glow-text">A</div>
           <h1 className="text-4xl font-bold mb-4 tracking-tighter">APEX NETWORK</h1>
-          <p className="text-white/40 mb-10 text-sm">Secure, high-performance learning infrastructure for the next generation of students.</p>
+          <p className="text-white/40 mb-10 text-sm">차세대 학생들을 위한 쉽고 강력한 학습 도우미입니다.</p>
           <button
             onClick={login}
             className="w-full bg-white text-apex-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-apex-accent transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-            Establish Connection
+            시작하기
           </button>
         </div>
       </div>
@@ -266,31 +266,31 @@ export default function App() {
           <div className="w-10 h-10 bg-apex-accent/10 border border-apex-accent/30 rounded-xl flex items-center justify-center text-apex-accent font-black text-xl shadow-[0_0_20px_rgba(16,185,129,0.1)]">A</div>
           <div>
             <span className="block font-black uppercase tracking-[0.3em] text-xs glow-text">APEX</span>
-            <span className="block text-[8px] uppercase tracking-[0.5em] text-white/30">Infrastructure</span>
+            <span className="block text-[8px] uppercase tracking-[0.5em] text-white/30">학습 시스템</span>
           </div>
         </div>
         
         <div className="flex-1 px-4 space-y-2 overflow-y-auto">
           <div className="px-4 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Core Systems</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">학습 도구</span>
           </div>
-          <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="Scanner" />
-          <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="Interface" />
-          <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="Vault" />
+          <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="문제 스캔" />
+          <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="학습 모드" />
+          <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="오답 노트" />
           
           <div className="px-4 mt-8 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Analytics</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">학습 분석</span>
           </div>
-          <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="Prediction" />
-          <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="Ability" />
-          <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="Hierarchy" />
+          <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="성적 예측" />
+          <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="학습 지표" />
+          <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="학습 계층" />
           
           <div className="px-4 mt-8 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">Intelligence</span>
+            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">AI 도우미</span>
           </div>
-          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="Analyzer" />
-          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="Extractor" />
-          <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="Rewards" />
+          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI 분석기" />
+          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="문제 추출" />
+          <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="업적 및 보상" />
         </div>
 
         <div className="p-6 border-t border-apex-border">
@@ -298,7 +298,7 @@ export default function App() {
             <img src={user.photoURL || ''} alt="" className="w-10 h-10 rounded-xl border border-white/10" />
             <div className="flex-1 min-w-0">
               <span className="block text-[10px] font-black uppercase tracking-widest truncate">{user.displayName}</span>
-              <span className="block text-[8px] text-white/30 uppercase tracking-widest">Active Node</span>
+              <span className="block text-[8px] text-white/30 uppercase tracking-widest">학습 중</span>
             </div>
             <button onClick={logout} className="p-2 hover:bg-white/5 rounded-lg transition-all text-white/20 hover:text-red-500">
               <LogOut size={16} />
@@ -312,8 +312,8 @@ export default function App() {
           <div className="absolute inset-0 z-50 bg-apex-black/80 backdrop-blur-md flex items-center justify-center p-6">
             <div className="glass rounded-[40px] p-10 max-w-md w-full shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
-              <h2 className="text-3xl font-bold mb-2 tracking-tighter">INITIALIZING NODE</h2>
-              <p className="text-white/40 mb-10 text-sm">Configure your cognitive baseline to optimize the learning neural network.</p>
+              <h2 className="text-3xl font-bold mb-2 tracking-tighter">학습 프로필 설정</h2>
+              <p className="text-white/40 mb-10 text-sm">맞춤형 학습 분석을 위해 현재 실력을 선택해주세요.</p>
               
               <div className="space-y-3">
                 {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
@@ -323,11 +323,13 @@ export default function App() {
                     className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 hover:bg-apex-accent/10 hover:border-apex-accent/30 transition-all text-left px-8 group relative overflow-hidden"
                   >
                     <div className="absolute right-0 top-0 h-full w-1 bg-apex-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="font-black uppercase tracking-[0.2em] text-xs group-hover:text-apex-accent mb-1">{level}</div>
+                    <div className="font-black uppercase tracking-[0.2em] text-xs group-hover:text-apex-accent mb-1">
+                      {level === 'HIGH' ? '상급' : level === 'MEDIUM' ? '중급' : '초급'}
+                    </div>
                     <div className="text-[10px] text-white/30 uppercase tracking-widest">
-                      {level === 'HIGH' ? 'Advanced Cognitive State' : 
-                       level === 'MEDIUM' ? 'Standard Baseline' : 
-                       'Initial Learning Phase'}
+                      {level === 'HIGH' ? '심화 학습 가능' : 
+                       level === 'MEDIUM' ? '기초 학습 완료' : 
+                       '입문 학습 단계'}
                     </div>
                   </button>
                 ))}

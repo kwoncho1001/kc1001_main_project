@@ -40,12 +40,12 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
         <div>
           <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2 flex items-center gap-4">
             <Star className="text-apex-accent fill-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.5)]" size={40} />
-            Knowledge Vault
+            지식 저장소
           </h1>
-          <p className="text-white/40 font-medium">Secure archive of prioritized neural nodes and problem sets</p>
+          <p className="text-white/40 font-medium">중요 표시한 문제와 학습 개념 보관함</p>
         </div>
         <div className="glass px-6 py-3 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-          <span className="text-apex-accent">{bookmarks.length}</span> Nodes Secured
+          <span className="text-apex-accent">{bookmarks.length}</span> 노드 확보됨
         </div>
       </header>
 
@@ -54,7 +54,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-apex-accent transition-colors" size={20} />
           <input 
             type="text" 
-            placeholder="Search by node signature or identifier..."
+            placeholder="노드 서명 또는 식별자로 검색..."
             className="w-full pl-16 pr-6 py-5 glass rounded-3xl border border-white/5 focus:outline-none focus:border-apex-accent/50 transition-all text-sm font-medium placeholder:text-white/10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -67,7 +67,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
             value={filterTag || ''}
             onChange={(e) => setFilterTag(e.target.value || null)}
           >
-            <option value="" className="bg-apex-black">All Protocols</option>
+            <option value="" className="bg-apex-black">모든 프로토콜</option>
             {allTags.map(tag => (
               <option key={tag} value={tag} className="bg-apex-black">{tag}</option>
             ))}
@@ -79,8 +79,8 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
         {filteredProblems.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-10">
             <BookOpen size={120} className="mb-8" />
-            <h3 className="text-3xl font-bold uppercase tracking-[0.3em]">Vault Empty</h3>
-            <p className="text-sm font-medium tracking-widest">No neural nodes have been prioritized for archival.</p>
+            <h3 className="text-3xl font-bold uppercase tracking-[0.3em]">저장소 비어 있음</h3>
+            <p className="text-sm font-medium tracking-widest">보관된 문제가 없습니다.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -94,9 +94,9 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex flex-col">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">
-                        {p.type === 'multiple' ? 'Discrete Response' : 'Neural Synthesis'}
+                        {p.type === 'multiple' ? '객관식' : '주관식'}
                       </span>
-                      <h3 className="text-xl font-bold tracking-tight leading-tight group-hover:text-apex-accent transition-colors">{p.title || `Node ${p.id}`}</h3>
+                      <h3 className="text-xl font-bold tracking-tight leading-tight group-hover:text-apex-accent transition-colors">{p.title || `노드 ${p.id}`}</h3>
                     </div>
                     <button 
                       onClick={() => toggleBookmark(p.id)}
@@ -125,7 +125,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
                       onClick={() => onSelectProblem(p.id)}
                       className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-apex-accent transition-all group/btn"
                     >
-                      Re-Synchronize <ExternalLink size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                      재동기화 <ExternalLink size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                     </button>
                   </div>
                 </div>

@@ -37,20 +37,20 @@ export const DigitalLearningCanvas = forwardRef<ExcalidrawImperativeAPI, Digital
             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${appState.mode === 'pen' ? 'bg-apex-accent text-apex-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
             onClick={() => setAppState(prev => ({ ...prev, mode: 'pen' }))}
           >
-            Pen
+            펜
           </button>
           <button 
             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${appState.mode === 'selection' ? 'bg-apex-accent text-apex-black shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
             onClick={() => setAppState(prev => ({ ...prev, mode: 'selection' }))}
           >
-            Select
+            선택
           </button>
           <div className="w-px h-6 bg-white/10 self-center mx-1" />
           <button 
             className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-red-500 hover:bg-red-500/10 transition-all"
             onClick={() => setElements([])}
           >
-            Clear
+            지우기
           </button>
         </div>
       </div>
