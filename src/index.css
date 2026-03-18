@@ -25,12 +25,12 @@
   --background: #FFFFFF; /* Pure white background */
   --foreground: #000000; /* Pure black text (high contrast) */
   --card: #F9FAFB;
-  --card-foreground: #111827;
-  --border: #E5E7EB;
+  --card-foreground: #000000;
+  --border: #000000; /* Pure black border for high contrast */
   --accent: #4F46E5; /* Indigo 600 */
   --accent-foreground: #FFFFFF;
   --muted: #F3F4F6;
-  --muted-foreground: #111827; /* Darker muted foreground for readability */
+  --muted-foreground: #000000; /* No grey - same as foreground */
   --accent-glow: rgba(79, 70, 229, 0.1);
   --success: #10B981;
   --error: #EF4444;
@@ -39,15 +39,15 @@
 }
 
 .dark {
-  --background: #0F172A; /* Deep slate/dark blue background */
-  --foreground: #F8FAFC; /* Bright white text */
-  --card: #1E293B;
-  --card-foreground: #F1F5F9;
-  --border: #334155;
+  --background: #000000; /* Pure black background */
+  --foreground: #FFFFFF; /* Pure white text */
+  --card: #111111;
+  --card-foreground: #FFFFFF;
+  --border: #FFFFFF; /* Pure white border */
   --accent: #6366F1; /* Indigo 500 */
   --accent-foreground: #FFFFFF;
   --muted: #1E293B;
-  --muted-foreground: #CBD5E1;
+  --muted-foreground: #FFFFFF; /* No grey - same as foreground */
   --accent-glow: rgba(99, 102, 241, 0.15);
   --success: #10B981;
   --error: #EF4444;

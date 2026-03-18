@@ -34,10 +34,11 @@ export const ExamInterface: React.FC<{
   onSolve?: (result: SolvingResult) => void,
   theme: 'light' | 'dark' // Added theme prop
 }> = ({ problems, initialProblemId, onSolve, theme }) => {
-  const textColor = theme === 'light' ? 'text-black' : 'text-white';
-  const borderColor = theme === 'light' ? 'border-black' : 'border-white';
-  const mutedTextColor = theme === 'light' ? 'text-black/60' : 'text-white/60';
-  const cardBg = theme === 'light' ? 'bg-white' : 'bg-slate-900';
+  const textPrimary = theme === 'light' ? 'text-black' : 'text-white';
+  const textSecondary = theme === 'light' ? 'text-black/80' : 'text-white/80';
+  const borderPrimary = theme === 'light' ? 'border-black' : 'border-white';
+  const bgCard = theme === 'light' ? 'bg-white' : 'bg-slate-900';
+  const bgApp = theme === 'light' ? 'bg-white' : 'bg-black';
 
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
     if (initialProblemId) {
@@ -258,19 +259,19 @@ export const ExamInterface: React.FC<{
   }
 
   return (
-    <div className="flex w-full h-full gap-8">
+    <div className={`flex w-full h-full gap-8 p-6 ${bgApp}`}>
       {/* Left: Problem Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-6">
-            <div className={`card px-6 py-3 flex items-center gap-3 border-2 ${borderColor} ${remainingTime < 60 ? 'bg-red-500/10' : ''}`}>
-              <Clock size={18} className={remainingTime < 60 ? 'text-red-500' : 'text-accent'} />
-              <span className={`font-mono text-xl font-bold tracking-tighter ${remainingTime < 60 ? 'text-red-500' : textColor}`}>
+            <div className={`px-6 py-3 border-2 rounded-2xl flex items-center gap-3 ${borderPrimary} ${bgCard} ${remainingTime < 60 ? 'bg-red-500/10' : ''}`}>
+              <Clock size={18} className={remainingTime < 60 ? 'text-red-500' : textPrimary} />
+              <span className={`font-mono text-2xl font-black ${remainingTime < 60 ? 'text-red-500' : textPrimary}`}>
                 {formatTime(remainingTime)}
               </span>
             </div>
             {!isOnline && (
-              <div className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl border-2 border-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+              <div className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl border-2 border-red-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                 <WifiOff size={14} /> 오프라인 모드
               </div>
             )}
@@ -278,59 +279,59 @@ export const ExamInterface: React.FC<{
           
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-end">
-              <span className={`text-micro font-bold uppercase ${mutedTextColor}`}>활성 노드</span>
+              <span className={`text-[10px] font-black uppercase ${textSecondary}`}>Active Node</span>
               <div className="flex items-baseline gap-2">
-                <span className={`text-3xl font-black tracking-tighter ${textColor}`}>{currentProblemIndex + 1}</span>
-                <span className={`text-xs font-bold ${mutedTextColor}`}>/ {problems.length}</span>
+                <span className={`text-4xl font-black ${textPrimary}`}>{currentProblemIndex + 1}</span>
+                <span className={`text-sm font-bold ${textSecondary}`}>/ {problems.length}</span>
               </div>
             </div>
             <button 
               onClick={handleToggleBookmark}
-              className={`w-12 h-12 rounded-2xl border-2 flex items-center justify-center transition-all ${
+              className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center transition-all ${
                 isBookmarked(currentProblem.id) 
-                  ? 'bg-accent text-white border-accent shadow-lg' 
-                  : `card border-border ${textColor} hover:opacity-80`
+                  ? 'bg-yellow-500 text-white border-yellow-600 shadow-lg' 
+                  : `${bgCard} ${borderPrimary} ${textPrimary} hover:opacity-80`
               }`}
             >
-              <Star size={20} className={isBookmarked(currentProblem.id) ? 'fill-white' : ''} />
+              <Star size={24} className={isBookmarked(currentProblem.id) ? 'fill-current' : ''} />
             </button>
           </div>
         </header>
 
-        <div className="flex-1 card p-2 relative overflow-hidden group">
-          <div className="absolute inset-0 grid-pattern opacity-10"></div>
-          <div className="w-full h-full rounded-[32px] relative overflow-hidden bg-background/50">
+        <div className={`flex-1 border-2 rounded-[40px] relative overflow-hidden ${borderPrimary} ${bgCard}`}>
+          <div className="absolute inset-0 grid-pattern opacity-5"></div>
+          <div className="w-full h-full relative overflow-hidden">
             <DigitalLearningCanvas 
-              key={currentProblem.id} // 문제 변경 시 캔버스 초기화를 위해 Key 사용
+              key={currentProblem.id}
               theme={theme}
               initialData={{ 
-                elements: drawingData[currentProblem.id] || [], // 해당 문제의 필기 데이터 로드
+                elements: drawingData[currentProblem.id] || [],
                 appState: { mode: 'pen' } 
               }}
               onChange={(newElements) => {
                 setDrawingData(prev => ({
                   ...prev,
-                  [currentProblem.id]: newElements // 실시간으로 해당 문제 ID에 필기 저장
+                  [currentProblem.id]: newElements
                 }));
               }}
             />
             
             {/* Floating Navigation */}
-            <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 card p-2 rounded-3xl shadow-2xl border-2 ${borderColor}`}>
+            <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md p-2 rounded-3xl border-2 border-white/20 shadow-2xl`}>
               <button 
                 disabled={currentProblemIndex === 0}
                 onClick={() => setCurrentProblemIndex(i => i - 1)}
-                className={`px-8 py-4 ${textColor} text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-accent/10 rounded-2xl transition-all`}
+                className="px-10 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-white/20 rounded-2xl disabled:opacity-20 transition-all"
               >
-                이전
+                PREV
               </button>
-              <div className={`w-px h-6 ${theme === 'light' ? 'bg-black' : 'bg-white'} opacity-20`} />
+              <div className="w-px h-6 bg-white/20" />
               <button 
                 disabled={currentProblemIndex === problems.length - 1}
                 onClick={() => setCurrentProblemIndex(i => i + 1)}
-                className={`px-8 py-4 ${textColor} text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-accent/10 rounded-2xl transition-all`}
+                className="px-10 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-white/20 rounded-2xl disabled:opacity-20 transition-all"
               >
-                다음 노드
+                NEXT NODE
               </button>
             </div>
           </div>
@@ -339,34 +340,34 @@ export const ExamInterface: React.FC<{
 
       {/* Right: Answer Panel */}
       <aside className="w-96 flex flex-col gap-8">
-        <div className={`card p-8 flex flex-col gap-8 border-2 ${borderColor}`}>
-          <div className="flex items-center justify-between">
-            <h2 className={`text-micro font-bold uppercase ${mutedTextColor}`}>응답 매트릭스</h2>
-            <div className="flex items-center gap-2 text-[10px] font-black text-accent uppercase tracking-widest">
-              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
-              동기화됨
+        <div className={`p-8 border-2 rounded-[32px] ${borderPrimary} ${bgCard}`}>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className={`text-[10px] font-black uppercase ${textSecondary}`}>Response Matrix</h2>
+            <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              SYNCED
             </div>
           </div>
 
           <div className="space-y-8">
-            <div className={`p-6 ${cardBg} rounded-3xl border-2 ${borderColor}`}>
-              <span className={`block text-micro font-bold uppercase ${mutedTextColor} mb-3`}>노드 지능</span>
+            <div className={`p-6 bg-black/5 dark:bg-white/5 rounded-3xl border-2 ${borderPrimary}`}>
+              <span className={`block text-[10px] font-black uppercase ${textSecondary} mb-3`}>Node Intelligence</span>
               <div className="flex items-center justify-between">
-                <span className={`font-black text-sm uppercase tracking-tight ${textColor}`}>문제 {currentProblemIndex + 1}</span>
-                <span className={`font-mono text-xs font-bold text-accent`}>{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
+                <span className={`font-black text-sm uppercase tracking-tight ${textPrimary}`}>Problem {currentProblemIndex + 1}</span>
+                <span className={`font-mono text-xs font-black text-emerald-500`}>{formatMs(perQuestionTime[currentProblem.id] || 0)}</span>
               </div>
             </div>
 
             {currentProblem.type === 'multiple' ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 {currentProblem.options?.map(opt => (
                   <button 
                     key={opt}
                     onClick={() => handleAnswerChange(opt)}
-                    className={`h-16 rounded-2xl border-2 text-xs font-black uppercase tracking-widest transition-all ${
+                    className={`h-20 rounded-2xl border-2 text-sm font-black transition-all ${
                       answers[currentProblem.id] === opt 
-                        ? 'bg-accent text-white border-accent shadow-lg scale-[1.02]' 
-                        : `${cardBg} ${borderColor} ${textColor} hover:border-accent/50`
+                        ? (theme === 'light' ? 'bg-black text-white border-black' : 'bg-white text-black border-white') 
+                        : (theme === 'light' ? 'bg-white text-black border-black/20' : 'bg-transparent text-white border-white/20')
                     }`}
                   >
                     {opt}
@@ -376,8 +377,8 @@ export const ExamInterface: React.FC<{
             ) : (
               <div className="space-y-3">
                 <textarea 
-                  className={`w-full h-48 p-6 ${cardBg} border-2 ${borderColor} rounded-3xl text-sm focus:outline-none focus:border-accent transition-all resize-none font-bold leading-relaxed ${textColor} placeholder:${mutedTextColor}`}
-                  placeholder="정답 입력..."
+                  className={`w-full h-64 p-6 border-2 rounded-3xl text-base font-bold focus:outline-none transition-all resize-none ${theme === 'light' ? 'bg-white border-black text-black placeholder:text-black/30' : 'bg-slate-800 border-white text-white placeholder:text-white/30'}`}
+                  placeholder="정답을 입력하세요..."
                   value={answers[currentProblem.id] || ''}
                   onChange={(e) => handleAnswerChange(e.target.value)}
                 />
@@ -387,8 +388,8 @@ export const ExamInterface: React.FC<{
         </div>
 
         {/* Progress Tracker */}
-        <div className={`card p-8 flex-1 flex flex-col border-2 ${borderColor}`}>
-          <h3 className={`text-micro font-bold uppercase ${mutedTextColor} mb-8`}>동기화 진행률</h3>
+        <div className={`p-8 border-2 rounded-[32px] flex-1 flex flex-col ${borderPrimary} ${bgCard}`}>
+          <h3 className={`text-[10px] font-black uppercase ${textSecondary} mb-8`}>Sync Progress</h3>
           <div className="grid grid-cols-5 gap-3 overflow-y-auto pr-2 scrollbar-hide">
             {problems.map((p, idx) => (
               <button
@@ -396,12 +397,12 @@ export const ExamInterface: React.FC<{
                 onClick={() => setCurrentProblemIndex(idx)}
                 className={`aspect-square rounded-xl flex items-center justify-center text-[10px] font-black transition-all ${
                   currentProblemIndex === idx 
-                    ? 'ring-2 ring-accent ring-offset-4 ring-offset-background' 
+                    ? 'ring-2 ring-emerald-500 ring-offset-4 ring-offset-background' 
                     : ''
                 } ${
                   answers[p.id] 
-                    ? 'bg-accent text-white' 
-                    : `${cardBg} ${textColor} border-2 ${borderColor}`
+                    ? 'bg-emerald-500 text-white' 
+                    : `border-2 ${borderPrimary} ${textPrimary}`
                 }`}
               >
                 {idx + 1}
@@ -412,10 +413,10 @@ export const ExamInterface: React.FC<{
 
         <div className="space-y-4">
           {blurCount > 0 && (
-            <div className="flex items-center gap-3 text-red-500 bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
+            <div className="flex items-center gap-3 text-red-500 bg-red-500/10 p-4 rounded-2xl border-2 border-red-500/20">
               <AlertCircle size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-widest">
-                {blurCount}회의 집중력 위반이 감지되었습니다
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                {blurCount} VIOLATIONS DETECTED
               </span>
             </div>
           )}
@@ -423,9 +424,9 @@ export const ExamInterface: React.FC<{
           <button 
             onClick={handleSubmit}
             disabled={!isOnline}
-            className="w-full py-6 accent-gradient text-white rounded-3xl font-bold uppercase tracking-widest text-xs hover:opacity-90 transition-all shadow-xl disabled:opacity-50"
+            className="w-full py-6 bg-emerald-500 text-white rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-emerald-600 transition-all shadow-xl disabled:opacity-50"
           >
-            최종 제출
+            TERMINATE SESSION
           </button>
         </div>
       </aside>

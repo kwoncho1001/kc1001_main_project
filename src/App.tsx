@@ -72,10 +72,10 @@ const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: I
       className={`w-full px-4 py-2.5 flex items-center gap-3 text-[11px] font-semibold transition-all rounded-lg group ${
         isActive 
           ? 'bg-accent/10 text-accent border border-accent/20' 
-          : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+          : 'text-foreground hover:text-foreground hover:bg-foreground/5'
       }`}
     >
-      <Icon size={16} className={isActive ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground'} />
+      <Icon size={16} className={isActive ? 'text-accent' : 'text-foreground group-hover:text-foreground'} />
       {label}
     </button>
   );
@@ -324,7 +324,7 @@ export default function App() {
             <div className="absolute top-0 left-0 w-full h-1 accent-gradient"></div>
             <div className="w-20 h-20 accent-gradient rounded-2xl mx-auto mb-8 flex items-center justify-center text-white text-4xl font-black shadow-lg">A</div>
             <h1 className="text-3xl font-bold mb-3 heading-tight">APEX NETWORK</h1>
-            <p className="text-muted-foreground mb-10 text-sm">차세대 학생들을 위한 쉽고 강력한 학습 도우미입니다.</p>
+            <p className="text-foreground mb-10 text-sm">차세대 학생들을 위한 쉽고 강력한 학습 도우미입니다.</p>
             <button
               onClick={login}
               className="w-full bg-foreground text-background py-4 rounded-xl font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl"
@@ -348,12 +348,12 @@ export default function App() {
               <div className="w-8 h-8 accent-gradient rounded-lg flex items-center justify-center text-white font-black text-lg shadow-md">A</div>
               <div>
                 <span className="block font-bold text-sm tracking-tight">APEX</span>
-                <span className="block text-[10px] text-muted-foreground">Learning System</span>
+                <span className="block text-[10px] text-foreground">Learning System</span>
               </div>
             </div>
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-all"
+              className="p-2 rounded-lg hover:bg-foreground/5 text-foreground hover:text-foreground transition-all"
             >
               {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
@@ -395,9 +395,9 @@ export default function App() {
               <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-lg border border-border" />
               <div className="flex-1 min-w-0">
                 <span className="block text-xs font-semibold truncate">{user.displayName}</span>
-                <span className="block text-[10px] text-muted-foreground">Active</span>
+                <span className="block text-[10px] text-foreground">Active</span>
               </div>
-              <button onClick={logout} className="p-1.5 text-muted-foreground hover:text-error transition-colors">
+              <button onClick={logout} className="p-1.5 text-foreground hover:text-error transition-colors">
                 <LogOut size={14} />
               </button>
             </div>
@@ -410,7 +410,7 @@ export default function App() {
               <div className="card p-10 max-w-md w-full shadow-2xl relative overflow-hidden glow">
                 <div className="absolute top-0 left-0 w-full h-1 accent-gradient"></div>
                 <h2 className="text-2xl font-bold mb-2 heading-tight">학습 프로필 설정</h2>
-                <p className="text-muted-foreground mb-8 text-sm">맞춤형 학습 분석을 위해 현재 실력을 선택해주세요.</p>
+                <p className="text-foreground mb-8 text-sm">맞춤형 학습 분석을 위해 현재 실력을 선택해주세요.</p>
                 
                 <div className="space-y-3">
                   {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
@@ -421,7 +421,7 @@ export default function App() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm">{level === 'HIGH' ? '상급' : level === 'MEDIUM' ? '중급' : '초급'}</span>
-                        <ArrowRight size={16} className="text-muted-foreground group-hover:text-accent transition-all" />
+                        <ArrowRight size={16} className="text-foreground group-hover:text-accent transition-all" />
                       </div>
                     </button>
                   ))}
