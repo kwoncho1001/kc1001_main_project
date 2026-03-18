@@ -4,10 +4,12 @@ import Konva from 'konva';
 import { DigitalInkObject, CanvasGlobalState, UIMode, CanvasInitialData } from './types';
 import { generatePressureSensitiveStroke } from './HandwritingEngine';
 import { convertToDigitalInkObjects, newElementWith } from './ComponentManagement';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 interface RenderingEngineProps {
   initialData?: CanvasInitialData;
   mode?: UIMode;
+  theme?: 'light' | 'dark'; // Added theme prop
   onChange?: (elements: DigitalInkObject[], appState: CanvasGlobalState) => void;
   onPointerDown?: (e: any) => void;
   onPointerUpdate?: (e: any) => void;
@@ -17,6 +19,7 @@ interface RenderingEngineProps {
 export const RenderingEngine: React.FC<RenderingEngineProps> = ({
   initialData,
   mode = 'pen',
+  theme = 'dark', // Added theme prop
   onChange,
   onPointerDown,
   onPointerUpdate,
@@ -33,6 +36,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
   const [activeElement, setActiveElement] = useState<DigitalInkObject | null>(null);
   const [isInteracting, setIsInteracting] = useState(false);
   const stageRef = useRef<Konva.Stage>(null);
+  const colors = useThemeColors();
 
   // Sync with props
   useEffect(() => {
@@ -51,12 +55,17 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
     setAppState((prev) => ({ ...prev, mode }));
   }, [mode]);
 
+  useEffect(() => {
+    setAppState((prev) => ({ ...prev, theme }));
+  }, [theme]);
+
   const handlePointerDown = (e: any) => {
     setIsInteracting(true);
     const stage = e.target.getStage();
     const pos = stage.getPointerPosition();
     
     if (appState.mode === 'pen') {
+      const penColor = theme === 'light' ? '#000000' : '#FFFFFF'; // Theme-based pen color
       const newEl: DigitalInkObject = {
         id: Math.random().toString(36).substr(2, 9),
         type: 'freedraw',
@@ -64,7 +73,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
         y: pos.y,
         width: 0,
         height: 0,
-        strokeColor: '#ffffff',
+        strokeColor: penColor,
         backgroundColor: 'transparent',
         strokeWidth: 4,
         opacity: 1,
@@ -133,7 +142,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
             data={pathData}
             fill={el.strokeColor}
             opacity={el.opacity}
-            stroke={selectedElementIds[el.id] ? '#10b981' : undefined}
+            stroke={selectedElementIds[el.id] ? colors.accent : undefined}
             strokeWidth={selectedElementIds[el.id] ? 2 : 0}
           />
         );
@@ -146,7 +155,7 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
             y={el.y}
             width={el.width}
             height={el.height}
-            stroke={selectedElementIds[el.id] ? '#10b981' : el.strokeColor}
+            stroke={selectedElementIds[el.id] ? colors.accent : el.strokeColor}
             strokeWidth={selectedElementIds[el.id] ? Math.max(el.strokeWidth, 2) : el.strokeWidth}
             fill={el.backgroundColor}
             opacity={el.opacity}
@@ -185,7 +194,9 @@ export const RenderingEngine: React.FC<RenderingEngineProps> = ({
   };
 
   return (
-    <div className="w-full h-full bg-black/40 relative overflow-hidden touch-none">
+    <div className={`w-full h-full relative overflow-hidden touch-none transition-colors duration-300 ${
+      theme === 'light' ? 'bg-white' : 'bg-slate-900'
+    }`}>
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}

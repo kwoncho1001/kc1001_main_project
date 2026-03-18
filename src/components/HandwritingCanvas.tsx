@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import Konva from 'konva';
+import { useThemeColors } from '../hooks/useThemeColors';
 
 interface Stroke {
   points: number[];
@@ -9,20 +10,24 @@ interface Stroke {
 
 interface HandwritingCanvasProps {
   problemId: string;
+  theme: 'light' | 'dark'; // Added theme prop
 }
 
-export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId }) => {
+export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId, theme }) => {
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [activeStroke, setActiveStroke] = useState<Stroke | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const stageRef = useRef<Konva.Stage>(null);
+  const colors = useThemeColors();
 
   const handlePointerDown = (e: any) => {
     setIsDrawing(true);
     const pos = e.target.getStage().getPointerPosition();
+    const penColor = theme === 'light' ? '#000000' : '#FFFFFF'; // Theme-based pen color
+    
     setActiveStroke({
       points: [pos.x, pos.y],
-      color: '#ffffff',
+      color: penColor,
     });
   };
 
@@ -46,7 +51,9 @@ export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId 
   };
 
   return (
-    <div className="w-full h-full border border-border rounded-2xl overflow-hidden touch-none bg-muted/50 backdrop-blur-sm">
+    <div className={`w-full h-full border border-border rounded-2xl overflow-hidden touch-none transition-colors duration-300 ${
+      theme === 'light' ? 'bg-white' : 'bg-slate-900'
+    }`}>
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}

@@ -70,10 +70,10 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({ analysis, loadin
             </div>
             <div className="space-y-6">
               <div>
-                <span className="block text-[8px] font-bold uppercase tracking-widest text-red-500 mb-3">집중 보완 필요</span>
+                <span className="block text-[8px] font-bold uppercase tracking-widest text-error mb-3">집중 보완 필요</span>
                 <div className="flex flex-wrap gap-2">
                   {analysis.weakPoints.map(id => (
-                    <span key={id} className="px-3 py-1 bg-red-500/10 text-red-500 text-[8px] font-bold uppercase tracking-widest rounded-full border border-red-500/20">
+                    <span key={id} className="px-3 py-1 bg-error/10 text-error text-[8px] font-bold uppercase tracking-widest rounded-full border border-error/20">
                       {id}
                     </span>
                   ))}

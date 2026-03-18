@@ -15,32 +15,44 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent-glow: var(--accent-glow);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
 }
 
 :root {
-  --background: #F5F5F0;
-  --foreground: #141414;
-  --card: #FFFFFF;
-  --card-foreground: #141414;
-  --border: #E4E4E0;
-  --accent: #6366F1;
+  --background: #FFFFFF; /* Pure white background */
+  --foreground: #000000; /* Pure black text (high contrast) */
+  --card: #F9FAFB;
+  --card-foreground: #111827;
+  --border: #E5E7EB;
+  --accent: #4F46E5; /* Indigo 600 */
   --accent-foreground: #FFFFFF;
-  --muted: #F1F1F1;
-  --muted-foreground: #6B7280;
-  --accent-glow: rgba(99, 102, 241, 0.1);
+  --muted: #F3F4F6;
+  --muted-foreground: #111827; /* Darker muted foreground for readability */
+  --accent-glow: rgba(79, 70, 229, 0.1);
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
 }
 
 .dark {
-  --background: #030712;
-  --foreground: #F9FAFB;
-  --card: #09090B;
-  --card-foreground: #F9FAFB;
-  --border: #1F2937;
-  --accent: #6366F1;
+  --background: #0F172A; /* Deep slate/dark blue background */
+  --foreground: #F8FAFC; /* Bright white text */
+  --card: #1E293B;
+  --card-foreground: #F1F5F9;
+  --border: #334155;
+  --accent: #6366F1; /* Indigo 500 */
   --accent-foreground: #FFFFFF;
-  --muted: #111827;
-  --muted-foreground: #9CA3AF;
+  --muted: #1E293B;
+  --muted-foreground: #CBD5E1;
   --accent-glow: rgba(99, 102, 241, 0.15);
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
 }
 
 @layer base {

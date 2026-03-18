@@ -86,7 +86,7 @@ export const ScannerUI: React.FC = () => {
         <div className="flex gap-4">
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className="px-8 py-3 card hover:bg-white/5 transition-all text-micro flex items-center gap-3"
+            className="px-8 py-3 card hover:bg-foreground/5 transition-all text-micro flex items-center gap-3"
           >
             <Camera size={16} className="text-accent" />
             이미지 불러오기
@@ -151,7 +151,7 @@ export const ScannerUI: React.FC = () => {
                   <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button 
                       onClick={() => removeImage(idx)}
-                      className="text-red-500 text-[8px] font-bold uppercase tracking-widest hover:scale-110 transition-transform"
+                      className="text-error text-[8px] font-bold uppercase tracking-widest hover:scale-110 transition-transform"
                     >
                       제거
                     </button>
@@ -163,7 +163,7 @@ export const ScannerUI: React.FC = () => {
               ))}
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="shrink-0 w-32 aspect-[3/4] card border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-white/5 transition-all"
+                className="shrink-0 w-32 aspect-[3/4] card border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-foreground/5 transition-all"
               >
                 <Camera size={20} className="text-muted-foreground" />
                 <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">추가</span>
@@ -193,7 +193,7 @@ export const ScannerUI: React.FC = () => {
               </a>
               <button 
                 onClick={() => reset()}
-                className="px-12 py-6 card rounded-2xl font-bold uppercase tracking-[0.3em] text-xs hover:bg-white/5 transition-all"
+                className="px-12 py-6 card rounded-2xl font-bold uppercase tracking-[0.3em] text-xs hover:bg-foreground/5 transition-all"
               >
                 초기화
               </button>

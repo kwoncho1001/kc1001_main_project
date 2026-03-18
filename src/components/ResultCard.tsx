@@ -51,7 +51,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({
           </div>
           <div className="h-2 bg-background/50 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-accent shadow-[0_0_10px_rgba(var(--accent),0.5)] transition-all duration-1000"
+              className="h-full bg-accent shadow-[0_0_10px_var(--accent-glow)] transition-all duration-1000"
               style={{ width: `${percentile}%` }}
             />
           </div>

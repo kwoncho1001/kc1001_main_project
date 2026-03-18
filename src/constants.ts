@@ -28,10 +28,10 @@ export const API_ENDPOINTS = {
 };
 
 export const COLORS = {
-  PRIMARY: '#10b981', // apex-accent
-  SECONDARY: '#0a0a0a', // apex-black
-  SUCCESS: '#10b981',
-  ERROR: '#ef4444',
-  WARNING: '#f59e0b',
-  INFO: '#3b82f6'
+  PRIMARY: 'var(--accent)',
+  SECONDARY: 'var(--foreground)',
+  SUCCESS: 'var(--success)',
+  ERROR: 'var(--error)',
+  WARNING: 'var(--warning)',
+  INFO: 'var(--info)'
 };

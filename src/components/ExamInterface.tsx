@@ -30,8 +30,9 @@ const MOCK_EXAM_METADATA: ExamPaperMetadata = {
 export const ExamInterface: React.FC<{ 
   problems: Problem[], 
   initialProblemId?: string | null,
-  onSolve?: (result: SolvingResult) => void 
-}> = ({ problems, initialProblemId, onSolve }) => {
+  onSolve?: (result: SolvingResult) => void,
+  theme: 'light' | 'dark' // Added theme prop
+}> = ({ problems, initialProblemId, onSolve, theme }) => {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(() => {
     if (initialProblemId) {
       const index = problems.findIndex(p => p.id === initialProblemId);
@@ -63,6 +64,7 @@ export const ExamInterface: React.FC<{
   const { remainingTime, perQuestionTime, isTimeUp, blurCount } = useExamTimer(
     60 * 30,
     currentProblem.id,
+    examStatus === 'ACTIVE', // Pass active state
     () => {
       const finalState = ExamManagerService.handleTimeout(answers);
       setExamStatus(finalState.status);
@@ -279,7 +281,7 @@ export const ExamInterface: React.FC<{
         <div className="flex-1 card p-2 relative overflow-hidden group">
           <div className="absolute inset-0 grid-pattern opacity-10"></div>
           <div className="w-full h-full rounded-[32px] relative overflow-hidden bg-background/50">
-            <DigitalLearningCanvas />
+            <DigitalLearningCanvas theme={theme} />
             
             {/* Floating Navigation */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 card p-2 rounded-3xl shadow-2xl">

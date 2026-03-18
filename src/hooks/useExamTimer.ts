@@ -21,6 +21,7 @@ export interface ExamTimerResult {
 export const useExamTimer = (
   examDurationSeconds: number,
   currentQuestionId: string,
+  isActive: boolean, // Added: exam active state
   onTimeUp?: () => void
 ): ExamTimerResult => {
   const [remainingTime, setRemainingTime] = useState(examDurationSeconds);
@@ -36,6 +37,8 @@ export const useExamTimer = (
 
   // 1. Global Timer Logic (Countdown)
   useEffect(() => {
+    if (!isActive) return; // Do not start timer if not active
+
     const interval = setInterval(() => {
       const now = Date.now();
       const deltaMs = now - lastGlobalTickRef.current;
@@ -76,7 +79,7 @@ export const useExamTimer = (
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [currentQuestionId, onTimeUp]);
+  }, [currentQuestionId, onTimeUp, isActive]); // Added isActive to dependencies
 
   // 2. Question Switching Logic
   const lastQuestionIdRef = useRef(currentQuestionId);

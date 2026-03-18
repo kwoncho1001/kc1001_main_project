@@ -37,11 +37,11 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
   const getLevelColor = (level: AbilityLevel) => {
     switch (level) {
-      case 'FIELD': return 'bg-purple-500';
+      case 'FIELD': return 'bg-accent';
       case 'COURSE': return 'bg-accent';
-      case 'MAJOR_CHAPTER': return 'bg-blue-500';
-      case 'MINOR_CHAPTER': return 'bg-amber-500';
-      case 'TYPE': return 'bg-rose-500';
+      case 'MAJOR_CHAPTER': return 'bg-info';
+      case 'MINOR_CHAPTER': return 'bg-warning';
+      case 'TYPE': return 'bg-error';
       default: return 'bg-foreground/20';
     }
   };
@@ -108,7 +108,7 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
         <div className="space-y-8">
           <div className="card p-8">
             <h2 className="text-micro mb-8 flex items-center gap-3">
-              <Zap size={16} className="text-amber-500" />
+              <Zap size={16} className="text-warning" />
               주요 학습 주제
             </h2>
             <div className="space-y-8">
@@ -155,8 +155,8 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
                   <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">태그</span>
                   <span className={`text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest ${
                     lastBehavior.behaviorTag === 'NORMAL' ? 'bg-accent/10 text-accent' :
-                    lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-amber-500/10 text-amber-500' :
-                    'bg-blue-500/10 text-blue-500'
+                    lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-warning/10 text-warning' :
+                    'bg-info/10 text-info'
                   }`}>
                     {lastBehavior.behaviorTag === 'NORMAL' ? '정상' : 
                      lastBehavior.behaviorTag === 'LUCKY_GUESS' ? '찍기' : '실수'}

@@ -15,7 +15,7 @@ export const convertToDigitalInkObjects = (
       y: skeleton.y,
       width: skeleton.width || 100,
       height: skeleton.height || 100,
-      strokeColor: skeleton.strokeColor || '#000000',
+      strokeColor: skeleton.strokeColor || 'var(--foreground)',
       backgroundColor: skeleton.backgroundColor || 'transparent',
       strokeWidth: skeleton.strokeWidth || 2,
       opacity: skeleton.opacity || 1,

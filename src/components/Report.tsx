@@ -91,38 +91,40 @@ export const Report: React.FC<ReportProps> = ({
             <div className="flex-1 min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} vertical={false} />
                   <XAxis 
                     dataKey="name" 
-                    stroke="rgba(255,255,255,0.2)" 
+                    stroke="var(--muted-foreground)" 
                     fontSize={10} 
                     tickLine={false} 
                     axisLine={false}
-                    tick={{ fill: 'rgba(255,255,255,0.4)', fontWeight: 700 }}
+                    tick={{ fill: 'var(--muted-foreground)', fontWeight: 700 }}
                   />
                   <YAxis 
-                    stroke="rgba(255,255,255,0.2)" 
+                    stroke="var(--muted-foreground)" 
                     fontSize={10} 
                     tickLine={false} 
                     axisLine={false}
-                    tick={{ fill: 'rgba(255,255,255,0.4)', fontWeight: 700 }}
+                    tick={{ fill: 'var(--muted-foreground)', fontWeight: 700 }}
                     unit="%"
                   />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    cursor={{ fill: 'var(--muted)', opacity: 0.2 }}
                     contentStyle={{ 
-                      backgroundColor: 'rgba(10,10,10,0.9)', 
-                      border: '1px solid rgba(255,255,255,0.1)',
+                      backgroundColor: 'var(--card)', 
+                      border: '1px solid var(--border)',
                       borderRadius: '16px',
                       fontSize: '10px',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.1em'
+                      letterSpacing: '0.1em',
+                      color: 'var(--foreground)'
                     }}
+                    itemStyle={{ color: 'var(--foreground)' }}
                   />
                   <Bar dataKey="errorRate" radius={[4, 4, 0, 0]}>
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.isHighError ? '#ef4444' : '#6366f1'} />
+                      <Cell key={`cell-${index}`} fill={entry.isHighError ? 'var(--error)' : 'var(--accent)'} />
                     ))}
                   </Bar>
                 </BarChart>

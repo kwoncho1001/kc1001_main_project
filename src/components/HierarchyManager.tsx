@@ -103,11 +103,11 @@ export const HierarchyManager: React.FC = () => {
           </button>
           
           <div className={`text-[8px] px-2 py-0.5 rounded-md font-bold uppercase tracking-widest ${
-            node.level === 'FIELD' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-            node.level === 'COURSE' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-            node.level === 'MAJOR_CHAPTER' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-            node.level === 'MINOR_CHAPTER' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-            'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+            node.level === 'FIELD' ? 'bg-accent/10 text-accent border border-accent/20' :
+            node.level === 'COURSE' ? 'bg-info/10 text-info border border-info/20' :
+            node.level === 'MAJOR_CHAPTER' ? 'bg-success/10 text-success border border-success/20' :
+            node.level === 'MINOR_CHAPTER' ? 'bg-warning/10 text-warning border border-warning/20' :
+            'bg-error/10 text-error border border-error/20'
           }`}>
             {levelLabels[node.level] || node.level}
           </div>
@@ -130,7 +130,7 @@ export const HierarchyManager: React.FC = () => {
                 <Plus size={14} />
               </button>
             )}
-            <button onClick={() => handleDelete(node.id)} className="p-2 hover:bg-red-500/10 text-red-500/60 hover:text-red-500 rounded-xl transition-all">
+            <button onClick={() => handleDelete(node.id)} className="p-2 hover:bg-error/10 text-error/60 hover:text-error rounded-xl transition-all">
               <Trash2 size={14} />
             </button>
           </div>
@@ -169,7 +169,7 @@ export const HierarchyManager: React.FC = () => {
 
       {message && (
         <div className={`p-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 border ${
-          message.type === 'success' ? 'bg-accent/10 text-accent border-accent/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
+          message.type === 'success' ? 'bg-accent/10 text-accent border-accent/20' : 'bg-error/10 text-error border-error/20'
         }`}>
           {message.type === 'success' ? <CheckCircle2 size={16} /> : <X size={16} />}
           {message.text}

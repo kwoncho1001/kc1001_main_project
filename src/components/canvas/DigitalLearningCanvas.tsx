@@ -6,11 +6,12 @@ import { CanvasInitialData, UIMode, DigitalInkObject, CanvasGlobalState } from '
 interface DigitalLearningCanvasProps {
   initialData?: CanvasInitialData;
   mode?: UIMode;
+  theme?: 'light' | 'dark'; // Added theme prop
   onChange?: (elements: DigitalInkObject[], appState: CanvasGlobalState) => void;
 }
 
 export const DigitalLearningCanvas = forwardRef<ExcalidrawImperativeAPI, DigitalLearningCanvasProps>(
-  ({ initialData, mode = 'pen', onChange }, ref) => {
+  ({ initialData, mode = 'pen', theme = 'dark', onChange }, ref) => {
     const { elements, setElements, appState, setAppState, api } = useCanvasAPI(
       initialData?.elements,
       initialData?.appState
@@ -29,6 +30,7 @@ export const DigitalLearningCanvas = forwardRef<ExcalidrawImperativeAPI, Digital
         <RenderingEngine
           initialData={{ elements, appState }}
           mode={mode}
+          theme={theme} // Pass theme to RenderingEngine
           onChange={handleChange}
         />
         {/* Toolbar Overlay */}

@@ -261,7 +261,12 @@ export default function App() {
   const renderView = () => {
     switch (view) {
       case 'exam':
-        return <ExamInterface problems={problems as any} initialProblemId={selectedProblemId} onSolve={handleSolve} />;
+        return <ExamInterface 
+                  problems={problems as any} 
+                  initialProblemId={selectedProblemId} 
+                  onSolve={handleSolve} 
+                  theme={theme} 
+               />;
       case 'scanner':
         return <ScannerUI />;
       case 'bookmarks':
@@ -284,7 +289,7 @@ export default function App() {
         return (
           <div className="space-y-12">
             <AnalysisSettings />
-            <div className="border-t border-white/5 pt-12">
+            <div className="border-t border-border pt-12">
               <DatabaseInitializer />
             </div>
           </div>
@@ -392,7 +397,7 @@ export default function App() {
                 <span className="block text-xs font-semibold truncate">{user.displayName}</span>
                 <span className="block text-[10px] text-muted-foreground">Active</span>
               </div>
-              <button onClick={logout} className="p-1.5 text-muted-foreground hover:text-red-500 transition-colors">
+              <button onClick={logout} className="p-1.5 text-muted-foreground hover:text-error transition-colors">
                 <LogOut size={14} />
               </button>
             </div>
