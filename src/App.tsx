@@ -33,7 +33,10 @@ import {
   FileText,
   Settings,
   Upload,
-  Users
+  Users,
+  ArrowRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 import { AbilityLevel, SolvingResult, BehaviorCorrectionOutput, InitialSkillRequest, AbilityScore, WeightCalculationResponse } from './types/ability';
@@ -66,13 +69,13 @@ const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: I
   return (
     <button 
       onClick={() => onClick(id)}
-      className={`w-full px-4 py-3 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-bold transition-all rounded-xl group ${
+      className={`w-full px-4 py-2.5 flex items-center gap-3 text-[11px] font-semibold transition-all rounded-lg group ${
         isActive 
-          ? 'bg-apex-accent/10 text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.1)]' 
-          : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+          ? 'bg-accent/10 text-accent border border-accent/20' 
+          : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
       }`}
     >
-      <Icon size={16} className={isActive ? 'text-apex-accent' : 'text-white/20 group-hover:text-white/40'} />
+      <Icon size={16} className={isActive ? 'text-accent' : 'text-muted-foreground group-hover:text-foreground/70'} />
       {label}
     </button>
   );
@@ -105,12 +108,15 @@ const mockAbilityScores: Record<string, number> = {
 
 export default function App() {
   const { user, loading, login, logout } = useAuth();
-  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ai-analyzer' | 'ocr-extractor' | 'gamification' | 'scorer' | 'reports' | 'settings' | 'upload' | 'teacher-dashboard'>('scanner');
+  const [view, setView] = useState<'exam' | 'scanner' | 'bookmarks' | 'prediction' | 'ability' | 'hierarchy' | 'ocr-extractor' | 'gamification' | 'scorer' | 'reports' | 'settings' | 'upload' | 'teacher-dashboard'>('scanner');
   const [selectedProblemId, setSelectedProblemId] = useState<string | null>(null);
   const [abilityScores, setAbilityScores] = useState<Record<string, AbilityScore>>({}); // Start empty for onboarding demo
   const [lastBehavior, setLastBehavior] = useState<BehaviorCorrectionOutput | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [prediction, setPrediction] = useState<WeightCalculationResponse | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
   // Sync ability scores from Firestore
   useEffect(() => {
@@ -266,8 +272,6 @@ export default function App() {
         return <AbilityTracker scores={abilityScores} hierarchy={mockHierarchy} lastBehavior={lastBehavior} />;
       case 'hierarchy':
         return <HierarchyManager />;
-      case 'ai-analyzer':
-        return <AIMetadataAnalyzer />;
       case 'ocr-extractor':
         return <ProblemExtractor />;
       case 'gamification':
@@ -296,11 +300,12 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-apex-black">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 border-2 border-apex-accent/20 rounded-full"></div>
-          <div className="absolute inset-0 border-2 border-apex-accent border-t-transparent rounded-full animate-spin"></div>
-          <div className="absolute inset-0 flex items-center justify-center text-apex-accent font-black text-xs">A</div>
+      <div className={`${theme}`}>
+        <div className="w-screen h-screen flex items-center justify-center bg-background text-foreground grid-pattern">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 border-2 border-accent/20 rounded-full"></div>
+            <div className="absolute inset-0 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+          </div>
         </div>
       </div>
     );
@@ -308,117 +313,123 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-apex-black apex-grid p-6">
-        <div className="glass rounded-[40px] p-12 max-w-md w-full text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-apex-accent to-transparent"></div>
-          <div className="w-24 h-24 bg-apex-accent/10 border border-apex-accent/20 rounded-3xl mx-auto mb-8 flex items-center justify-center text-apex-accent text-5xl font-black shadow-[0_0_40px_rgba(16,185,129,0.2)] glow-text">A</div>
-          <h1 className="text-4xl font-bold mb-4 tracking-tighter">APEX NETWORK</h1>
-          <p className="text-white/40 mb-10 text-sm">차세대 학생들을 위한 쉽고 강력한 학습 도우미입니다.</p>
-          <button
-            onClick={login}
-            className="w-full bg-white text-apex-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-apex-accent transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-          >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-            시작하기
-          </button>
+      <div className={`${theme}`}>
+        <div className="w-screen h-screen flex items-center justify-center bg-background text-foreground grid-pattern p-6">
+          <div className="card p-12 max-w-md w-full text-center relative overflow-hidden glow">
+            <div className="absolute top-0 left-0 w-full h-1 accent-gradient"></div>
+            <div className="w-20 h-20 accent-gradient rounded-2xl mx-auto mb-8 flex items-center justify-center text-white text-4xl font-black shadow-lg">A</div>
+            <h1 className="text-3xl font-bold mb-3 heading-tight">APEX NETWORK</h1>
+            <p className="text-muted-foreground mb-10 text-sm">차세대 학생들을 위한 쉽고 강력한 학습 도우미입니다.</p>
+            <button
+              onClick={login}
+              className="w-full bg-foreground text-background py-4 rounded-xl font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-xl"
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+              Google로 시작하기
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-screen h-screen flex bg-apex-black overflow-hidden">
-      {/* Sidebar Navigation */}
-      <aside className="w-72 border-r border-apex-border flex flex-col shrink-0 bg-apex-dark/50 backdrop-blur-md">
-        <div className="p-8 flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-apex-accent/10 border border-apex-accent/30 rounded-xl flex items-center justify-center text-apex-accent font-black text-xl shadow-[0_0_20px_rgba(16,185,129,0.1)]">A</div>
-          <div>
-            <span className="block font-black uppercase tracking-[0.3em] text-xs glow-text">APEX</span>
-            <span className="block text-[8px] uppercase tracking-[0.5em] text-white/30">학습 시스템</span>
-          </div>
-        </div>
-        
-        <div className="flex-1 px-4 space-y-2 overflow-y-auto">
-          <div className="px-4 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">학습 도구</span>
-          </div>
-          <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="문제 스캔" />
-          <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="학습 모드" />
-          <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="오답 노트" />
-          
-          <div className="px-4 mt-8 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">학습 분석</span>
-          </div>
-          <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="성적 예측" />
-          <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="학습 지표" />
-          <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="학습 계층" />
-          
-          <div className="px-4 mt-8 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">AI 도우미</span>
-          </div>
-          <NavButton id="ai-analyzer" currentView={view} onClick={setView} icon={Brain} label="AI 문제 분석기" />
-          <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="문제 추출기" />
-          <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="업적 및 보상" />
-          
-          <div className="px-4 mt-8 mb-4">
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20">시스템 관리</span>
-          </div>
-          <NavButton id="scorer" currentView={view} onClick={setView} icon={Calculator} label="성적 입력" />
-          <NavButton id="reports" currentView={view} onClick={setView} icon={FileText} label="리포트 보관함" />
-          <NavButton id="settings" currentView={view} onClick={setView} icon={Settings} label="분석 설정" />
-          <NavButton id="upload" currentView={view} onClick={setView} icon={Upload} label="데이터 업로드" />
-          <NavButton id="teacher-dashboard" currentView={view} onClick={setView} icon={Users} label="교사 대시보드" />
-        </div>
-
-        <div className="p-6 border-t border-apex-border">
-          <div className="flex items-center gap-4 p-3 glass rounded-2xl">
-            <img src={user.photoURL || ''} alt="" className="w-10 h-10 rounded-xl border border-white/10" />
-            <div className="flex-1 min-w-0">
-              <span className="block text-[10px] font-black uppercase tracking-widest truncate">{user.displayName}</span>
-              <span className="block text-[8px] text-white/30 uppercase tracking-widest">학습 중</span>
-            </div>
-            <button onClick={logout} className="p-2 hover:bg-white/5 rounded-lg transition-all text-white/20 hover:text-red-500">
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 overflow-auto relative apex-grid">
-        {showOnboarding && (
-          <div className="absolute inset-0 z-50 bg-apex-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <div className="glass rounded-[40px] p-10 max-w-md w-full shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
-              <h2 className="text-3xl font-bold mb-2 tracking-tighter">학습 프로필 설정</h2>
-              <p className="text-white/40 mb-10 text-sm">맞춤형 학습 분석을 위해 현재 실력을 선택해주세요.</p>
-              
-              <div className="space-y-3">
-                {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
-                  <button
-                    key={level}
-                    onClick={() => handleOnboarding(level)}
-                    className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 hover:bg-apex-accent/10 hover:border-apex-accent/30 transition-all text-left px-8 group relative overflow-hidden"
-                  >
-                    <div className="absolute right-0 top-0 h-full w-1 bg-apex-accent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="font-black uppercase tracking-[0.2em] text-xs group-hover:text-apex-accent mb-1">
-                      {level === 'HIGH' ? '상급' : level === 'MEDIUM' ? '중급' : '초급'}
-                    </div>
-                    <div className="text-[10px] text-white/30 uppercase tracking-widest">
-                      {level === 'HIGH' ? '심화 학습 가능' : 
-                       level === 'MEDIUM' ? '기초 학습 완료' : 
-                       '입문 학습 단계'}
-                    </div>
-                  </button>
-                ))}
+    <div className={`${theme}`}>
+      <div className="w-screen h-screen flex bg-background text-foreground overflow-hidden">
+        {/* Sidebar Navigation */}
+        <aside className="w-64 border-r border-border flex flex-col shrink-0 bg-card/50 backdrop-blur-md">
+          <div className="p-6 flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 accent-gradient rounded-lg flex items-center justify-center text-white font-black text-lg shadow-md">A</div>
+              <div>
+                <span className="block font-bold text-sm tracking-tight">APEX</span>
+                <span className="block text-[10px] text-muted-foreground">Learning System</span>
               </div>
             </div>
+            <button 
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-foreground/5 text-muted-foreground hover:text-foreground transition-all"
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
           </div>
-        )}
+          
+          <div className="flex-1 px-3 space-y-1 overflow-y-auto scrollbar-hide">
+            <div className="px-3 mb-3">
+              <span className="text-micro">학습 도구</span>
+            </div>
+            <NavButton id="scanner" currentView={view} onClick={setView} icon={Scan} label="문제 스캔" />
+            <NavButton id="exam" currentView={view} onClick={setView} icon={PenTool} label="학습 모드" />
+            <NavButton id="bookmarks" currentView={view} onClick={setView} icon={Star} label="오답 노트" />
+            
+            <div className="px-3 mt-8 mb-3">
+              <span className="text-micro">학습 분석</span>
+            </div>
+            <NavButton id="prediction" currentView={view} onClick={setView} icon={BarChart3} label="성적 예측" />
+            <NavButton id="ability" currentView={view} onClick={setView} icon={Layers} label="학습 지표" />
+            <NavButton id="hierarchy" currentView={view} onClick={setView} icon={Database} label="학습 계층" />
+            
+            <div className="px-3 mt-8 mb-3">
+              <span className="text-micro">AI 도우미</span>
+            </div>
+            <NavButton id="ocr-extractor" currentView={view} onClick={setView} icon={FileSearch} label="문제 추출 및 분석" />
+            <NavButton id="gamification" currentView={view} onClick={setView} icon={Trophy} label="업적 및 보상" />
+            
+            <div className="px-3 mt-8 mb-3">
+              <span className="text-micro">시스템 관리</span>
+            </div>
+            <NavButton id="scorer" currentView={view} onClick={setView} icon={Calculator} label="성적 입력" />
+            <NavButton id="reports" currentView={view} onClick={setView} icon={FileText} label="리포트 보관함" />
+            <NavButton id="settings" currentView={view} onClick={setView} icon={Settings} label="분석 설정" />
+            <NavButton id="upload" currentView={view} onClick={setView} icon={Upload} label="데이터 업로드" />
+            <NavButton id="teacher-dashboard" currentView={view} onClick={setView} icon={Users} label="교사 대시보드" />
+          </div>
 
-        <div className="h-full p-8">
-          {renderView()}
-        </div>
-      </main>
+          <div className="p-4 border-t border-border">
+            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-foreground/5 transition-all">
+              <img src={user.photoURL || ''} alt="" className="w-8 h-8 rounded-lg border border-border" />
+              <div className="flex-1 min-w-0">
+                <span className="block text-xs font-semibold truncate">{user.displayName}</span>
+                <span className="block text-[10px] text-muted-foreground">Active</span>
+              </div>
+              <button onClick={logout} className="p-1.5 text-muted-foreground hover:text-red-500 transition-colors">
+                <LogOut size={14} />
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <main className="flex-1 overflow-auto relative grid-pattern">
+          {showOnboarding && (
+            <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-6">
+              <div className="card p-10 max-w-md w-full shadow-2xl relative overflow-hidden glow">
+                <div className="absolute top-0 left-0 w-full h-1 accent-gradient"></div>
+                <h2 className="text-2xl font-bold mb-2 heading-tight">학습 프로필 설정</h2>
+                <p className="text-muted-foreground mb-8 text-sm">맞춤형 학습 분석을 위해 현재 실력을 선택해주세요.</p>
+                
+                <div className="space-y-3">
+                  {(['HIGH', 'MEDIUM', 'LOW'] as const).map(level => (
+                    <button
+                      key={level}
+                      onClick={() => handleOnboarding(level)}
+                      className="w-full py-4 rounded-xl border border-border bg-foreground/5 hover:bg-accent/10 hover:border-accent/30 transition-all text-left px-6 group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-sm">{level === 'HIGH' ? '상급' : level === 'MEDIUM' ? '중급' : '초급'}</span>
+                        <ArrowRight size={16} className="text-muted-foreground group-hover:text-accent transition-all" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="p-12 max-w-7xl mx-auto min-h-full">
+            {renderView()}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

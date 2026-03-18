@@ -38,38 +38,38 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
     <div className="flex flex-col h-full gap-8">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2 flex items-center gap-4">
-            <Star className="text-apex-accent fill-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.5)]" size={40} />
+          <h1 className="text-4xl font-bold heading-tight uppercase mb-2 flex items-center gap-4">
+            <Star className="text-accent fill-accent shadow-lg" size={40} />
             지식 저장소
           </h1>
-          <p className="text-white/40 font-medium">중요 표시한 문제와 학습 개념 보관함</p>
+          <p className="text-muted-foreground font-medium">중요 표시한 문제와 학습 개념 보관함</p>
         </div>
-        <div className="glass px-6 py-3 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-          <span className="text-apex-accent">{bookmarks.length}</span> 노드 확보됨
+        <div className="card px-6 py-3 text-micro">
+          <span className="text-accent">{bookmarks.length}</span> 노드 확보됨
         </div>
       </header>
 
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-apex-accent transition-colors" size={20} />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-accent transition-colors" size={20} />
           <input 
             type="text" 
-            placeholder="노드 서명 또는 식별자로 검색..."
-            className="w-full pl-16 pr-6 py-5 glass rounded-3xl border border-white/5 focus:outline-none focus:border-apex-accent/50 transition-all text-sm font-medium placeholder:text-white/10"
+            placeholder="문제 제목 또는 ID로 검색..."
+            className="w-full pl-16 pr-6 py-5 card focus:outline-none focus:border-accent/50 transition-all text-sm font-medium placeholder:text-muted-foreground/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-4 glass px-6 py-2 rounded-3xl border border-white/5">
-          <Filter size={18} className="text-white/20" />
+        <div className="flex items-center gap-4 card px-6 py-2">
+          <Filter size={18} className="text-muted-foreground" />
           <select 
-            className="bg-transparent text-[10px] font-black uppercase tracking-[0.2em] focus:outline-none cursor-pointer text-white/60"
+            className="bg-transparent text-micro focus:outline-none cursor-pointer text-muted-foreground"
             value={filterTag || ''}
             onChange={(e) => setFilterTag(e.target.value || null)}
           >
-            <option value="" className="bg-apex-black">모든 프로토콜</option>
+            <option value="" className="bg-background">모든 태그</option>
             {allTags.map(tag => (
-              <option key={tag} value={tag} className="bg-apex-black">{tag}</option>
+              <option key={tag} value={tag} className="bg-background">{tag}</option>
             ))}
           </select>
         </div>
@@ -87,16 +87,16 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
             {filteredProblems.map((p) => (
               <div 
                 key={p.id}
-                className="glass rounded-[40px] p-8 border border-white/5 hover:border-apex-accent/30 transition-all group relative overflow-hidden"
+                className="card p-8 hover:border-accent/30 transition-all group relative overflow-hidden"
               >
-                <div className="absolute inset-0 apex-grid opacity-5"></div>
+                <div className="absolute inset-0 grid-pattern opacity-5"></div>
                 <div className="relative z-10">
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">
+                      <span className="text-micro mb-2">
                         {p.type === 'multiple' ? '객관식' : '주관식'}
                       </span>
-                      <h3 className="text-xl font-bold tracking-tight leading-tight group-hover:text-apex-accent transition-colors">{p.title || `노드 ${p.id}`}</h3>
+                      <h3 className="text-xl font-bold heading-tight group-hover:text-accent transition-colors">{p.title || `문제 ${p.id}`}</h3>
                     </div>
                     <button 
                       onClick={() => toggleBookmark(p.id)}
@@ -108,24 +108,24 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ problems, onSelect
 
                   <div className="flex flex-wrap gap-2 mb-12">
                     {p.tags.map(tag => (
-                      <span key={tag} className="px-3 py-1.5 bg-apex-accent/10 text-apex-accent text-[10px] font-black uppercase tracking-widest rounded-lg border border-apex-accent/20">
+                      <span key={tag} className="px-3 py-1.5 bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest rounded-lg border border-accent/20">
                         {tag}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-3 text-white/20">
+                  <div className="flex items-center justify-between pt-6 border-t border-border">
+                    <div className="flex items-center gap-3 text-muted-foreground">
                       <Calendar size={14} />
-                      <span className="text-[10px] font-black uppercase tracking-widest">
+                      <span className="text-micro">
                         {new Date(p.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <button 
                       onClick={() => onSelectProblem(p.id)}
-                      className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-apex-accent transition-all group/btn"
+                      className="flex items-center gap-3 text-micro text-muted-foreground hover:text-accent transition-all group/btn"
                     >
-                      재동기화 <ExternalLink size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                      상세 보기 <ExternalLink size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                     </button>
                   </div>
                 </div>

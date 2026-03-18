@@ -46,7 +46,7 @@ export const HandwritingCanvas: React.FC<HandwritingCanvasProps> = ({ problemId 
   };
 
   return (
-    <div className="w-full h-full border border-white/5 rounded-2xl overflow-hidden touch-none bg-black/20">
+    <div className="w-full h-full border border-border rounded-2xl overflow-hidden touch-none bg-muted/50 backdrop-blur-sm">
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}

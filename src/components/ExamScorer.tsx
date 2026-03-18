@@ -39,23 +39,23 @@ export const ExamScorer: React.FC<ExamScorerProps> = ({ onScoreCalculated }) => 
   };
 
   return (
-    <div className="glass p-10 rounded-[48px] relative overflow-hidden">
-      <div className="absolute inset-0 apex-grid opacity-5"></div>
+    <div className="card p-10 relative overflow-hidden">
+      <div className="absolute inset-0 grid-pattern opacity-5"></div>
       
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-apex-accent/20 flex items-center justify-center text-apex-accent">
+            <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent">
               <Calculator size={20} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tighter uppercase">시험 점수 입력</h2>
-              <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">수동 채점 및 성적 산출</p>
+              <h2 className="text-2xl font-bold heading-tight uppercase">시험 점수 입력</h2>
+              <p className="text-micro text-muted-foreground">수동 채점 및 성적 산출</p>
             </div>
           </div>
           <button 
             onClick={handleCalculate}
-            className="px-8 py-3 bg-white text-apex-black rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-apex-accent transition-all flex items-center gap-3"
+            className="px-8 py-3 bg-foreground text-background rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] hover:opacity-90 transition-all flex items-center gap-3 shadow-lg"
           >
             <CheckCircle2 size={16} />
             성적 산출
@@ -65,8 +65,8 @@ export const ExamScorer: React.FC<ExamScorerProps> = ({ onScoreCalculated }) => 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-8">
             <div className="flex items-center gap-3 mb-4">
-              <ListChecks size={16} className="text-apex-accent" />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">문항별 채점 결과</h3>
+              <ListChecks size={16} className="text-accent" />
+              <h3 className="text-micro text-muted-foreground">문항별 채점 결과</h3>
             </div>
 
             <div className="grid grid-cols-5 gap-4">
@@ -76,11 +76,11 @@ export const ExamScorer: React.FC<ExamScorerProps> = ({ onScoreCalculated }) => 
                   onClick={() => handleToggleResult(q.questionId)}
                   className={`aspect-square rounded-2xl border flex flex-col items-center justify-center gap-2 transition-all ${
                     results[q.questionId] 
-                      ? 'bg-apex-accent/20 border-apex-accent/50 text-apex-accent shadow-[0_0_20px_rgba(16,185,129,0.2)]' 
-                      : 'glass border-white/5 text-white/20 hover:border-white/20'
+                      ? 'bg-accent/20 border-accent/50 text-accent shadow-lg' 
+                      : 'bg-background/50 border-border text-muted-foreground hover:border-accent/30'
                   }`}
                 >
-                  <span className="text-[10px] font-black">{idx + 1}</span>
+                  <span className="text-[10px] font-bold">{idx + 1}</span>
                   {results[q.questionId] ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
                 </button>
               ))}
@@ -89,25 +89,25 @@ export const ExamScorer: React.FC<ExamScorerProps> = ({ onScoreCalculated }) => 
 
           <div className="space-y-8">
             <div className="flex items-center gap-3 mb-4">
-              <History size={16} className="text-apex-accent" />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">산출 결과 요약</h3>
+              <History size={16} className="text-accent" />
+              <h3 className="text-micro text-muted-foreground">산출 결과 요약</h3>
             </div>
 
             {calculatedResult ? (
               <div className="space-y-4">
-                <div className="p-8 rounded-3xl bg-apex-accent/10 border border-apex-accent/20 text-center">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-apex-accent mb-2">최종 점수</span>
-                  <span className="text-5xl font-bold tracking-tighter text-apex-accent">{calculatedResult.totalScore.toFixed(1)}</span>
+                <div className="p-8 rounded-3xl bg-accent/10 border border-accent/20 text-center">
+                  <span className="block text-micro text-accent mb-2">최종 점수</span>
+                  <span className="text-5xl font-bold tracking-tighter text-accent">{calculatedResult.totalScore.toFixed(1)}</span>
                 </div>
-                <div className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center">
-                  <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">예상 석차</span>
-                  <span className="text-3xl font-bold tracking-tighter text-white">{calculatedResult.rank} / {calculatedResult.totalCandidates}</span>
+                <div className="p-8 rounded-3xl bg-background/50 border border-border text-center">
+                  <span className="block text-micro text-muted-foreground mb-2">예상 석차</span>
+                  <span className="text-3xl font-bold tracking-tighter text-foreground">{calculatedResult.rank} / {calculatedResult.totalCandidates}</span>
                 </div>
               </div>
             ) : (
-              <div className="p-12 glass border-white/5 rounded-[32px] text-center opacity-20">
+              <div className="p-12 card border-border text-center opacity-20">
                 <Calculator size={48} className="mx-auto mb-4" />
-                <p className="text-[10px] font-black uppercase tracking-[0.3em]">데이터를 입력해주세요</p>
+                <p className="text-micro">데이터를 입력해주세요</p>
               </div>
             )}
           </div>

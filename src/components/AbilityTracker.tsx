@@ -38,11 +38,11 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
   const getLevelColor = (level: AbilityLevel) => {
     switch (level) {
       case 'FIELD': return 'bg-purple-500';
-      case 'COURSE': return 'bg-apex-accent';
+      case 'COURSE': return 'bg-accent';
       case 'MAJOR_CHAPTER': return 'bg-blue-500';
       case 'MINOR_CHAPTER': return 'bg-amber-500';
       case 'TYPE': return 'bg-rose-500';
-      default: return 'bg-white/20';
+      default: return 'bg-foreground/20';
     }
   };
 
@@ -50,18 +50,18 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
     <div className="space-y-8">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2 flex items-center gap-4">
-            <Layers className="text-apex-accent" size={40} />
+          <h1 className="text-5xl font-bold heading-tight uppercase mb-2 flex items-center gap-4">
+            <Layers className="text-accent" size={40} />
             학습 성취도 분석
           </h1>
-          <p className="text-white/40 font-medium">5단계 학습 성취도 분석 모델</p>
+          <p className="text-muted-foreground font-medium">5단계 학습 성취도 분석 모델</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {Object.entries(ABILITY_WEIGHTS).reverse().map(([level, weight]) => (
-            <div key={level} className="flex items-center gap-2 px-4 py-2 glass rounded-full text-[10px] font-black uppercase tracking-widest border border-white/5">
+            <div key={level} className="flex items-center gap-2 px-4 py-2 card rounded-full text-[10px] font-bold uppercase tracking-widest border border-border">
               <div className={`w-2 h-2 rounded-full ${getLevelColor(level as AbilityLevel)}`}></div>
-              <span className="text-white/40">{level}:</span>
-              <span className="text-white">{weight * 100}%</span>
+              <span className="text-muted-foreground">{level}:</span>
+              <span className="text-foreground">{weight * 100}%</span>
             </div>
           ))}
         </div>
@@ -69,15 +69,15 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Radar Chart: Subject Overview */}
-        <div className="lg:col-span-2 glass rounded-[48px] p-8 relative overflow-hidden">
-          <div className="absolute inset-0 apex-grid opacity-10"></div>
+        <div className="lg:col-span-2 card p-8 relative overflow-hidden">
+          <div className="absolute inset-0 grid-pattern opacity-10"></div>
           <div className="relative z-10">
             <div className="flex justify-between items-center mb-12">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 flex items-center gap-3">
-                <TrendingUp size={16} className="text-apex-accent" />
+              <h2 className="text-micro flex items-center gap-3">
+                <TrendingUp size={16} className="text-accent" />
                 학습 성취도
               </h2>
-              <div className="text-[10px] font-black text-white/20 flex items-center gap-2 uppercase tracking-widest">
+              <div className="text-[10px] font-bold text-muted-foreground flex items-center gap-2 uppercase tracking-widest">
                 <Info size={14} />
                 가중치 합산
               </div>
@@ -85,18 +85,18 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
             <div className="h-[450px]">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                  <PolarGrid stroke="var(--border)" />
                   <PolarAngleAxis 
                     dataKey="subject" 
-                    tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900 }} 
+                    tick={{ fill: 'var(--muted-foreground)', fontSize: 10, fontWeight: 900 }} 
                   />
                   <Radar
                     name="Ability"
                     dataKey="score"
-                    stroke="#10b981"
-                    fill="#10b981"
+                    stroke="var(--accent)"
+                    fill="var(--accent)"
                     fillOpacity={0.15}
-                    dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#0a0a0a' }}
+                    dot={{ r: 4, fill: 'var(--accent)', strokeWidth: 2, stroke: 'var(--background)' }}
                   />
                 </RadarChart>
               </ResponsiveContainer>
@@ -106,8 +106,8 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
 
         {/* Top Tags / Weaknesses */}
         <div className="space-y-8">
-          <div className="glass rounded-[40px] p-8">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
+          <div className="card p-8">
+            <h2 className="text-micro mb-8 flex items-center gap-3">
               <Zap size={16} className="text-amber-500" />
               주요 학습 주제
             </h2>
@@ -115,12 +115,12 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
               {tagData.map((tag, idx) => (
                 <div key={idx} className="group">
                   <div className="flex justify-between items-end mb-3">
-                    <span className="text-lg font-bold tracking-tight text-white/80">{tag.name}</span>
-                    <span className="text-sm font-black text-apex-accent">{(tag.score * 100).toFixed(0)}%</span>
+                    <span className="text-lg font-bold tracking-tight text-foreground">{tag.name}</span>
+                    <span className="text-sm font-bold text-accent">{(tag.score * 100).toFixed(0)}%</span>
                   </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-apex-accent rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                      className="h-full bg-accent rounded-full transition-all duration-1000 shadow-[0_0_10px_var(--accent-glow)]"
                       style={{ width: `${tag.score * 100}%` }}
                     ></div>
                   </div>
@@ -129,32 +129,32 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
             </div>
           </div>
 
-          <div className="p-8 rounded-[40px] bg-apex-accent/10 border border-apex-accent/20 relative overflow-hidden group">
+          <div className="p-8 rounded-[40px] bg-accent/10 border border-accent/20 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
-              <TrendingUp size={64} className="text-apex-accent" />
+              <TrendingUp size={64} className="text-accent" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-[10px] font-black text-apex-accent uppercase tracking-[0.2em] mb-4">학습 데이터 전파</h3>
-              <p className="text-sm text-white/70 leading-relaxed font-medium mb-8">
+              <h3 className="text-[10px] font-bold text-accent uppercase tracking-[0.2em] mb-4">학습 데이터 전파</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed font-medium mb-8">
                 "미적분" 태그 업데이트는 가중치가 감소하면서 "전공: 해석학" 및 "과목: 수학"으로 전파됩니다.
               </p>
-              <button className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3">
+              <button className="w-full py-4 bg-foreground/5 hover:bg-foreground/10 border border-foreground/10 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3">
                 상세 계층 보기 <ChevronRight size={16} />
               </button>
             </div>
           </div>
 
           {lastBehavior && (
-            <div className="glass rounded-[40px] p-8">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8 flex items-center gap-3">
-                <Info size={16} className="text-apex-accent" />
+            <div className="card p-8">
+              <h2 className="text-micro mb-8 flex items-center gap-3">
+                <Info size={16} className="text-accent" />
                 행동 분석
               </h2>
               <div className="space-y-6">
-                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">태그</span>
-                  <span className={`text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ${
-                    lastBehavior.behaviorTag === 'NORMAL' ? 'bg-apex-accent/10 text-apex-accent' :
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/50 border border-border">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">태그</span>
+                  <span className={`text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest ${
+                    lastBehavior.behaviorTag === 'NORMAL' ? 'bg-accent/10 text-accent' :
                     lastBehavior.behaviorTag === 'LUCKY_GUESS' ? 'bg-amber-500/10 text-amber-500' :
                     'bg-blue-500/10 text-blue-500'
                   }`}>
@@ -162,13 +162,13 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
                      lastBehavior.behaviorTag === 'LUCKY_GUESS' ? '찍기' : '실수'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">보정</span>
-                  <span className="text-lg font-bold tracking-tighter">x{lastBehavior.correctionFactor.toFixed(2)}</span>
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/50 border border-border">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">보정</span>
+                  <span className="text-lg font-bold tracking-tighter text-foreground">x{lastBehavior.correctionFactor.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center p-4 rounded-2xl bg-white/5">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/20">신뢰도</span>
-                  <span className="text-lg font-bold tracking-tighter">{(lastBehavior.reliabilityIndex * 100).toFixed(0)}%</span>
+                <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/50 border border-border">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">신뢰도</span>
+                  <span className="text-lg font-bold tracking-tighter text-foreground">{(lastBehavior.reliabilityIndex * 100).toFixed(0)}%</span>
                 </div>
               </div>
             </div>
@@ -177,21 +177,21 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
       </div>
 
       {/* Detailed Hierarchy List */}
-      <div className="glass rounded-[48px] overflow-hidden">
-        <div className="p-8 border-b border-white/5">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">계층적 세부 분석</h2>
+      <div className="card overflow-hidden">
+        <div className="p-8 border-b border-border">
+          <h2 className="text-micro">계층적 세부 분석</h2>
         </div>
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-border">
           {hierarchy.filter(h => h.level === 'FIELD' || h.level === 'COURSE').map((item) => (
-            <div key={item.id} className="p-8 hover:bg-white/5 transition-all group">
+            <div key={item.id} className="p-8 hover:bg-foreground/5 transition-all group">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-6">
-                  <div className={`w-14 h-14 rounded-2xl ${getLevelColor(item.level)} flex items-center justify-center text-apex-black font-black text-xl shadow-lg`}>
+                  <div className={`w-14 h-14 rounded-2xl ${getLevelColor(item.level)} flex items-center justify-center text-white font-bold text-xl shadow-lg`}>
                     {item.name[0]}
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold tracking-tight text-white/90 mb-1">{item.name}</h4>
-                    <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em]">{
+                    <h4 className="text-xl font-bold tracking-tight text-foreground mb-1">{item.name}</h4>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">{
                       item.level === 'FIELD' ? '분야' : 
                       item.level === 'COURSE' ? '과목' : 
                       item.level === 'MAJOR_CHAPTER' ? '대단원' : 
@@ -201,11 +201,11 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
                 </div>
                 <div className="flex items-center gap-12">
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">현재 숙련도</p>
-                    <p className="text-3xl font-bold tracking-tighter text-white">{(scores[item.id]?.score ?? 0.5).toFixed(3)}</p>
-                    <p className="text-[10px] font-black text-apex-accent uppercase tracking-widest mt-1">해결: {scores[item.id]?.solvedProblemCount ?? 0}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">현재 숙련도</p>
+                    <p className="text-3xl font-bold tracking-tighter text-foreground">{(scores[item.id]?.score ?? 0.5).toFixed(3)}</p>
+                    <p className="text-[10px] font-bold text-accent uppercase tracking-widest mt-1">해결: {scores[item.id]?.solvedProblemCount ?? 0}</p>
                   </div>
-                  <div className="w-48 h-3 bg-white/5 rounded-full overflow-hidden hidden md:block">
+                  <div className="w-48 h-3 bg-muted rounded-full overflow-hidden hidden md:block">
                     <div 
                       className={`h-full ${getLevelColor(item.level)} shadow-[0_0_10px_rgba(255,255,255,0.2)]`}
                       style={{ width: `${(scores[item.id]?.score ?? 0.5) * 100}%` }}

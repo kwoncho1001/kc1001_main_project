@@ -3,7 +3,7 @@ import { Database, Play, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react
 import { QuestionService } from '../services/questionService';
 import { FirebaseService } from '../services/firebaseService';
 import { auth } from '../firebase';
-import { mockHierarchy } from '../services/hierarchyService';
+import { HierarchyService } from '../services/hierarchyService';
 
 export const DatabaseInitializer: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -78,21 +78,21 @@ export const DatabaseInitializer: React.FC = () => {
   };
 
   return (
-    <div className="glass p-10 rounded-[48px] relative overflow-hidden max-w-2xl mx-auto">
-      <div className="absolute inset-0 apex-grid opacity-5"></div>
+    <div className="card p-10 relative overflow-hidden max-w-2xl mx-auto">
+      <div className="absolute inset-0 grid-pattern opacity-5"></div>
       <div className="relative z-10 text-center">
-        <div className="w-20 h-20 rounded-3xl bg-apex-accent/20 flex items-center justify-center text-apex-accent border border-apex-accent/30 mx-auto mb-8">
+        <div className="w-20 h-20 rounded-3xl bg-accent/10 flex items-center justify-center text-accent border border-accent/20 mx-auto mb-8 shadow-xl">
           <Database size={40} />
         </div>
-        <h2 className="text-3xl font-bold tracking-tighter uppercase mb-4">데이터베이스 초기화</h2>
-        <p className="text-white/40 font-medium mb-12">
+        <h2 className="text-3xl font-bold heading-tight uppercase mb-4">데이터베이스 초기화</h2>
+        <p className="text-muted-foreground font-medium mb-12">
           프로그램을 실제 학원에서 사용하기 위해 필요한 초기 데이터(계통도, 샘플 문항 등)를 데이터베이스에 등록합니다.
         </p>
 
         {status === 'idle' && (
           <button 
             onClick={handleInitialize}
-            className="px-12 py-4 bg-apex-accent text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-transform flex items-center gap-3 mx-auto"
+            className="px-12 py-5 accent-gradient text-white font-bold uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all flex items-center gap-3 mx-auto shadow-xl"
           >
             <Play size={20} fill="currentColor" />
             초기화 시작
@@ -100,21 +100,24 @@ export const DatabaseInitializer: React.FC = () => {
         )}
 
         {status === 'loading' && (
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 size={40} className="text-apex-accent animate-spin" />
-            <p className="text-xs font-bold text-apex-accent animate-pulse">{message}</p>
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative w-12 h-12">
+              <div className="absolute inset-0 border-2 border-accent/20 rounded-full"></div>
+              <div className="absolute inset-0 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-micro text-accent animate-pulse">{message}</p>
           </div>
         )}
 
         {status === 'success' && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 mb-2">
-              <CheckCircle2 size={24} />
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mb-2 border border-green-500/20 shadow-lg">
+              <CheckCircle2 size={32} />
             </div>
-            <p className="text-sm font-bold text-green-500">{message}</p>
+            <p className="text-lg font-bold text-green-500">{message}</p>
             <button 
               onClick={() => setStatus('idle')}
-              className="mt-4 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+              className="mt-4 text-micro text-muted-foreground hover:text-foreground transition-colors"
             >
               다시 실행하기
             </button>
@@ -122,14 +125,14 @@ export const DatabaseInitializer: React.FC = () => {
         )}
 
         {status === 'error' && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 mb-2">
-              <AlertCircle size={24} />
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-2 border border-red-500/20 shadow-lg">
+              <AlertCircle size={32} />
             </div>
-            <p className="text-sm font-bold text-red-500">{message}</p>
+            <p className="text-lg font-bold text-red-500">{message}</p>
             <button 
               onClick={() => setStatus('idle')}
-              className="mt-4 px-8 py-3 glass border-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/5 transition-colors rounded-xl"
+              className="mt-4 px-10 py-4 card border-border text-micro text-foreground hover:bg-white/5 transition-all"
             >
               다시 시도
             </button>

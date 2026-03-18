@@ -96,13 +96,13 @@ export const HierarchyManager: React.FC = () => {
     };
 
     return (
-      <div key={node.id} className="border-l border-white/5 ml-6 my-2">
-        <div className="flex items-center gap-3 p-3 hover:bg-white/5 rounded-2xl group transition-all">
-          <button onClick={() => toggleExpand(node.id)} className="w-6 h-6 flex items-center justify-center text-white/20 hover:text-apex-accent transition-colors">
-            {hasChildren ? (isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />) : <div className="w-1 h-1 bg-white/20 rounded-full" />}
+      <div key={node.id} className="border-l border-border ml-6 my-2">
+        <div className="flex items-center gap-3 p-3 hover:bg-foreground/5 rounded-2xl group transition-all">
+          <button onClick={() => toggleExpand(node.id)} className="w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-accent transition-colors">
+            {hasChildren ? (isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />) : <div className="w-1 h-1 bg-muted-foreground rounded-full" />}
           </button>
           
-          <div className={`text-[8px] px-2 py-0.5 rounded-md font-black uppercase tracking-widest ${
+          <div className={`text-[8px] px-2 py-0.5 rounded-md font-bold uppercase tracking-widest ${
             node.level === 'FIELD' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
             node.level === 'COURSE' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
             node.level === 'MAJOR_CHAPTER' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
@@ -112,11 +112,11 @@ export const HierarchyManager: React.FC = () => {
             {levelLabels[node.level] || node.level}
           </div>
 
-          <span className="text-sm font-bold tracking-tight text-white/80">{node.name}</span>
-          <span className="text-[10px] text-white/20 font-mono tracking-widest">#{node.id}</span>
+          <span className="text-sm font-bold tracking-tight text-foreground">{node.name}</span>
+          <span className="text-[10px] text-muted-foreground font-mono tracking-widest">#{node.id}</span>
 
           <div className="ml-auto opacity-0 group-hover:opacity-100 flex gap-2 transition-opacity">
-            <button onClick={() => setEditingNode(node)} className="p-2 hover:bg-white/10 text-white/40 hover:text-white rounded-xl transition-all">
+            <button onClick={() => setEditingNode(node)} className="p-2 hover:bg-foreground/10 text-muted-foreground hover:text-foreground rounded-xl transition-all">
               <Edit2 size={14} />
             </button>
             {node.level !== 'TYPE' && (
@@ -125,7 +125,7 @@ export const HierarchyManager: React.FC = () => {
                   parentId: node.id, 
                   level: getNextLevel(node.level) 
                 })} 
-                className="p-2 hover:bg-apex-accent/10 text-apex-accent rounded-xl transition-all"
+                className="p-2 hover:bg-accent/10 text-accent rounded-xl transition-all"
               >
                 <Plus size={14} />
               </button>
@@ -155,12 +155,12 @@ export const HierarchyManager: React.FC = () => {
     <div className="max-w-6xl mx-auto h-full flex flex-col gap-8">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mb-2">학습 구조 관리</h1>
-          <p className="text-white/40 font-medium">계층적 학습 노드 및 전파 로직 설정</p>
+          <h1 className="text-5xl font-bold heading-tight uppercase mb-2">학습 구조 관리</h1>
+          <p className="text-muted-foreground font-medium">계층적 학습 노드 및 전파 로직 설정</p>
         </div>
         <button 
           onClick={() => setNewNode({ level: 'FIELD' })}
-          className="bg-white text-apex-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-apex-accent transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+          className="accent-gradient text-white px-8 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 hover:opacity-90 transition-all shadow-lg"
         >
           <Plus size={18} />
           루트 노드 초기화
@@ -168,8 +168,8 @@ export const HierarchyManager: React.FC = () => {
       </header>
 
       {message && (
-        <div className={`p-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 border ${
-          message.type === 'success' ? 'bg-apex-accent/10 text-apex-accent border-apex-accent/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
+        <div className={`p-5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 border ${
+          message.type === 'success' ? 'bg-accent/10 text-accent border-accent/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
         }`}>
           {message.type === 'success' ? <CheckCircle2 size={16} /> : <X size={16} />}
           {message.text}
@@ -179,10 +179,10 @@ export const HierarchyManager: React.FC = () => {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-0">
         {/* Structure Tree */}
         <div className="lg:col-span-2 flex flex-col min-h-0">
-          <div className="flex-1 glass rounded-[40px] p-8 border border-white/5 overflow-y-auto scrollbar-hide">
-            <div className="flex items-center gap-3 mb-8 text-white/20">
+          <div className="flex-1 card p-8 overflow-y-auto scrollbar-hide">
+            <div className="flex items-center gap-3 mb-8 text-muted-foreground">
               <Layers size={16} />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">학습 맵 구조</h3>
+              <h3 className="text-micro">학습 맵 구조</h3>
             </div>
             {structure.map(root => renderNode(root))}
           </div>
@@ -190,10 +190,10 @@ export const HierarchyManager: React.FC = () => {
 
         {/* Weights & Settings */}
         <div className="space-y-6 overflow-y-auto pr-2 scrollbar-hide">
-          <div className="glass rounded-[40px] p-8 border border-white/5">
-            <div className="flex items-center gap-3 mb-8 text-white/20">
+          <div className="card p-8">
+            <div className="flex items-center gap-3 mb-8 text-muted-foreground">
               <Settings size={16} />
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">전파 로직</h3>
+              <h3 className="text-micro">전파 로직</h3>
             </div>
             
             <div className="space-y-8">
@@ -207,12 +207,12 @@ export const HierarchyManager: React.FC = () => {
                 return (
                   <div key={key} className="group">
                     <div className="flex justify-between items-center mb-3">
-                      <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 group-hover:text-apex-accent transition-colors">{weightLabels[key] || key.replace(/_/g, ' ')}</label>
-                      <span className="text-[10px] font-mono font-black text-apex-accent">{val.toFixed(2)}</span>
+                      <label className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground group-hover:text-accent transition-colors">{weightLabels[key] || key.replace(/_/g, ' ')}</label>
+                      <span className="text-[10px] font-mono font-bold text-accent">{val.toFixed(2)}</span>
                     </div>
-                  <div className="relative h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="relative h-1.5 bg-muted rounded-full overflow-hidden">
                     <div 
-                      className="absolute top-0 left-0 h-full bg-apex-accent shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-500"
+                      className="absolute top-0 left-0 h-full bg-accent transition-all duration-500"
                       style={{ width: `${val * 100}%` }}
                     />
                     <input 
@@ -236,12 +236,12 @@ export const HierarchyManager: React.FC = () => {
           </div>
         </div>
 
-          <div className="p-8 bg-apex-accent/5 rounded-[32px] border border-apex-accent/20 relative overflow-hidden">
+          <div className="p-8 bg-accent/5 rounded-[32px] border border-accent/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-6 opacity-10">
-              <Brain size={48} className="text-apex-accent" />
+              <Brain size={48} className="text-accent" />
             </div>
-            <h4 className="text-[10px] font-black text-apex-accent uppercase tracking-[0.3em] mb-3">시스템 지침</h4>
-            <p className="text-[11px] text-white/40 leading-relaxed">
+            <h4 className="text-[10px] font-bold text-accent uppercase tracking-[0.3em] mb-3">시스템 지침</h4>
+            <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">
               계층 구조를 변경하면 모든 학생의 데이터에 즉시 반영됩니다. 
               기존 데이터가 연결된 노드는 삭제가 제한될 수 있습니다.
             </p>
@@ -251,15 +251,15 @@ export const HierarchyManager: React.FC = () => {
 
       {/* Modals */}
       {(editingNode || newNode) && (
-        <div className="fixed inset-0 bg-apex-black/80 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="glass rounded-[40px] border border-white/5 w-full max-w-lg overflow-hidden shadow-2xl relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-apex-accent"></div>
-            <div className="p-10 border-b border-white/5 flex justify-between items-center">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-md z-50 flex items-center justify-center p-6">
+          <div className="card w-full max-w-lg overflow-hidden shadow-2xl relative">
+            <div className="absolute top-0 left-0 w-full h-1 accent-gradient"></div>
+            <div className="p-10 border-b border-border flex justify-between items-center">
               <div>
-                <h3 className="text-2xl font-bold tracking-tighter uppercase">{editingNode ? '노드 수정' : '노드 초기화'}</h3>
-                <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">구조적 메타데이터 설정</p>
+                <h3 className="text-2xl font-bold heading-tight uppercase">{editingNode ? '노드 수정' : '노드 초기화'}</h3>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">구조적 메타데이터 설정</p>
               </div>
-              <button onClick={() => { setEditingNode(null); setNewNode(null); }} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/5 transition-all">
+              <button onClick={() => { setEditingNode(null); setNewNode(null); }} className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all">
                 <X size={20} />
               </button>
             </div>
@@ -267,10 +267,10 @@ export const HierarchyManager: React.FC = () => {
             <div className="p-10 space-y-6">
               {newNode && (
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">노드 식별자 (고유)</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">노드 식별자 (고유)</label>
                   <input 
                     type="text" 
-                    className="w-full p-5 glass border border-white/5 rounded-2xl text-sm font-medium focus:outline-none focus:border-apex-accent/50 transition-all placeholder:text-white/5"
+                    className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20"
                     placeholder="예: node-alpha-01"
                     value={newNode.id || ''}
                     onChange={e => setNewNode({ ...newNode, id: e.target.value })}
@@ -279,10 +279,10 @@ export const HierarchyManager: React.FC = () => {
               )}
               
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">노드 명칭</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">노드 명칭</label>
                 <input 
                   type="text" 
-                  className="w-full p-5 glass border border-white/5 rounded-2xl text-sm font-medium focus:outline-none focus:border-apex-accent/50 transition-all placeholder:text-white/5"
+                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20"
                   placeholder="사람이 읽을 수 있는 이름"
                   value={editingNode?.name || newNode?.name || ''}
                   onChange={e => editingNode ? setEditingNode({ ...editingNode, name: e.target.value }) : setNewNode({ ...newNode, name: e.target.value })}
@@ -290,9 +290,9 @@ export const HierarchyManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">기능적 설명</label>
+                <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2">기능적 설명</label>
                 <textarea 
-                  className="w-full p-5 glass border border-white/5 rounded-2xl text-sm font-medium h-32 focus:outline-none focus:border-apex-accent/50 transition-all placeholder:text-white/5 resize-none"
+                  className="w-full p-5 bg-muted border border-border rounded-2xl text-sm font-medium h-32 focus:outline-none focus:border-accent transition-all placeholder:text-muted-foreground/20 resize-none"
                   placeholder="노드 목적 및 범위..."
                   value={editingNode?.description || newNode?.description || ''}
                   onChange={e => editingNode ? setEditingNode({ ...editingNode, description: e.target.value }) : setNewNode({ ...newNode, description: e.target.value })}
@@ -300,28 +300,28 @@ export const HierarchyManager: React.FC = () => {
               </div>
 
               {newNode && newNode.parentId && (
-                <div className="p-6 glass rounded-2xl border border-white/5 flex items-center justify-between">
+                <div className="p-6 bg-muted/50 rounded-2xl border border-border flex items-center justify-between">
                   <div>
-                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/20 block mb-1">부모 컨텍스트</span>
-                    <span className="text-xs font-bold text-white/60">노드: {newNode.parentId}</span>
+                    <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-muted-foreground block mb-1">부모 컨텍스트</span>
+                    <span className="text-xs font-bold text-muted-foreground">노드: {newNode.parentId}</span>
                   </div>
-                  <div className="text-[8px] px-3 py-1 bg-apex-accent/10 text-apex-accent rounded-lg border border-apex-accent/20 font-black uppercase tracking-widest">
+                  <div className="text-[8px] px-3 py-1 bg-accent/10 text-accent rounded-lg border border-accent/20 font-bold uppercase tracking-widest">
                     {newNode.level}
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-10 bg-white/5 flex gap-4">
+            <div className="p-10 bg-muted/50 flex gap-4">
               <button 
                 onClick={() => { setEditingNode(null); setNewNode(null); }}
-                className="flex-1 py-5 glass border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition-all"
+                className="flex-1 py-5 bg-muted border border-border rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-foreground/5 transition-all"
               >
                 중단
               </button>
               <button 
                 onClick={editingNode ? handleUpdate : handleCreate}
-                className="flex-1 py-5 bg-white text-apex-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-apex-accent transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                className="flex-1 py-5 accent-gradient text-white rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center justify-center gap-3 shadow-lg"
               >
                 <Save size={18} />
                 {editingNode ? '변경 사항 적용' : '노드 초기화'}
