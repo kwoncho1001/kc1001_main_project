@@ -108,5 +108,5 @@
 }
 
 .text-micro {
-  @apply text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground;
+  @apply text-[10px] font-black uppercase tracking-[0.2em] text-foreground;
 }

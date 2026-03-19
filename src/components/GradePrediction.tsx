@@ -102,8 +102,8 @@ export const GradePrediction: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-[400px] w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <LineChart data={historyData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.2} />
                   <XAxis 

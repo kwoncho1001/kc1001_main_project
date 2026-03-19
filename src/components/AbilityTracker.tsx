@@ -82,8 +82,8 @@ export const AbilityTracker: React.FC<AbilityTrackerProps> = ({ scores, hierarch
                 가중치 합산
               </div>
             </div>
-            <div className="h-[450px]">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-[450px] w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="var(--border)" />
                   <PolarAngleAxis 

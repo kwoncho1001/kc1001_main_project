@@ -69,13 +69,13 @@ const NavButton: React.FC<NavButtonProps> = ({ id, currentView, onClick, icon: I
   return (
     <button 
       onClick={() => onClick(id)}
-      className={`w-full px-4 py-2.5 flex items-center gap-3 text-[11px] font-semibold transition-all rounded-lg group ${
+      className={`w-full px-4 py-2.5 flex items-center gap-3 text-[11px] font-bold transition-all rounded-lg group ${
         isActive 
-          ? 'bg-accent/10 text-accent border border-accent/20' 
-          : 'text-foreground hover:text-foreground hover:bg-foreground/5'
+          ? 'bg-foreground text-background shadow-lg' /* 활성화 시 색상 반전 */
+          : 'text-foreground hover:bg-foreground/10' /* 비활성화 시에도 검정/흰색 유지 */
       }`}
     >
-      <Icon size={16} className={isActive ? 'text-accent' : 'text-foreground group-hover:text-foreground'} />
+      <Icon size={16} className="shrink-0" />
       {label}
     </button>
   );
@@ -404,7 +404,7 @@ export default function App() {
           </div>
         </aside>
 
-        <main className="flex-1 overflow-auto relative grid-pattern">
+        <main className="flex-1 overflow-auto relative grid-pattern min-w-0">
           {showOnboarding && (
             <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-6">
               <div className="card p-10 max-w-md w-full shadow-2xl relative overflow-hidden glow">
@@ -430,7 +430,7 @@ export default function App() {
             </div>
           )}
 
-          <div className="p-12 max-w-7xl mx-auto min-h-full">
+          <div className="p-12 max-w-7xl mx-auto min-h-full w-full">
             {renderView()}
           </div>
         </main>

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, FileText, CheckCircle2, Loader2, Download, RefreshCw, ArrowRight, Scan } from 'lucide-react';
+import { Camera, FileText, CheckCircle2, Loader2, Download, RefreshCw, ArrowRight, Scan, UploadCloud } from 'lucide-react';
 import { runPipeline, PIPELINE_STEPS } from '../core/pipeline';
 import confetti from 'canvas-confetti';
 
 export const ScannerUI: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
   const [processing, setProcessing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // 드래그 상태 추가
   const [currentPage, setCurrentPage] = useState(0);
   const [currentStep, setCurrentStep] = useState(-1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -13,29 +14,44 @@ export const ScannerUI: React.FC = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const newImages: string[] = [];
-      let loadedCount = 0;
-
-      for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          newImages[i] = event.target?.result as string;
-          loadedCount++;
-          if (loadedCount === files.length) {
-            setImages(prev => [...prev, ...newImages]);
-            reset();
-          }
-        };
-        reader.readAsDataURL(files[i]);
-      }
+  // 파일 처리 공통 로직
+  const processFiles = (files: FileList) => {
+    const newImages: string[] = [];
+    let loadedCount = 0;
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        newImages[i] = event.target?.result as string;
+        loadedCount++;
+        if (loadedCount === files.length) {
+          setImages(prev => [...prev, ...newImages]);
+          reset();
+        }
+      };
+      reader.readAsDataURL(files[i]);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) processFiles(e.target.files);
   };
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // [드래그 앤 드롭 핸들러]
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) processFiles(e.dataTransfer.files);
   };
 
   const reset = () => {
@@ -49,7 +65,6 @@ export const ScannerUI: React.FC = () => {
     if (images.length === 0) return;
     setProcessing(true);
     reset();
-
     try {
       const finalPdfUrl = await runPipeline(images, (pageIndex, stepIndex, canvas) => {
         setCurrentPage(pageIndex);
@@ -57,13 +72,8 @@ export const ScannerUI: React.FC = () => {
         setCompletedSteps(prev => [...prev, stepIndex]);
         setStepCanvases(prev => ({ ...prev, [stepIndex]: canvas.toDataURL() }));
       });
-      
       setPdfUrl(finalPdfUrl);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     } catch (error) {
       console.error('Scan failed:', error);
     } finally {
@@ -73,75 +83,47 @@ export const ScannerUI: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-full flex flex-col gap-8">
-      {/* Header */}
-      <header className="flex justify-between items-end">
+    <div 
+      className="max-w-7xl mx-auto h-full flex flex-col gap-8"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Header: 드래그 중일 때 강조 표시 */}
+      <header className={`flex justify-between items-end p-6 rounded-3xl transition-all ${isDragging ? 'bg-accent/20 border-2 border-dashed border-accent' : ''}`}>
         <div>
-          <div className="flex items-center gap-2 text-accent mb-2">
-            <Scan size={16} />
-            <span className="text-micro">이미지 분석 중</span>
+          <div className="flex items-center gap-2 mb-2">
+            <Scan size={16} className="text-accent" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">이미지 분석 시스템</span>
           </div>
-          <h1 className="text-4xl font-bold heading-tight uppercase">문제 스캐너</h1>
+          <h1 className="text-5xl font-black heading-tight uppercase text-foreground">문제 스캐너</h1>
         </div>
-        <div className="flex gap-4">
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="px-8 py-3 card hover:bg-foreground/5 transition-all text-micro flex items-center gap-3"
-          >
-            <Camera size={16} className="text-accent" />
-            이미지 불러오기
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            accept="image/*" 
-            multiple
-            className="hidden" 
-          />
-        </div>
+        <button 
+          onClick={() => fileInputRef.current?.click()}
+          className="px-10 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all flex items-center gap-3"
+        >
+          {isDragging ? <UploadCloud className="animate-bounce" /> : <Camera size={18} />}
+          {isDragging ? "여기에 놓으세요" : "이미지 불러오기"}
+        </button>
+        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" multiple className="hidden" />
       </header>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-0">
-        {/* Left: Input & Preview */}
         <div className="lg:col-span-2 flex flex-col gap-8 min-h-0">
-          <div className="flex-1 card p-2 relative overflow-hidden group">
-            <div className="absolute inset-0 grid-pattern opacity-20"></div>
-            <div className="w-full h-full rounded-2xl relative overflow-hidden bg-background/80 flex items-center justify-center">
+          <div className={`flex-1 card border-2 border-foreground relative overflow-hidden ${isDragging ? 'scale-[0.98] border-accent' : ''}`}>
+            <div className="absolute inset-0 grid-pattern opacity-10"></div>
+            <div className="w-full h-full rounded-2xl relative overflow-hidden bg-background/50 flex items-center justify-center">
               {images.length > 0 ? (
-                <img 
-                  src={stepCanvases[currentStep] || stepCanvases[completedSteps[completedSteps.length - 1]] || images[currentPage]} 
-                  alt="Preview" 
-                  className="max-w-full max-h-full object-contain relative z-10"
-                />
+                <img src={stepCanvases[currentStep] || images[currentPage]} alt="Preview" className="max-w-full max-h-full object-contain relative z-10" />
               ) : (
-                <div className="text-center opacity-20">
-                  <Camera size={64} className="mx-auto mb-6" />
-                  <p className="text-micro">이미지를 추가해주세요</p>
-                </div>
-              )}
-              
-              {processing && (
-                <div className="absolute inset-0 z-20 bg-background/60 backdrop-blur-sm flex items-center justify-center">
-                  <div className="card px-10 py-8 flex flex-col items-center gap-4 shadow-2xl border-accent/20">
-                    <div className="relative w-12 h-12">
-                      <div className="absolute inset-0 border-2 border-accent/20 rounded-full"></div>
-                      <div className="absolute inset-0 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                    <div className="text-center">
-                      <span className="block text-micro text-accent mb-1">
-                        페이지 분석 중 {currentPage + 1} / {images.length}
-                      </span>
-                      <span className="block font-mono text-[8px] uppercase tracking-[0.2em] text-muted-foreground">
-                        작업: {PIPELINE_STEPS[currentStep]?.name}
-                      </span>
-                    </div>
-                  </div>
+                <div className="text-center">
+                  <UploadCloud size={64} className={`mx-auto mb-6 ${isDragging ? 'text-accent animate-pulse' : 'text-foreground/20'}`} />
+                  <p className="font-black text-foreground uppercase tracking-widest">파일을 드래그하여 추가하세요</p>
                 </div>
               )}
             </div>
           </div>
-
+          
           {/* Image List */}
           {images.length > 0 && !processing && !pdfUrl && (
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -165,12 +147,13 @@ export const ScannerUI: React.FC = () => {
                 onClick={() => fileInputRef.current?.click()}
                 className="shrink-0 w-32 aspect-[3/4] card border-dashed border-border flex flex-col items-center justify-center gap-2 hover:bg-foreground/5 transition-all"
               >
-                <Camera size={20} className="text-muted-foreground" />
-                <span className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground">추가</span>
+                <Camera size={20} className="text-foreground/50" />
+                <span className="text-[8px] font-bold uppercase tracking-widest text-foreground/50">추가</span>
               </button>
             </div>
           )}
 
+          {/* 하단 스캔 시작 버튼 */}
           {images.length > 0 && !processing && !pdfUrl && (
             <button 
               onClick={startScan}
@@ -201,64 +184,49 @@ export const ScannerUI: React.FC = () => {
           )}
         </div>
 
-        {/* Right: Pipeline Status */}
-        <div className="space-y-6 overflow-y-auto pr-2">
-          <div className="card p-8">
-            <div className="flex items-center gap-2 mb-8 text-muted-foreground">
-              <RefreshCw size={14} />
-              <h2 className="text-micro">분석 단계</h2>
-            </div>
-            
+        {/* Right: Pipeline Status (회색 박멸 핵심) */}
+        <aside className="space-y-6 overflow-y-auto pr-2">
+          <div className="card p-8 border-2 border-foreground bg-card">
+            <h2 className="text-[10px] font-black uppercase mb-8 text-foreground tracking-[0.3em]">분석 시퀀스</h2>
             <div className="space-y-4">
               {PIPELINE_STEPS.map((step, index) => {
                 const isCompleted = completedSteps.includes(index);
                 const isCurrent = currentStep === index;
-                
                 return (
-                  <div 
-                    key={index} 
-                    className={`p-5 rounded-2xl border transition-all relative overflow-hidden ${
-                      isCurrent ? 'bg-accent/10 border-accent/50' : 
-                      isCompleted ? 'bg-background/50 border-border' : 
-                      'border-border opacity-30'
-                    }`}
-                  >
-                    {isCurrent && (
-                      <div className="absolute top-0 left-0 w-1 h-full bg-accent"></div>
-                    )}
-                    <div className="flex justify-between items-start mb-3">
-                      <span className={`font-mono text-[8px] uppercase tracking-widest ${isCurrent ? 'text-accent' : 'text-muted-foreground'}`}>
+                  <div key={index} className={`p-5 rounded-2xl border-2 transition-all ${
+                    isCurrent ? 'bg-accent/10 border-accent' : 
+                    isCompleted ? 'bg-foreground text-background border-foreground' : 
+                    'border-foreground/20' // 투명도 제거, 선명한 경계
+                  }`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <span className={`font-mono text-[10px] font-black ${isCurrent ? 'text-accent' : isCompleted ? 'text-background' : 'text-foreground'}`}>
                         단계 0{index + 1}
                       </span>
-                      {isCompleted && <CheckCircle2 size={14} className="text-accent" />}
-                      {isCurrent && <Loader2 size={14} className="animate-spin text-accent" />}
+                      {isCompleted && <CheckCircle2 size={16} />}
                     </div>
-                    <h3 className={`font-bold text-[10px] uppercase tracking-widest mb-1 ${isCurrent ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    <h3 className={`font-black text-xs uppercase tracking-widest ${isCurrent ? 'text-accent' : isCompleted ? 'text-background' : 'text-foreground'}`}>
                       {step.name}
                     </h3>
-                    <p className="text-[9px] text-muted-foreground leading-relaxed mb-4">{step.description}</p>
-                    
-                    {isCurrent && (
-                      <div className="p-3 bg-accent/5 rounded-lg border border-accent/10">
-                        <p className="text-[9px] italic text-accent/80">"{step.thought}"</p>
-                      </div>
-                    )}
+                    <p className={`text-[10px] font-bold leading-relaxed mt-2 ${isCurrent ? 'text-foreground' : isCompleted ? 'text-background/80' : 'text-foreground/60'}`}>
+                      {step.description}
+                    </p>
                   </div>
                 );
               })}
             </div>
           </div>
-
+          
+          {/* PDF 완료 메시지 */}
           {pdfUrl && (
             <div className="p-8 bg-accent/10 border border-accent/30 rounded-3xl relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-20">
                 <CheckCircle2 size={48} className="text-accent" />
               </div>
               <h3 className="font-bold uppercase tracking-[0.2em] text-xs mb-2 text-accent">분석 완료</h3>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">이미지가 깔끔하게 보정되어 텍스트를 읽을 준비가 되었습니다.</p>
+              <p className="text-[10px] text-foreground leading-relaxed">이미지가 깔끔하게 보정되어 텍스트를 읽을 준비가 되었습니다.</p>
             </div>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );
